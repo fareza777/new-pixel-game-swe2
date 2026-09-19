@@ -10321,6 +10321,11 @@
   },
   {
    "x": 51,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 51,
    "y": 9,
    "m": "ground"
   },
@@ -10466,6 +10471,11 @@
   },
   {
    "x": 52,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 52,
    "y": 9,
    "m": "ground"
   },
@@ -10611,6 +10621,11 @@
   },
   {
    "x": 53,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 53,
    "y": 9,
    "m": "ground"
   },
@@ -10756,6 +10771,11 @@
   },
   {
    "x": 54,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 54,
    "y": 9,
    "m": "ground"
   },
@@ -10901,6 +10921,11 @@
   },
   {
    "x": 55,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 55,
    "y": 9,
    "m": "ground"
   },
@@ -11046,6 +11071,11 @@
   },
   {
    "x": 56,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 56,
    "y": 9,
    "m": "ground"
   },
@@ -11191,6 +11221,11 @@
   },
   {
    "x": 57,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 57,
    "y": 9,
    "m": "ground"
   },
@@ -11336,6 +11371,11 @@
   },
   {
    "x": 58,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 58,
    "y": 9,
    "m": "ground"
   },
@@ -11481,6 +11521,11 @@
   },
   {
    "x": 59,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 59,
    "y": 9,
    "m": "ground"
   },
@@ -11626,6 +11671,11 @@
   },
   {
    "x": 60,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 60,
    "y": 9,
    "m": "ground"
   },
@@ -11771,6 +11821,11 @@
   },
   {
    "x": 61,
+   "y": 10,
+   "m": "ground"
+  },
+  {
+   "x": 61,
    "y": 9,
    "m": "ground"
   },
@@ -11912,6 +11967,61 @@
   {
    "x": 62,
    "y": 21,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 20,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 19,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 18,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 17,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 16,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 15,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 14,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 13,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 12,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 11,
+   "m": "ground"
+  },
+  {
+   "x": 62,
+   "y": 10,
    "m": "ground"
   },
   {
@@ -13960,11 +14070,6 @@
    "m": "water"
   },
   {
-   "x": 51,
-   "y": 10,
-   "m": "water"
-  },
-  {
    "x": 52,
    "y": 20,
    "m": "water"
@@ -14012,11 +14117,6 @@
   {
    "x": 52,
    "y": 11,
-   "m": "water"
-  },
-  {
-   "x": 52,
-   "y": 10,
    "m": "water"
   },
   {
@@ -14070,11 +14170,6 @@
    "m": "water"
   },
   {
-   "x": 53,
-   "y": 10,
-   "m": "water"
-  },
-  {
    "x": 54,
    "y": 20,
    "m": "water"
@@ -14122,11 +14217,6 @@
   {
    "x": 54,
    "y": 11,
-   "m": "water"
-  },
-  {
-   "x": 54,
-   "y": 10,
    "m": "water"
   },
   {
@@ -14180,11 +14270,6 @@
    "m": "water"
   },
   {
-   "x": 55,
-   "y": 10,
-   "m": "water"
-  },
-  {
    "x": 56,
    "y": 20,
    "m": "water"
@@ -14232,11 +14317,6 @@
   {
    "x": 56,
    "y": 11,
-   "m": "water"
-  },
-  {
-   "x": 56,
-   "y": 10,
    "m": "water"
   },
   {
@@ -14290,11 +14370,6 @@
    "m": "water"
   },
   {
-   "x": 57,
-   "y": 10,
-   "m": "water"
-  },
-  {
    "x": 58,
    "y": 20,
    "m": "water"
@@ -14342,11 +14417,6 @@
   {
    "x": 58,
    "y": 11,
-   "m": "water"
-  },
-  {
-   "x": 58,
-   "y": 10,
    "m": "water"
   },
   {
@@ -14400,11 +14470,6 @@
    "m": "water"
   },
   {
-   "x": 59,
-   "y": 10,
-   "m": "water"
-  },
-  {
    "x": 60,
    "y": 20,
    "m": "water"
@@ -14455,11 +14520,6 @@
    "m": "water"
   },
   {
-   "x": 60,
-   "y": 10,
-   "m": "water"
-  },
-  {
    "x": 61,
    "y": 20,
    "m": "water"
@@ -14507,66 +14567,6 @@
   {
    "x": 61,
    "y": 11,
-   "m": "water"
-  },
-  {
-   "x": 61,
-   "y": 10,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 20,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 19,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 18,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 17,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 16,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 15,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 14,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 13,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 12,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 11,
-   "m": "water"
-  },
-  {
-   "x": 62,
-   "y": 10,
    "m": "water"
   }
  ],
@@ -16807,7 +16807,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
   },
   {
    "x": 54.5,
@@ -16818,7 +16818,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
   },
   {
    "x": 55.5,
@@ -16829,7 +16829,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
   },
   {
    "x": 57.5,
@@ -16840,7 +16840,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
   },
   {
    "x": 58.5,
@@ -16862,7 +16862,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
   },
   {
    "x": 60.5,
@@ -16873,7 +16873,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
   },
   {
    "x": 62.5,
@@ -16884,21 +16884,10 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
   },
   {
-   "x": 63.5,
-   "y": 21,
-   "kind": "",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
-  },
-  {
-   "x": 63.5,
+   "x": 62.5,
    "y": 20,
    "kind": "",
    "npcName": "",
@@ -16906,22 +16895,11 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
    "y": 19,
-   "kind": "",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
-  },
-  {
-   "x": 63.5,
-   "y": 18,
    "kind": "",
    "npcName": "",
    "line": "",
@@ -16931,7 +16909,18 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
+   "y": 18,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
+  },
+  {
+   "x": 62.5,
    "y": 17,
    "kind": "",
    "npcName": "",
@@ -16939,10 +16928,10 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
    "y": 16,
    "kind": "",
    "npcName": "",
@@ -16953,7 +16942,7 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
    "y": 15,
    "kind": "",
    "npcName": "",
@@ -16961,10 +16950,10 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
    "y": 14,
    "kind": "",
    "npcName": "",
@@ -16975,19 +16964,8 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
    "y": 13,
-   "kind": "",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
-  },
-  {
-   "x": 63.5,
-   "y": 12,
    "kind": "",
    "npcName": "",
    "line": "",
@@ -16997,7 +16975,18 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
+   "y": 12,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 62.5,
    "y": 11,
    "kind": "",
    "npcName": "",
@@ -17008,7 +16997,7 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
   },
   {
-   "x": 63.5,
+   "x": 62.5,
    "y": 10,
    "kind": "",
    "npcName": "",
@@ -17016,10 +17005,21 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
   },
   {
-   "x": 50.5,
+   "x": 61.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
+  },
+  {
+   "x": 60.5,
    "y": 10,
    "kind": "",
    "npcName": "",
@@ -17030,6 +17030,116 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
   },
   {
+   "x": 59.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+  },
+  {
+   "x": 58.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
+  },
+  {
+   "x": 57.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
+  },
+  {
+   "x": 56.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 55.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+  },
+  {
+   "x": 54.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
+  },
+  {
+   "x": 53.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
+  },
+  {
+   "x": 52.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 51.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+  },
+  {
+   "x": 50.5,
+   "y": 10,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
+  },
+  {
    "x": 50.5,
    "y": 11,
    "kind": "",
@@ -17038,7 +17148,7 @@
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
   },
   {
    "x": 13.5,
@@ -18172,8 +18282,8 @@
    "y": 35
   },
   {
-   "x": 63,
-   "y": 14
+   "x": 62,
+   "y": 13
   },
   {
    "x": 45,
@@ -18248,6 +18358,10 @@
    "y": 20
   },
   {
+   "x": 62,
+   "y": 20
+  },
+  {
    "x": 36,
    "y": 30
   },
@@ -18256,8 +18370,8 @@
    "y": 33
   },
   {
-   "x": 63,
-   "y": 12
+   "x": 62,
+   "y": 11
   },
   {
    "x": 42,
@@ -18304,6 +18418,10 @@
    "y": 39
   },
   {
+   "x": 61,
+   "y": 10
+  },
+  {
    "x": 50,
    "y": 10
   },
@@ -18348,16 +18466,12 @@
    "y": 21
   },
   {
-   "x": 63,
-   "y": 19
+   "x": 62,
+   "y": 18
   },
   {
    "x": 27,
    "y": 31
-  },
-  {
-   "x": 63,
-   "y": 10
   },
   {
    "x": 5,
@@ -18404,6 +18518,10 @@
    "y": 5
   },
   {
+   "x": 51,
+   "y": 10
+  },
+  {
    "x": 21,
    "y": 35
   },
@@ -18440,8 +18558,8 @@
    "y": 35
   },
   {
-   "x": 63,
-   "y": 17
+   "x": 62,
+   "y": 16
   },
   {
    "x": 36,
@@ -18476,6 +18594,10 @@
    "y": 21
   },
   {
+   "x": 55,
+   "y": 10
+  },
+  {
    "x": 38,
    "y": 35
   },
@@ -18500,6 +18622,10 @@
    "y": 20
   },
   {
+   "x": 57,
+   "y": 10
+  },
+  {
    "x": 20,
    "y": 29
   },
@@ -18508,8 +18634,8 @@
    "y": 33
   },
   {
-   "x": 63,
-   "y": 15
+   "x": 62,
+   "y": 14
   },
   {
    "x": 29,
@@ -18560,6 +18686,10 @@
    "y": 21
   },
   {
+   "x": 59,
+   "y": 10
+  },
+  {
    "x": 15,
    "y": 35
   },
@@ -18602,10 +18732,6 @@
   {
    "x": 49,
    "y": 12
-  },
-  {
-   "x": 63,
-   "y": 13
   },
   {
    "x": 17,
@@ -18692,12 +18818,8 @@
    "y": 19
   },
   {
-   "x": 63,
-   "y": 20
-  },
-  {
-   "x": 63,
-   "y": 11
+   "x": 62,
+   "y": 19
   },
   {
    "x": 5,
@@ -18706,6 +18828,10 @@
   {
    "x": 5,
    "y": 26
+  },
+  {
+   "x": 53,
+   "y": 10
   },
   {
    "x": 52,
@@ -18770,10 +18896,6 @@
   {
    "x": 54,
    "y": 21
-  },
-  {
-   "x": 63,
-   "y": 18
   },
   {
    "x": 5,
@@ -18864,10 +18986,6 @@
    "y": 5
   },
   {
-   "x": 63,
-   "y": 16
-  },
-  {
    "x": 49,
    "y": 15
   },
@@ -18904,6 +19022,14 @@
    "y": 26
   },
   {
+   "x": 62,
+   "y": 12
+  },
+  {
+   "x": 56,
+   "y": 10
+  },
+  {
    "x": 17,
    "y": 17
   },
@@ -18918,6 +19044,10 @@
   {
    "x": 59,
    "y": 2
+  },
+  {
+   "x": 60,
+   "y": 10
   },
   {
    "x": 11,
@@ -18950,6 +19080,10 @@
   {
    "x": 18,
    "y": 19
+  },
+  {
+   "x": 62,
+   "y": 10
   },
   {
    "x": 27,
@@ -19028,16 +19162,16 @@
    "y": 7
   },
   {
-   "x": 63,
-   "y": 21
-  },
-  {
    "x": 18,
    "y": 17
   },
   {
    "x": 23,
    "y": 21
+  },
+  {
+   "x": 62,
+   "y": 17
   },
   {
    "x": 16,
@@ -19084,6 +19218,10 @@
    "y": 35
   },
   {
+   "x": 52,
+   "y": 10
+  },
+  {
    "x": 13,
    "y": 17
   },
@@ -19116,12 +19254,20 @@
    "y": 21
   },
   {
+   "x": 62,
+   "y": 15
+  },
+  {
    "x": 36,
    "y": 25
   },
   {
    "x": 5,
    "y": 31
+  },
+  {
+   "x": 54,
+   "y": 10
   },
   {
    "x": 10,
@@ -19142,6 +19288,10 @@
   {
    "x": 46,
    "y": 39
+  },
+  {
+   "x": 58,
+   "y": 10
   },
   {
    "x": 6,
@@ -19186,10 +19336,6 @@
    "y": 11
   },
   {
-   "x": 51,
-   "y": 10
-  },
-  {
    "x": 52,
    "y": 20
   },
@@ -19228,10 +19374,6 @@
   {
    "x": 52,
    "y": 11
-  },
-  {
-   "x": 52,
-   "y": 10
   },
   {
    "x": 53,
@@ -19274,10 +19416,6 @@
    "y": 11
   },
   {
-   "x": 53,
-   "y": 10
-  },
-  {
    "x": 54,
    "y": 20
   },
@@ -19316,10 +19454,6 @@
   {
    "x": 54,
    "y": 11
-  },
-  {
-   "x": 54,
-   "y": 10
   },
   {
    "x": 55,
@@ -19362,10 +19496,6 @@
    "y": 11
   },
   {
-   "x": 55,
-   "y": 10
-  },
-  {
    "x": 56,
    "y": 20
   },
@@ -19404,10 +19534,6 @@
   {
    "x": 56,
    "y": 11
-  },
-  {
-   "x": 56,
-   "y": 10
   },
   {
    "x": 57,
@@ -19450,10 +19576,6 @@
    "y": 11
   },
   {
-   "x": 57,
-   "y": 10
-  },
-  {
    "x": 58,
    "y": 20
   },
@@ -19492,10 +19614,6 @@
   {
    "x": 58,
    "y": 11
-  },
-  {
-   "x": 58,
-   "y": 10
   },
   {
    "x": 59,
@@ -19538,10 +19656,6 @@
    "y": 11
   },
   {
-   "x": 59,
-   "y": 10
-  },
-  {
    "x": 60,
    "y": 20
   },
@@ -19582,10 +19696,6 @@
    "y": 11
   },
   {
-   "x": 60,
-   "y": 10
-  },
-  {
    "x": 61,
    "y": 20
   },
@@ -19624,54 +19734,6 @@
   {
    "x": 61,
    "y": 11
-  },
-  {
-   "x": 61,
-   "y": 10
-  },
-  {
-   "x": 62,
-   "y": 20
-  },
-  {
-   "x": 62,
-   "y": 19
-  },
-  {
-   "x": 62,
-   "y": 18
-  },
-  {
-   "x": 62,
-   "y": 17
-  },
-  {
-   "x": 62,
-   "y": 16
-  },
-  {
-   "x": 62,
-   "y": 15
-  },
-  {
-   "x": 62,
-   "y": 14
-  },
-  {
-   "x": 62,
-   "y": 13
-  },
-  {
-   "x": 62,
-   "y": 12
-  },
-  {
-   "x": 62,
-   "y": 11
-  },
-  {
-   "x": 62,
-   "y": 10
   }
  ],
  "tilled": [
