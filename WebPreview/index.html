@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Cozy Farm — Vertical Slice</title>
 <style>
   html,body{margin:0;height:100%;background:#14141c;overflow:hidden;font-family:'Courier New',monospace}
@@ -18,6 +19,20 @@
   #title p{margin:3px;color:#cfcfe8}
   #title .keys{color:#9fd0ff}
   #loadmsg{color:#aaa}
+  /* ---- touch controls ---- */
+  #touch{display:none;position:fixed;inset:0;z-index:7;pointer-events:none}
+  body.touchmode #touch{display:block}
+  #joy{position:absolute;left:24px;bottom:28px;width:120px;height:120px;border-radius:50%;
+    background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);pointer-events:auto;touch-action:none}
+  #knob{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;
+    background:rgba(255,255,255,.35);transform:translate(-50%,-50%)}
+  .btn{position:absolute;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:bold;color:#fff;background:rgba(80,140,60,.55);border:2px solid rgba(255,255,255,.4);
+    pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+  .btn:active{background:rgba(140,200,90,.8)}
+  #btnA{right:24px;bottom:36px;background:rgba(190,90,60,.6)}
+  #btnB{right:104px;bottom:76px;background:rgba(70,110,180,.55);font-size:15px}
+  #btnRun{right:24px;bottom:120px;background:rgba(120,80,160,.55);font-size:15px}
 </style>
 </head>
 <body>
@@ -25,10 +40,16 @@
 <div id="hud"></div>
 <div id="prompt"></div>
 <div id="dlg"></div>
+<div id="touch">
+  <div id="joy"><div id="knob"></div></div>
+  <div class="btn" id="btnA">A</div>
+  <div class="btn" id="btnB">T+</div>
+  <div class="btn" id="btnRun">RUN</div>
+</div>
 <div id="title"><h1>[ Cozy Farm — Vertical Slice ]</h1>
   <p>Desain vertical slice farming life-sim RPG — pakai sprite asli dari aset "2D Cozy RPG".</p>
-  <p class="keys">WASD / Arrow = jalan &nbsp;•&nbsp; E = interaksi &nbsp;•&nbsp; Shift = lari</p>
-  <p class="keys">T = skip waktu (day cycle) &nbsp;•&nbsp; Siram tanah basah → tanam → panen → jual</p>
+  <p class="keys">WASD / Arrow = jalan &nbsp;•&nbsp; E / tombol A = interaksi &nbsp;•&nbsp; Shift / RUN = lari</p>
+  <p class="keys">T / T+ = skip waktu &nbsp;•&nbsp; Di HP: joystick kiri + tombol kanan &nbsp;•&nbsp; Siram → tanam → panen → jual</p>
   <p id="loadmsg">loading sprites…</p></div>
 <script>
 const T=16, VIEW_W=26, VIEW_H=15;
@@ -109,7 +130,8 @@ function loop(ts){
   // move
   let mx=(K['a']||K['arrowleft']?-1:0)+(K['d']||K['arrowright']?1:0);
   let my=(K['w']||K['arrowup']?-1:0)+(K['s']||K['arrowdown']?1:0);
-  const sp=(K['shift']?5.4:3.2);
+  if(joy.mag>0.15){mx=joy.x*joy.mag;my=joy.y*joy.mag}
+  const sp=((K['shift']||K['run'])?5.4:3.2)*(joy.mag>0.15?Math.max(0.4,joy.mag):1);
   hero.move=!!(mx||my);
   if(mx||my){
     const l=Math.hypot(mx,my);mx/=l;my/=l;
@@ -224,6 +246,32 @@ function render(ts){
   document.getElementById('hud').innerHTML=
     `<span style="color:#ffd76e">HARI ${day} — ${hh}:${mm}</span><br><b>${gold}g</b> &nbsp;·&nbsp; bibit x${seeds}<br><span style="font-size:12px;color:#bbb">vertical slice — tanam · panen · jual</span>`;
 }
+// ---- touch: virtual joystick + buttons ----
+const joy={x:0,y:0,mag:0};
+(function(){
+  const joyEl=document.getElementById('joy'),knob=document.getElementById('knob');
+  let jid=null;
+  function setKnob(dx,dy){knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`}
+  joyEl.addEventListener('pointerdown',e=>{document.body.classList.add('touchmode');jid=e.pointerId;joyEl.setPointerCapture(jid);e.preventDefault()});
+  joyEl.addEventListener('pointermove',e=>{
+    if(e.pointerId!==jid)return;
+    const r=joyEl.getBoundingClientRect();
+    let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+    const d=Math.hypot(dx,dy),max=r.width/2;
+    if(d>max){dx*=max/d;dy*=max/d}
+    setKnob(dx,dy);joy.x=dx/max;joy.y=dy/max;joy.mag=Math.min(1,d/max);
+  });
+  const end=e=>{if(e.pointerId!==jid)return;jid=null;joy.x=joy.y=joy.mag=0;setKnob(0,0)};
+  joyEl.addEventListener('pointerup',end);joyEl.addEventListener('pointercancel',end);
+  function bind(id,down,up){
+    const el=document.getElementById(id);
+    el.addEventListener('pointerdown',e=>{document.body.classList.add('touchmode');down();e.preventDefault()});
+    if(up){el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up)}
+  }
+  bind('btnA',()=>interact());
+  bind('btnB',()=>{clock+=60});
+  bind('btnRun',()=>K['run']=true,()=>K['run']=false);
+})();
 boot();
 </script>
 </body>
