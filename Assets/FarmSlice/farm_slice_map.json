@@ -10326,26 +10326,6 @@
   },
   {
    "x": 51,
-   "y": 19,
-   "m": "ground"
-  },
-  {
-   "x": 51,
-   "y": 18,
-   "m": "ground"
-  },
-  {
-   "x": 51,
-   "y": 12,
-   "m": "ground"
-  },
-  {
-   "x": 51,
-   "y": 11,
-   "m": "ground"
-  },
-  {
-   "x": 51,
    "y": 10,
    "m": "ground"
   },
@@ -10496,26 +10476,6 @@
   },
   {
    "x": 52,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 52,
-   "y": 19,
-   "m": "ground"
-  },
-  {
-   "x": 52,
-   "y": 11,
-   "m": "ground"
-  },
-  {
-   "x": 52,
-   "y": 10,
-   "m": "ground"
-  },
-  {
-   "x": 52,
    "y": 9,
    "m": "ground"
   },
@@ -10657,16 +10617,6 @@
   {
    "x": 53,
    "y": 21,
-   "m": "ground"
-  },
-  {
-   "x": 53,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 53,
-   "y": 10,
    "m": "ground"
   },
   {
@@ -10816,16 +10766,6 @@
   },
   {
    "x": 54,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 54,
-   "y": 10,
-   "m": "ground"
-  },
-  {
-   "x": 54,
    "y": 9,
    "m": "ground"
   },
@@ -10967,16 +10907,6 @@
   {
    "x": 55,
    "y": 21,
-   "m": "ground"
-  },
-  {
-   "x": 55,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 55,
-   "y": 10,
    "m": "ground"
   },
   {
@@ -11271,16 +11201,6 @@
   },
   {
    "x": 57,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 57,
-   "y": 10,
-   "m": "ground"
-  },
-  {
-   "x": 57,
    "y": 9,
    "m": "ground"
   },
@@ -11422,16 +11342,6 @@
   {
    "x": 58,
    "y": 21,
-   "m": "ground"
-  },
-  {
-   "x": 58,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 58,
-   "y": 10,
    "m": "ground"
   },
   {
@@ -11581,16 +11491,6 @@
   },
   {
    "x": 59,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 59,
-   "y": 10,
-   "m": "ground"
-  },
-  {
-   "x": 59,
    "y": 9,
    "m": "ground"
   },
@@ -11736,26 +11636,6 @@
   },
   {
    "x": 60,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 60,
-   "y": 19,
-   "m": "ground"
-  },
-  {
-   "x": 60,
-   "y": 11,
-   "m": "ground"
-  },
-  {
-   "x": 60,
-   "y": 10,
-   "m": "ground"
-  },
-  {
-   "x": 60,
    "y": 9,
    "m": "ground"
   },
@@ -11897,36 +11777,6 @@
   {
    "x": 61,
    "y": 21,
-   "m": "ground"
-  },
-  {
-   "x": 61,
-   "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 61,
-   "y": 19,
-   "m": "ground"
-  },
-  {
-   "x": 61,
-   "y": 18,
-   "m": "ground"
-  },
-  {
-   "x": 61,
-   "y": 12,
-   "m": "ground"
-  },
-  {
-   "x": 61,
-   "y": 11,
-   "m": "ground"
-  },
-  {
-   "x": 61,
-   "y": 10,
    "m": "ground"
   },
   {
@@ -12077,51 +11927,6 @@
   {
    "x": 62,
    "y": 20,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 19,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 18,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 17,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 16,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 15,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 14,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 13,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 12,
-   "m": "ground"
-  },
-  {
-   "x": 62,
-   "y": 11,
    "m": "ground"
   },
   {
@@ -12468,6 +12273,51 @@
    "m": "dirt"
   },
   {
+   "x": 31,
+   "y": 18,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 17,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 16,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 15,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 14,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 13,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 12,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 11,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 10,
+   "m": "dirt"
+  },
+  {
    "x": 32,
    "y": 35,
    "m": "dirt"
@@ -12553,28 +12403,23 @@
    "m": "dirt"
   },
   {
-   "x": 31,
-   "y": 14,
+   "x": 32,
+   "y": 18,
    "m": "dirt"
   },
   {
-   "x": 31,
-   "y": 13,
+   "x": 32,
+   "y": 17,
    "m": "dirt"
   },
   {
-   "x": 31,
-   "y": 12,
+   "x": 32,
+   "y": 16,
    "m": "dirt"
   },
   {
-   "x": 31,
-   "y": 11,
-   "m": "dirt"
-  },
-  {
-   "x": 31,
-   "y": 10,
+   "x": 32,
+   "y": 15,
    "m": "dirt"
   },
   {
@@ -13838,46 +13683,6 @@
    "m": "sand"
   },
   {
-   "x": 31,
-   "y": 18,
-   "m": "sand"
-  },
-  {
-   "x": 31,
-   "y": 17,
-   "m": "sand"
-  },
-  {
-   "x": 31,
-   "y": 16,
-   "m": "sand"
-  },
-  {
-   "x": 31,
-   "y": 15,
-   "m": "sand"
-  },
-  {
-   "x": 32,
-   "y": 18,
-   "m": "sand"
-  },
-  {
-   "x": 32,
-   "y": 17,
-   "m": "sand"
-  },
-  {
-   "x": 32,
-   "y": 16,
-   "m": "sand"
-  },
-  {
-   "x": 32,
-   "y": 15,
-   "m": "sand"
-  },
-  {
    "x": 33,
    "y": 18,
    "m": "sand"
@@ -14120,243 +13925,18 @@
   {
    "x": 50,
    "y": 15,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 16,
-   "m": "sand"
-  },
-  {
-   "x": 54,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 13,
-   "m": "sand"
-  },
-  {
-   "x": 53,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 58,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 50,
-   "y": 18,
-   "m": "sand"
-  },
-  {
-   "x": 55,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 60,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 61,
-   "y": 18,
-   "m": "sand"
-  },
-  {
-   "x": 60,
-   "y": 11,
-   "m": "sand"
-  },
-  {
-   "x": 50,
-   "y": 12,
-   "m": "sand"
-  },
-  {
-   "x": 61,
-   "y": 12,
-   "m": "sand"
-  },
-  {
-   "x": 51,
-   "y": 11,
-   "m": "sand"
-  },
-  {
-   "x": 57,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 14,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 17,
-   "m": "sand"
-  },
-  {
-   "x": 53,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 56,
-   "y": 21,
-   "m": "sand"
-  },
-  {
-   "x": 55,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 52,
-   "y": 19,
-   "m": "sand"
-  },
-  {
-   "x": 59,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 50,
-   "y": 13,
-   "m": "sand"
-  },
-  {
-   "x": 61,
-   "y": 19,
-   "m": "sand"
-  },
-  {
-   "x": 51,
-   "y": 18,
-   "m": "sand"
-  },
-  {
-   "x": 51,
-   "y": 12,
-   "m": "sand"
-  },
-  {
-   "x": 60,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 52,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 57,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 18,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 15,
-   "m": "sand"
-  },
-  {
-   "x": 55,
-   "y": 21,
-   "m": "sand"
-  },
-  {
-   "x": 62,
-   "y": 12,
-   "m": "sand"
-  },
-  {
-   "x": 54,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 59,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 60,
-   "y": 19,
-   "m": "sand"
-  },
-  {
-   "x": 50,
-   "y": 14,
-   "m": "sand"
-  },
-  {
-   "x": 51,
-   "y": 19,
-   "m": "sand"
-  },
-  {
-   "x": 52,
-   "y": 20,
-   "m": "sand"
-  },
-  {
-   "x": 58,
-   "y": 10,
-   "m": "sand"
-  },
-  {
-   "x": 61,
-   "y": 11,
-   "m": "sand"
-  },
-  {
-   "x": 52,
-   "y": 11,
-   "m": "sand"
-  },
-  {
-   "x": 57,
-   "y": 21,
    "m": "sand"
   }
  ],
  "water": [
   {
-   "x": 51,
-   "y": 17,
+   "x": 52,
+   "y": 20,
    "m": "water"
   },
   {
-   "x": 51,
-   "y": 16,
-   "m": "water"
-  },
-  {
-   "x": 51,
-   "y": 15,
-   "m": "water"
-  },
-  {
-   "x": 51,
-   "y": 14,
-   "m": "water"
-  },
-  {
-   "x": 51,
-   "y": 13,
+   "x": 52,
+   "y": 19,
    "m": "water"
   },
   {
@@ -14392,6 +13972,21 @@
   {
    "x": 52,
    "y": 12,
+   "m": "water"
+  },
+  {
+   "x": 52,
+   "y": 11,
+   "m": "water"
+  },
+  {
+   "x": 52,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 53,
+   "y": 20,
    "m": "water"
   },
   {
@@ -14440,6 +14035,16 @@
    "m": "water"
   },
   {
+   "x": 53,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 54,
+   "y": 20,
+   "m": "water"
+  },
+  {
    "x": 54,
    "y": 19,
    "m": "water"
@@ -14485,6 +14090,16 @@
    "m": "water"
   },
   {
+   "x": 54,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 55,
+   "y": 20,
+   "m": "water"
+  },
+  {
    "x": 55,
    "y": 19,
    "m": "water"
@@ -14527,6 +14142,11 @@
   {
    "x": 55,
    "y": 11,
+   "m": "water"
+  },
+  {
+   "x": 55,
+   "y": 10,
    "m": "water"
   },
   {
@@ -14586,6 +14206,11 @@
   },
   {
    "x": 57,
+   "y": 20,
+   "m": "water"
+  },
+  {
+   "x": 57,
    "y": 19,
    "m": "water"
   },
@@ -14630,6 +14255,16 @@
    "m": "water"
   },
   {
+   "x": 57,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 58,
+   "y": 20,
+   "m": "water"
+  },
+  {
    "x": 58,
    "y": 19,
    "m": "water"
@@ -14675,6 +14310,16 @@
    "m": "water"
   },
   {
+   "x": 58,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 59,
+   "y": 20,
+   "m": "water"
+  },
+  {
    "x": 59,
    "y": 19,
    "m": "water"
@@ -14720,6 +14365,21 @@
    "m": "water"
   },
   {
+   "x": 59,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 60,
+   "y": 20,
+   "m": "water"
+  },
+  {
+   "x": 60,
+   "y": 19,
+   "m": "water"
+  },
+  {
    "x": 60,
    "y": 18,
    "m": "water"
@@ -14755,6 +14415,31 @@
    "m": "water"
   },
   {
+   "x": 60,
+   "y": 11,
+   "m": "water"
+  },
+  {
+   "x": 60,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 61,
+   "y": 20,
+   "m": "water"
+  },
+  {
+   "x": 61,
+   "y": 19,
+   "m": "water"
+  },
+  {
+   "x": 61,
+   "y": 18,
+   "m": "water"
+  },
+  {
    "x": 61,
    "y": 17,
    "m": "water"
@@ -14777,6 +14462,111 @@
   {
    "x": 61,
    "y": 13,
+   "m": "water"
+  },
+  {
+   "x": 61,
+   "y": 12,
+   "m": "water"
+  },
+  {
+   "x": 61,
+   "y": 11,
+   "m": "water"
+  },
+  {
+   "x": 61,
+   "y": 10,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 19,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 18,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 17,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 16,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 15,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 14,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 13,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 12,
+   "m": "water"
+  },
+  {
+   "x": 51,
+   "y": 11,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 19,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 18,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 17,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 16,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 15,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 14,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 13,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 12,
+   "m": "water"
+  },
+  {
+   "x": 62,
+   "y": 11,
    "m": "water"
   }
  ],
@@ -14829,12 +14619,12 @@
   {
    "x": 27,
    "y": 33,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 33,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 2,
@@ -14914,12 +14704,12 @@
   {
    "x": 27,
    "y": 25,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 25,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 2,
@@ -14935,6 +14725,11 @@
    "x": 7,
    "y": 21,
    "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4648.asset"
+  },
+  {
+   "x": 56,
+   "y": 21,
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_603.asset"
   },
   {
    "x": 51,
@@ -14964,12 +14759,12 @@
   {
    "x": 27,
    "y": 21,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4712.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 21,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4711.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 2,
@@ -15234,12 +15029,12 @@
   {
    "x": 5,
    "y": 35,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4709.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 21,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4711.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 6,
@@ -15429,122 +15224,122 @@
   {
    "x": 27,
    "y": 35,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4710.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 34,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 34,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 33,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 32,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 32,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 31,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 31,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 30,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 30,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 29,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 28,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 27,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 27,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 26,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 26,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 25,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 24,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 24,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 23,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 23,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 5,
    "y": 22,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 27,
    "y": 22,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 35,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4709.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 37,
@@ -15684,122 +15479,122 @@
   {
    "x": 52,
    "y": 35,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4710.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 21,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4712.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 34,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 34,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 33,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 32,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 32,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 31,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 31,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 30,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 30,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 29,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 28,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 27,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 27,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 26,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 26,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 25,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 24,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 24,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 23,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 23,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 36,
    "y": 22,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 52,
    "y": 22,
-   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4683.asset"
+   "m": "Assets/Gif/Super_Retro_Collection/Resources/Environments/TilePalette/Tiles/unity_full_tilepalette_v2_4649.asset"
   },
   {
    "x": 9,
@@ -16747,29 +16542,7 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Trees/tree_29.prefab"
   },
   {
-   "x": 52,
-   "y": 19,
-   "kind": "tree",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Trees/tree_29.prefab"
-  },
-  {
    "x": 11,
-   "y": 15,
-   "kind": "tree",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Trees/tree_13.prefab"
-  },
-  {
-   "x": 52,
    "y": 15,
    "kind": "tree",
    "npcName": "",
@@ -17026,41 +16799,8 @@
    "light": true
   },
   {
-   "x": 56.5,
-   "y": 20.5,
-   "kind": "",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_10.prefab"
-  },
-  {
-   "x": 60.5,
-   "y": 19.5,
-   "kind": "",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_27.prefab"
-  },
-  {
-   "x": 62.5,
-   "y": 15.5,
-   "kind": "",
-   "npcName": "",
-   "line": "",
-   "gold": 0,
-   "stage": 0,
-   "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
-  },
-  {
    "x": 51.5,
-   "y": 10.5,
+   "y": 19.5,
    "kind": "",
    "npcName": "",
    "line": "",
@@ -17070,19 +16810,96 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
   },
   {
-   "x": 60.5,
-   "y": 9.5,
+   "x": 53.5,
+   "y": 20.5,
    "kind": "",
    "npcName": "",
    "line": "",
    "gold": 0,
    "stage": 0,
    "wander": false,
-   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_11.prefab"
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
   },
   {
-   "x": 52.5,
-   "y": 18.5,
+   "x": 54.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 55.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+  },
+  {
+   "x": 57.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
+  },
+  {
+   "x": 58.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
+  },
+  {
+   "x": 59.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+  },
+  {
+   "x": 60.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+  },
+  {
+   "x": 62.5,
+   "y": 20.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+  },
+  {
+   "x": 62.5,
+   "y": 19.5,
    "kind": "",
    "npcName": "",
    "line": "",
@@ -17090,6 +16907,171 @@
    "stage": 0,
    "wander": false,
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 19.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 18.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 17.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 16.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 15.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 14.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 13.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_28.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 12.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_31.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 11.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_43.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 10.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_01.prefab"
+  },
+  {
+   "x": 63.5,
+   "y": 9.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+  },
+  {
+   "x": 62.5,
+   "y": 9.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 51.5,
+   "y": 9.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_04.prefab"
+  },
+  {
+   "x": 50.5,
+   "y": 9.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_06.prefab"
+  },
+  {
+   "x": 50.5,
+   "y": 10.5,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Rocks/rock_12.prefab"
   },
   {
    "x": 13.5,
@@ -17290,7 +17272,18 @@
    "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs_with_behavior/tall_grass_react_on_contact/tall_grass_react_on_contact.prefab"
   },
   {
-   "x": 31.5,
+   "x": 29.5,
+   "y": 16.2,
+   "kind": "",
+   "npcName": "",
+   "line": "",
+   "gold": 0,
+   "stage": 0,
+   "wander": false,
+   "prefab": "Assets/Gif/Super_Retro_Collection/Resources/Prefabs/Statues/statue_02.prefab"
+  },
+  {
+   "x": 33.5,
    "y": 16.2,
    "kind": "",
    "npcName": "",
@@ -18212,6 +18205,10 @@
    "y": 35
   },
   {
+   "x": 63,
+   "y": 14
+  },
+  {
    "x": 45,
    "y": 20
   },
@@ -18230,6 +18227,10 @@
   {
    "x": 5,
    "y": 29
+  },
+  {
+   "x": 59,
+   "y": 21
   },
   {
    "x": 14,
@@ -18252,16 +18253,8 @@
    "y": 5
   },
   {
-   "x": 60,
-   "y": 20
-  },
-  {
    "x": 52,
    "y": 24
-  },
-  {
-   "x": 52,
-   "y": 15
   },
   {
    "x": 40,
@@ -18288,6 +18281,10 @@
    "y": 20
   },
   {
+   "x": 62,
+   "y": 20
+  },
+  {
    "x": 36,
    "y": 30
   },
@@ -18296,8 +18293,8 @@
    "y": 33
   },
   {
-   "x": 31,
-   "y": 17
+   "x": 63,
+   "y": 12
   },
   {
    "x": 42,
@@ -18344,8 +18341,16 @@
    "y": 39
   },
   {
+   "x": 50,
+   "y": 10
+  },
+  {
    "x": 6,
    "y": 35
+  },
+  {
+   "x": 33,
+   "y": 17
   },
   {
    "x": 13,
@@ -18376,8 +18381,20 @@
    "y": 2
   },
   {
+   "x": 53,
+   "y": 21
+  },
+  {
+   "x": 63,
+   "y": 19
+  },
+  {
    "x": 27,
    "y": 31
+  },
+  {
+   "x": 63,
+   "y": 10
   },
   {
    "x": 5,
@@ -18424,6 +18441,10 @@
    "y": 5
   },
   {
+   "x": 51,
+   "y": 10
+  },
+  {
    "x": 21,
    "y": 35
   },
@@ -18460,8 +18481,8 @@
    "y": 35
   },
   {
-   "x": 62,
-   "y": 16
+   "x": 63,
+   "y": 17
   },
   {
    "x": 36,
@@ -18490,6 +18511,10 @@
   {
    "x": 55,
    "y": 10
+  },
+  {
+   "x": 57,
+   "y": 21
   },
   {
    "x": 38,
@@ -18528,15 +18553,19 @@
    "y": 33
   },
   {
+   "x": 63,
+   "y": 15
+  },
+  {
+   "x": 29,
+   "y": 17
+  },
+  {
    "x": 45,
    "y": 21
   },
   {
    "x": 21,
-   "y": 21
-  },
-  {
-   "x": 56,
    "y": 21
   },
   {
@@ -18570,6 +18599,10 @@
   {
    "x": 52,
    "y": 25
+  },
+  {
+   "x": 60,
+   "y": 21
   },
   {
    "x": 15,
@@ -18608,8 +18641,16 @@
    "y": 39
   },
   {
+   "x": 62,
+   "y": 21
+  },
+  {
    "x": 49,
    "y": 12
+  },
+  {
+   "x": 63,
+   "y": 13
   },
   {
    "x": 17,
@@ -18664,6 +18705,14 @@
    "y": 20
   },
   {
+   "x": 50,
+   "y": 11
+  },
+  {
+   "x": 30,
+   "y": 17
+  },
+  {
    "x": 24,
    "y": 21
   },
@@ -18688,8 +18737,16 @@
    "y": 19
   },
   {
+   "x": 63,
+   "y": 20
+  },
+  {
    "x": 38,
    "y": 10
+  },
+  {
+   "x": 63,
+   "y": 11
   },
   {
    "x": 5,
@@ -18760,6 +18817,14 @@
    "y": 39
   },
   {
+   "x": 54,
+   "y": 21
+  },
+  {
+   "x": 63,
+   "y": 18
+  },
+  {
    "x": 5,
    "y": 33
   },
@@ -18770,6 +18835,10 @@
   {
    "x": 16,
    "y": 2
+  },
+  {
+   "x": 58,
+   "y": 21
   },
   {
    "x": 42,
@@ -18812,10 +18881,6 @@
    "y": 2
   },
   {
-   "x": 52,
-   "y": 19
-  },
-  {
    "x": 17,
    "y": 10
   },
@@ -18846,6 +18911,10 @@
   {
    "x": 24,
    "y": 5
+  },
+  {
+   "x": 63,
+   "y": 16
   },
   {
    "x": 49,
@@ -18900,10 +18969,6 @@
    "y": 2
   },
   {
-   "x": 60,
-   "y": 10
-  },
-  {
    "x": 11,
    "y": 15
   },
@@ -18920,10 +18985,6 @@
    "y": 21
   },
   {
-   "x": 32,
-   "y": 17
-  },
-  {
    "x": 4,
    "y": 2
   },
@@ -18938,6 +18999,10 @@
   {
    "x": 18,
    "y": 19
+  },
+  {
+   "x": 62,
+   "y": 10
   },
   {
    "x": 27,
@@ -18968,6 +19033,10 @@
    "y": 21
   },
   {
+   "x": 34,
+   "y": 17
+  },
+  {
    "x": 16,
    "y": 35
   },
@@ -18980,12 +19049,12 @@
    "y": 2
   },
   {
-   "x": 19,
-   "y": 18
+   "x": 51,
+   "y": 20
   },
   {
-   "x": 51,
-   "y": 11
+   "x": 19,
+   "y": 18
   },
   {
    "x": 20,
@@ -19088,6 +19157,10 @@
    "y": 35
   },
   {
+   "x": 55,
+   "y": 21
+  },
+  {
    "x": 36,
    "y": 25
   },
@@ -19126,16 +19199,12 @@
  ],
  "waterCells": [
   {
-   "x": 51,
-   "y": 17
+   "x": 52,
+   "y": 20
   },
   {
-   "x": 51,
-   "y": 16
-  },
-  {
-   "x": 51,
-   "y": 13
+   "x": 52,
+   "y": 19
   },
   {
    "x": 52,
@@ -19164,6 +19233,18 @@
   {
    "x": 52,
    "y": 12
+  },
+  {
+   "x": 52,
+   "y": 11
+  },
+  {
+   "x": 52,
+   "y": 10
+  },
+  {
+   "x": 53,
+   "y": 20
   },
   {
    "x": 53,
@@ -19202,6 +19283,14 @@
    "y": 11
   },
   {
+   "x": 53,
+   "y": 10
+  },
+  {
+   "x": 54,
+   "y": 20
+  },
+  {
    "x": 54,
    "y": 19
   },
@@ -19238,6 +19327,14 @@
    "y": 11
   },
   {
+   "x": 54,
+   "y": 10
+  },
+  {
+   "x": 55,
+   "y": 20
+  },
+  {
    "x": 55,
    "y": 19
   },
@@ -19272,6 +19369,10 @@
   {
    "x": 55,
    "y": 11
+  },
+  {
+   "x": 55,
+   "y": 10
   },
   {
    "x": 56,
@@ -19319,6 +19420,10 @@
   },
   {
    "x": 57,
+   "y": 20
+  },
+  {
+   "x": 57,
    "y": 19
   },
   {
@@ -19354,6 +19459,14 @@
    "y": 11
   },
   {
+   "x": 57,
+   "y": 10
+  },
+  {
+   "x": 58,
+   "y": 20
+  },
+  {
    "x": 58,
    "y": 19
   },
@@ -19390,6 +19503,14 @@
    "y": 11
   },
   {
+   "x": 58,
+   "y": 10
+  },
+  {
+   "x": 59,
+   "y": 20
+  },
+  {
    "x": 59,
    "y": 19
   },
@@ -19426,6 +19547,18 @@
    "y": 11
   },
   {
+   "x": 59,
+   "y": 10
+  },
+  {
+   "x": 60,
+   "y": 20
+  },
+  {
+   "x": 60,
+   "y": 19
+  },
+  {
    "x": 60,
    "y": 18
   },
@@ -19454,6 +19587,26 @@
    "y": 12
   },
   {
+   "x": 60,
+   "y": 11
+  },
+  {
+   "x": 60,
+   "y": 10
+  },
+  {
+   "x": 61,
+   "y": 20
+  },
+  {
+   "x": 61,
+   "y": 19
+  },
+  {
+   "x": 61,
+   "y": 18
+  },
+  {
    "x": 61,
    "y": 17
   },
@@ -19472,6 +19625,82 @@
   {
    "x": 61,
    "y": 13
+  },
+  {
+   "x": 61,
+   "y": 12
+  },
+  {
+   "x": 61,
+   "y": 11
+  },
+  {
+   "x": 61,
+   "y": 10
+  },
+  {
+   "x": 51,
+   "y": 19
+  },
+  {
+   "x": 51,
+   "y": 18
+  },
+  {
+   "x": 51,
+   "y": 17
+  },
+  {
+   "x": 51,
+   "y": 16
+  },
+  {
+   "x": 51,
+   "y": 13
+  },
+  {
+   "x": 51,
+   "y": 12
+  },
+  {
+   "x": 51,
+   "y": 11
+  },
+  {
+   "x": 62,
+   "y": 19
+  },
+  {
+   "x": 62,
+   "y": 18
+  },
+  {
+   "x": 62,
+   "y": 17
+  },
+  {
+   "x": 62,
+   "y": 16
+  },
+  {
+   "x": 62,
+   "y": 15
+  },
+  {
+   "x": 62,
+   "y": 14
+  },
+  {
+   "x": 62,
+   "y": 13
+  },
+  {
+   "x": 62,
+   "y": 12
+  },
+  {
+   "x": 62,
+   "y": 11
   }
  ],
  "tilled": [
