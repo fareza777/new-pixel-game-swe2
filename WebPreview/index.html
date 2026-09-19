@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Cozy Farm — Vertical Slice</title>
+<style>
+  html,body{margin:0;height:100%;background:#14141c;overflow:hidden;font-family:'Courier New',monospace}
+  #game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;width:100vw;height:100vh}
+  #hud{position:fixed;top:10px;left:10px;color:#fff;text-shadow:2px 2px 0 #000;font-size:15px;line-height:1.5;pointer-events:none;z-index:5;background:rgba(0,0,0,.45);padding:6px 10px;border:2px solid #000;border-radius:4px}
+  #hud b{color:#ffd76e}
+  #prompt{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);background:#000a;color:#fff;
+    padding:6px 14px;border:2px solid #fff8;border-radius:6px;font-size:14px;display:none;z-index:5}
+  #dlg{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#2b1d10e8;color:#ffe9c4;
+    padding:10px 18px;border:3px solid #c89b5a;border-radius:8px;font-size:14px;max-width:70vw;display:none;z-index:6}
+  #title{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#000b;color:#fff;z-index:10;cursor:pointer}
+  #title h1{font-size:28px;color:#ffd76e;text-shadow:3px 3px 0 #603010;margin:0 0 8px}
+  #title p{margin:3px;color:#cfcfe8}
+  #title .keys{color:#9fd0ff}
+  #loadmsg{color:#aaa}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud"></div>
+<div id="prompt"></div>
+<div id="dlg"></div>
+<div id="title"><h1>[ Cozy Farm — Vertical Slice ]</h1>
+  <p>Desain vertical slice farming life-sim RPG — pakai sprite asli dari aset "2D Cozy RPG".</p>
+  <p class="keys">WASD / Arrow = jalan &nbsp;•&nbsp; E = interaksi &nbsp;•&nbsp; Shift = lari</p>
+  <p class="keys">T = skip waktu (day cycle) &nbsp;•&nbsp; Siram tanah basah → tanam → panen → jual</p>
+  <p id="loadmsg">loading sprites…</p></div>
+<script>
+const T=16, VIEW_W=26, VIEW_H=15;
+const cv=document.getElementById('game'), ctx=cv.getContext('2d');
+let SCALE=3;
+function fit(){cv.width=innerWidth;cv.height=innerHeight;SCALE=Math.max(2,Math.floor(Math.min(innerWidth/(VIEW_W*T),innerHeight/(VIEW_H*T))));}
+addEventListener('resize',fit);fit();
+
+let M=null;const IMG={};
+async function boot(){
+  M=await(await fetch('map.json')).json();
+  const names=Object.values(M.sprites);
+  await Promise.all(names.map(n=>new Promise(r=>{const i=new Image();i.onload=()=>{IMG[n]=i;r()};i.onerror=()=>{console.log('sprite gagal:',n);r()};i.src='sprites/'+n})));
+  initState();
+  document.getElementById('title').addEventListener('click',()=>{document.getElementById('title').style.display='none'},{once:true});
+  document.getElementById('loadmsg').textContent='klik untuk mulai';
+  requestAnimationFrame(loop);
+}
+const K={};addEventListener('keydown',e=>{K[e.key.toLowerCase()]=true;if(e.key.toLowerCase()=='e')interact();if(e.key.toLowerCase()=='t')clock+=60;});
+addEventListener('keyup',e=>K[e.key.toLowerCase()]=false);
+
+// state
+let L=null,solid=null,waterSet=null,objs=null,hero=null;
+const crops={};                          // "x,y" -> {crop:n, stage:0..N, watered:bool}
+function initState(){
+  L=M.layers;
+  solid=new Set(L.solid);waterSet=new Set(L.water_cells);
+  objs=L.objects.map(o=>({...o,hx:o.x,hy:o.y,ph:Math.random()*10}));
+  hero={x:L.spawn.x,y:L.spawn.y,dir:'DOWN',f:0,t:0,move:false};
+  L.tilled_cells.forEach(c=>{crops[c]={crop:0,stage:0,watered:false,soil:true}});
+}
+let gold=0,day=1,clock=8*60;            // clock in minutes (8:00 start)
+let seeds=6, dialog=null, promptTxt='';
+
+function blocked(x,y){
+  if(x<0||y<0||x>=L.W||y>=L.H)return true;
+  const k=Math.floor(x)+','+Math.floor(y);
+  return solid.has(k)||waterSet.has(k);
+}
+function collide(nx,ny){ // circle-ish: check 2 feet points
+  return blocked(nx-0.28,ny-0.18)||blocked(nx+0.28,ny-0.18)||blocked(nx-0.28,ny+0.05)||blocked(nx+0.28,ny+0.05);
+}
+
+function near(r){
+  const out=[];const cx=Math.floor(hero.x),cy=Math.floor(hero.y);
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)out.push([cx+dx,cy+dy]);
+  return out;
+}
+function interact(){
+  for(const[cx,cy]of near(1)){
+    const k=cx+','+cy;
+    if(crops[k]&&crops[k].soil){
+      const c=crops[k];
+      if(c.crop===0&&seeds>0){c.crop=1+Math.floor(Math.random()*6)*1; c.crop=[1,3,8,13,18,21][Math.floor(Math.random()*6)];c.stage=1;c.watered=true;seeds--;return}
+      if(c.crop>0){
+        const n=c.crop, last=L.crop_frames[n].length-1;
+        if(c.stage>=last-1){c.crop=0;c.stage=0;gold+=12;return}
+      }
+      continue;
+    }
+    for(const o of objs){
+      if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-cy)<1.2){
+        const m=o.meta||{};
+        if(m.kind=='chest'&&!o.opened){o.opened=true;o.key='chest_o';gold+=m.gold||0;return}
+        if(m.kind=='npc'){dialog=(m.name||'???')+': '+(m.line||'...');setTimeout(()=>dialog=null,3500);return}
+        if(m.kind=='pig'||m.kind=='animal'){o.heart=60;return}
+      }
+    }
+  }
+}
+
+let last=0;
+function loop(ts){
+  const dt=Math.min(0.05,(ts-last)/1000||0);last=ts;
+  // time
+  clock+=dt*8; if(clock>=24*60){clock-=24*60;day++;for(const k in crops){const c=crops[k];if(c.crop>0&&c.watered)c.stage=Math.min(c.stage+1,L.crop_frames[c.crop].length-1);c.watered=false}}
+  // move
+  let mx=(K['a']||K['arrowleft']?-1:0)+(K['d']||K['arrowright']?1:0);
+  let my=(K['w']||K['arrowup']?-1:0)+(K['s']||K['arrowdown']?1:0);
+  const sp=(K['shift']?5.4:3.2);
+  hero.move=!!(mx||my);
+  if(mx||my){
+    const l=Math.hypot(mx,my);mx/=l;my/=l;
+    if(Math.abs(mx)>Math.abs(my))hero.dir=mx<0?'LEFT':'RIGHT';else hero.dir=my<0?'UP':'DOWN';
+    if(!collide(hero.x+mx*sp*dt,hero.y))hero.x+=mx*sp*dt;
+    if(!collide(hero.x,hero.y+my*sp*dt))hero.y+=my*sp*dt;
+    hero.t+=dt;
+  }
+  // pigs wander
+  for(const o of objs){
+    const m=o.meta||{};
+    if(m.kind=='pig'&&m.wander){
+      o.ph-=dt;
+      if(o.ph<=0){o.ph=1.5+Math.random()*3;o.d=Math.floor(Math.random()*5)}
+      const dd=['down','left','right','up'][o.d%4]||'down';
+      if(o.d<4){
+        const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
+        const nx=o.x+dx*0.7*dt,ny=o.y+dy*0.7*dt;
+        if(nx>34&&nx<43&&ny>10&&ny<17){o.x=nx;o.y=ny}
+        o.anim={frames:[`pig_${dd}0`,`pig_${dd}1`,`pig_${dd}2`,`${o.key[0]=='p'&&o.key[2]=='b'?'pigb':'pig'}_${dd}3`],fps:6};
+        if(o.key.startsWith('pigb'))o.anim.frames=o.anim.frames.map(f=>f.replace('pig_','pigb_'));
+      } else o.anim={frames:[o.key],fps:1};
+    }
+  }
+  render(ts);
+  requestAnimationFrame(loop);
+}
+
+function sprAt(key,x,y,anchorBottom=true){ // x,y tile coords (y = top row index)
+  const im=IMG[M.sprites[key]];if(!im)return;
+  const w=im.width,h=im.height;
+  return [x*T, y*T+h*0, w, h];
+}
+
+function render(ts){
+  ctx.imageSmoothingEnabled=false;
+  ctx.fillStyle='#14141c';ctx.fillRect(0,0,cv.width,cv.height);
+  const camx=Math.max(0,Math.min(hero.x-VIEW_W/2,L.W-VIEW_W))*T*SCALE;
+  const camy=Math.max(0,Math.min(hero.y-VIEW_H/2,L.H-VIEW_H))*T*SCALE;
+  const ox=Math.round(cv.width/2-camx-hero.x*T*SCALE+hero.x*T*SCALE-(L.W*T*SCALE)/2+(L.W*T*SCALE)/2);
+  // camera directly:
+  const vx=hero.x*T*SCALE, vy=hero.y*T*SCALE;
+  const offX=Math.round(cv.width/2-vx), offY=Math.round(cv.height/2-vy);
+  const minX=Math.min(0,cv.width-L.W*T*SCALE),minY=Math.min(0,cv.height-L.H*T*SCALE);
+  const camX=Math.max(minX,Math.min(0,offX)),camY=Math.max(minY,Math.min(0,offY));
+  function drawTile(key,cx,cy){
+    const im=IMG[M.sprites[key]];if(!im)return;
+    ctx.drawImage(im,Math.round(camX+cx*T*SCALE),Math.round(camY+cy*T*SCALE),im.width*SCALE,im.height*SCALE);
+  }
+  // layers
+  for(const k in L.ground){const[x,y]=k.split(',').map(Number);drawTile(L.ground[k],x,y)}
+  for(const k in L.soil){const[x,y]=k.split(',').map(Number);drawTile(L.soil[k],x,y)}
+  for(const k in L.path){const[x,y]=k.split(',').map(Number);drawTile(L.path[k],x,y)}
+  for(const k in L.water){const[x,y]=k.split(',').map(Number);drawTile(L.water[k],x,y)}
+  for(const k in L.decor){const[x,y]=k.split(',').map(Number);drawTile(L.decor[k],x,y)}
+  // dynamic crops
+  for(const k in crops){const c=crops[k];if(c.crop>0){const[x,y]=k.split(',').map(Number);
+    const key=L.crop_frames[c.crop][Math.min(c.stage,L.crop_frames[c.crop].length-1)];
+    const im=IMG[M.sprites[key]];ctx.drawImage(im,Math.round(camX+x*T*SCALE-im.width/2*SCALE+8*SCALE-16*SCALE/2*0),Math.round(camY+(y)*T*SCALE-(im.height-16)*SCALE),im.width*SCALE,im.height*SCALE);}}
+  // sortable objects + hero
+  const draw=[];
+  for(const o of objs)draw.push(o);
+  draw.push({key:'hero',x:hero.x,y:hero.y,hero:true});
+  draw.sort((a,b)=>a.y-b.y);
+  for(const o of draw){
+    let key=o.key;
+    if(o.hero){
+      key=hero.move?`hero_walk_${hero.dir}${Math.floor(hero.t*8)%4}`:`hero_idle_${hero.dir}0`;
+    }else if(o.anim){
+      const fr=o.anim.frames;key=fr[Math.floor(ts/1000*o.anim.fps)%fr.length];
+    }
+    const im=IMG[M.sprites[key]];if(!im)continue;
+    const dw=im.width*SCALE,dh=im.height*SCALE;
+    const px=Math.round(camX+o.x*T*SCALE-dw/2), py=Math.round(camY+o.y*T*SCALE-dh+T*SCALE*0.9);
+    ctx.drawImage(im,px,py,dw,dh);
+    if(o.heart>0){o.heart--;ctx.font=`bold ${8*SCALE/2}px monospace`;ctx.fillStyle='#f44';ctx.fillText('<3',px+dw/2-4,py-4)}
+  }
+  // prompt detection
+  promptTxt='';
+  for(const[cx,cy]of near(1)){
+    const k=cx+','+cy;const c=crops[k];
+    if(c&&c.soil&&c.crop===0){promptTxt='E — tanam bibit ('+seeds+' sisa)';break}
+    if(c&&c.crop>0){const last=L.crop_frames[c.crop].length-1;
+      if(c.stage>=last-1)promptTxt='E — panen (+12g)';else promptTxt=c.watered?'tumbuh… (disiram)':'kering — siram nanti?';break}
+  }
+  if(!promptTxt)for(const[cx,cy]of near(1)){
+    for(const o of objs){const m=o.meta||{};
+      if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-cy)<1.2){
+        if(m.kind=='chest'&&!o.opened)promptTxt='E — buka peti';
+        else if(m.kind=='npc')promptTxt='E — bicara dengan '+(m.name||'warga');
+        else if(m.kind=='pig'||m.kind=='animal')promptTxt='E — elus '+(m.name||'hewan');
+      }}}
+  document.getElementById('prompt').style.display=promptTxt?'block':'none';
+  document.getElementById('prompt').textContent=promptTxt;
+  document.getElementById('dlg').style.display=dialog?'block':'none';
+  if(dialog)document.getElementById('dlg').textContent=dialog;
+  // day/night tint
+  const h=clock/60; let a=0;
+  if(h<5.5||h>21)a=.38;else if(h<7)a=.38*(7-h)/1.5;else if(h>19)a=.38*(h-19)/2;
+  if(a>0){ctx.fillStyle=`rgba(10,10,50,${a})`;ctx.fillRect(0,0,cv.width,cv.height);
+    // light glows
+    ctx.globalCompositeOperation='lighter';
+    for(const o of objs){const m=o.meta||{};if(m.light){
+      const im=IMG[M.sprites[o.key]];
+      const px=camX+o.x*T*SCALE,py=camY+o.y*T*SCALE;
+      const g=ctx.createRadialGradient(px,py,4,px,py,6*T*SCALE/2);
+      g.addColorStop(0,'rgba(255,190,90,.55)');g.addColorStop(1,'rgba(255,190,90,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,6*T*SCALE/2,0,7);ctx.fill();}}
+    ctx.globalCompositeOperation='source-over';}
+  // HUD
+  const hh=String(Math.floor(h)).padStart(2,'0'),mm=String(Math.floor(clock%60)).padStart(2,'0');
+  document.getElementById('hud').innerHTML=
+    `<span style="color:#ffd76e">HARI ${day} — ${hh}:${mm}</span><br><b>${gold}g</b> &nbsp;·&nbsp; bibit x${seeds}<br><span style="font-size:12px;color:#bbb">vertical slice — tanam · panen · jual</span>`;
+}
+boot();
+</script>
+</body>
+</html>
