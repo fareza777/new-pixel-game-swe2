@@ -52,20 +52,27 @@
   <p class="keys">T / T+ = skip waktu &nbsp;•&nbsp; Di HP: joystick kiri + tombol kanan &nbsp;•&nbsp; Siram → tanam → panen → jual</p>
   <p id="loadmsg">loading sprites…</p></div>
 <script>
-const T=16, VIEW_W=26, VIEW_H=15;
+const T=16, isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0;
+let VIEW_W=26, VIEW_H=15;
 const cv=document.getElementById('game'), ctx=cv.getContext('2d');
 let SCALE=3;
-function fit(){cv.width=innerWidth;cv.height=innerHeight;SCALE=Math.max(2,Math.floor(Math.min(innerWidth/(VIEW_W*T),innerHeight/(VIEW_H*T))));}
+function fit(){
+  cv.width=innerWidth;cv.height=innerHeight;
+  VIEW_W=cv.width<cv.height?15:26; VIEW_H=cv.width<cv.height?24:15;   // portrait vs landscape
+  SCALE=Math.max(2,Math.floor(Math.min(cv.width/(VIEW_W*T),cv.height/(VIEW_H*T))));
+}
 addEventListener('resize',fit);fit();
+if(isTouch)document.body.classList.add('touchmode');
 
-let M=null;const IMG={};
+let M=null,ATLAS=null;const IMG={};
 async function boot(){
-  M=await(await fetch('map.json')).json();
-  const names=Object.values(M.sprites);
-  await Promise.all(names.map(n=>new Promise(r=>{const i=new Image();i.onload=()=>{IMG[n]=i;r()};i.onerror=()=>{console.log('sprite gagal:',n);r()};i.src='sprites/'+n})));
+  const [m,amap]=await Promise.all([fetch('map.json').then(r=>r.json()),fetch('atlas.json').then(r=>r.json())]);
+  M=m; ATLAS=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src='atlas.png'});
+  // IMG[key] = {w,h, sx,sy} rect di atlas
+  for(const k in M.sprites){const f=M.sprites[k],r=amap[f];if(r)IMG[k]={w:r[2],h:r[3],sx:r[0],sy:r[1]}}
   initState();
   document.getElementById('title').addEventListener('click',()=>{document.getElementById('title').style.display='none'},{once:true});
-  document.getElementById('loadmsg').textContent='klik untuk mulai';
+  document.getElementById('loadmsg').textContent=isTouch?'tap untuk mulai':'klik untuk mulai';
   requestAnimationFrame(loop);
 }
 const K={};addEventListener('keydown',e=>{K[e.key.toLowerCase()]=true;if(e.key.toLowerCase()=='e')interact();if(e.key.toLowerCase()=='t')clock+=60;});
@@ -178,8 +185,8 @@ function render(ts){
   const minX=Math.min(0,cv.width-L.W*T*SCALE),minY=Math.min(0,cv.height-L.H*T*SCALE);
   const camX=Math.max(minX,Math.min(0,offX)),camY=Math.max(minY,Math.min(0,offY));
   function drawTile(key,cx,cy){
-    const im=IMG[M.sprites[key]];if(!im)return;
-    ctx.drawImage(im,Math.round(camX+cx*T*SCALE),Math.round(camY+cy*T*SCALE),im.width*SCALE,im.height*SCALE);
+    const s=IMG[key];if(!s)return;
+    ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,Math.round(camX+cx*T*SCALE),Math.round(camY+cy*T*SCALE),s.w*SCALE,s.h*SCALE);
   }
   // layers
   for(const k in L.ground){const[x,y]=k.split(',').map(Number);drawTile(L.ground[k],x,y)}
@@ -190,7 +197,8 @@ function render(ts){
   // dynamic crops
   for(const k in crops){const c=crops[k];if(c.crop>0){const[x,y]=k.split(',').map(Number);
     const key=L.crop_frames[c.crop][Math.min(c.stage,L.crop_frames[c.crop].length-1)];
-    const im=IMG[M.sprites[key]];ctx.drawImage(im,Math.round(camX+x*T*SCALE-im.width/2*SCALE+8*SCALE-16*SCALE/2*0),Math.round(camY+(y)*T*SCALE-(im.height-16)*SCALE),im.width*SCALE,im.height*SCALE);}}
+    const s=IMG[key];if(!s)continue;
+    ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,Math.round(camX+x*T*SCALE-s.w/2*SCALE+8*SCALE-16*SCALE/2*0),Math.round(camY+(y)*T*SCALE-(s.h-16)*SCALE),s.w*SCALE,s.h*SCALE);}}
   // sortable objects + hero
   const draw=[];
   for(const o of objs)draw.push(o);
@@ -203,26 +211,27 @@ function render(ts){
     }else if(o.anim){
       const fr=o.anim.frames;key=fr[Math.floor(ts/1000*o.anim.fps)%fr.length];
     }
-    const im=IMG[M.sprites[key]];if(!im)continue;
-    const dw=im.width*SCALE,dh=im.height*SCALE;
+    const s=IMG[key];if(!s)continue;
+    const dw=s.w*SCALE,dh=s.h*SCALE;
     const px=Math.round(camX+o.x*T*SCALE-dw/2), py=Math.round(camY+o.y*T*SCALE-dh+T*SCALE*0.9);
-    ctx.drawImage(im,px,py,dw,dh);
+    ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,px,py,dw,dh);
     if(o.heart>0){o.heart--;ctx.font=`bold ${8*SCALE/2}px monospace`;ctx.fillStyle='#f44';ctx.fillText('<3',px+dw/2-4,py-4)}
   }
   // prompt detection
+  const BTN=isTouch?'A':'E';
   promptTxt='';
   for(const[cx,cy]of near(1)){
     const k=cx+','+cy;const c=crops[k];
-    if(c&&c.soil&&c.crop===0){promptTxt='E — tanam bibit ('+seeds+' sisa)';break}
+    if(c&&c.soil&&c.crop===0){promptTxt=BTN+' — tanam bibit ('+seeds+' sisa)';break}
     if(c&&c.crop>0){const last=L.crop_frames[c.crop].length-1;
-      if(c.stage>=last-1)promptTxt='E — panen (+12g)';else promptTxt=c.watered?'tumbuh… (disiram)':'E — siram tanaman';break}
+      if(c.stage>=last-1)promptTxt=BTN+' — panen (+12g)';else promptTxt=c.watered?'tumbuh… (disiram)':BTN+' — siram tanaman';break}
   }
   if(!promptTxt)for(const[cx,cy]of near(1)){
     for(const o of objs){const m=o.meta||{};
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-cy)<1.2){
-        if(m.kind=='chest'&&!o.opened)promptTxt='E — buka peti';
-        else if(m.kind=='npc')promptTxt='E — bicara dengan '+(m.name||'warga');
-        else if(m.kind=='pig'||m.kind=='animal')promptTxt='E — elus '+(m.name||'hewan');
+        if(m.kind=='chest'&&!o.opened)promptTxt=BTN+' — buka peti';
+        else if(m.kind=='npc')promptTxt=BTN+' — bicara dengan '+(m.name||'warga');
+        else if(m.kind=='pig'||m.kind=='animal')promptTxt=BTN+' — elus '+(m.name||'hewan');
       }}}
   document.getElementById('prompt').style.display=promptTxt?'block':'none';
   document.getElementById('prompt').textContent=promptTxt;
@@ -235,7 +244,7 @@ function render(ts){
     // light glows
     ctx.globalCompositeOperation='lighter';
     for(const o of objs){const m=o.meta||{};if(m.light){
-      const im=IMG[M.sprites[o.key]];
+      const s=IMG[o.key];if(!s)continue;
       const px=camX+o.x*T*SCALE,py=camY+o.y*T*SCALE;
       const g=ctx.createRadialGradient(px,py,4,px,py,6*T*SCALE/2);
       g.addColorStop(0,'rgba(255,190,90,.55)');g.addColorStop(1,'rgba(255,190,90,0)');
