@@ -12279,6 +12279,26 @@
  "path": [
   {
    "x": 31,
+   "y": 39,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 38,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 37,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
+   "y": 36,
+   "m": "dirt"
+  },
+  {
+   "x": 31,
    "y": 35,
    "m": "dirt"
   },
@@ -12405,6 +12425,26 @@
   {
    "x": 31,
    "y": 10,
+   "m": "dirt"
+  },
+  {
+   "x": 32,
+   "y": 39,
+   "m": "dirt"
+  },
+  {
+   "x": 32,
+   "y": 38,
+   "m": "dirt"
+  },
+  {
+   "x": 32,
+   "y": 37,
+   "m": "dirt"
+  },
+  {
+   "x": 32,
+   "y": 36,
    "m": "dirt"
   },
   {
@@ -18167,7 +18207,7 @@
    "y": 28.4,
    "kind": "npc",
    "npcName": "Mira",
-   "line": "Tanaman butuh air tiap hari. Siram lalu tunggu besok!",
+   "line": "",
    "gold": 0,
    "stage": 0,
    "wander": false,
@@ -18179,7 +18219,7 @@
    "y": 14.600000000000001,
    "kind": "npc",
    "npcName": "Old Fen",
-   "line": "Kolam ini penuh ikan di musim panas.",
+   "line": "",
    "gold": 0,
    "stage": 0,
    "wander": false,

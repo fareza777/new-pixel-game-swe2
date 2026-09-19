@@ -1,29 +1,45 @@
 ---
 name: testing-farm-preview
-description: How to serve, drive, and verify the Cozy Farm browser preview (WebPreview / farm_preview_build) end-to-end
+description: How to serve, drive, and verify the Sunpetal Valley browser preview (WebPreview / farm_preview_build) end-to-end
 ---
 
-# Testing the Cozy Farm browser preview
+# Testing the Sunpetal Valley preview
 
 ## Serve
-- Serve the static folder: `python3 -m http.server 8123` from `/home/ubuntu/farm_preview_build` (or repo `WebPreview/` — identical). Then open `http://localhost:8123/index.html` in Chrome and click the title overlay to start.
-- No build step, no secrets needed. `map.json` + `sprites/` are loaded by `index.html` at boot.
+- `python3 -m http.server 8123 -d /home/ubuntu/farm_preview_build` (or repo `WebPreview/` — identical bundle). Open `http://localhost:8123/index.html`.
+- Everything is inlined in index.html (MDATA/ADATA/ATLAS_SRC/AUDIO consts) — no fetch, so it also works in a WebView `file://` context.
+- To drive it headless: Playwright `connect_over_cdp('http://localhost:29229')` on the box's Chrome; `pg.mouse.click`/`pg.keyboard` work, and `pg.evaluate` reaches game globals.
 
-## Driving the game
-- Keys: WASD/arrows move, Shift run, E interact, T = +60 in-game min. Real key taps via the computer tool reach the page; for sustained movement use `hold_key` (durations ≥1s work, sub-0.5s can act like taps). Shell `xdotool keydown/keyup` did NOT reach the page in this env — don't rely on it.
-- Time flows 8 game-min per real second; a full day ≈ 3 min real. Don't fight the clock — press T to jump.
-- The heart/`-<3` marker on petting lasts only ~1s (60 frames) — too fast for the computer screenshot. Verify via console `objs.find(o=>(o.meta||{}).name=='kucing').heart` (==60 right after E) or capture during `hold_key e` auto-repeat with a background `scrot`.
+## Flow / states
+`G.state`: `title` → `intro` (4 VO slides, tap/E advances) → `play` (or `dlg`/`shop`/`bag`/`festival`).
+Title tap starts the intro; 4 taps advance all slides.
 
-## Verifying state (console globals — all top-level bindings)
-`hero.x/hero.y`, `crops` (map "x,y" → {crop,stage,watered,soil}), `seeds`, `gold`, `day`, `clock` (minutes), `objs`, `blocked(x,y)`, `L` (layers), `M.sprites`. Use `browser_console` evals to read positions/states; screenshots alone can't prove movement because the camera re-centers the hero.
+## Globals (all under `G`)
+`G.hero.x/y/dir`, `G.map` ('farm'|'village'), `G.L` (current map layers), `G.objs`, `G.crops[mapId]['x,y']`,
+`G.gold`, `G.day`, `G.clock` (minutes), `G.inv.seed/crop`, `G.selSeed`, `G.flags` (metBram, planted, watered,
+harvested, sold2, mq2done, haveSunseed, sunpetalPlanted, sunpetalBloom, festival, metAll, fedFen).
+Helpers: `loadMap(id,x,y)`, `interact()`, `talkTo(obj)`, `skipHour()` (+60min), `openShop()`, `toggleBag()`.
 
-## Key map facts (map.json, 64x40)
-- Spawn (16.5,22.5); house solid x13-18 y18-21 with a walkable gap at x19; chest (20.8,20.9) +25g opened via E from cell (20,20)/(21,20) — NOT open-on-contact.
-- Tilled cells: rows y6-7 (x9-16 west, x21-28 + 22,23 y7 east). Staged decor crops sit on odd-x y7 cells — plant on even-x or row y6 to avoid sprite overlap.
-- NPCs: Mira (24.5,16.4), Old Fen (47.5,24.3) — Old Fen only reachable from cell (46,24) (west-south-east around pond edge; 46,23 is water).
-- Cat "kucing" (14.3,21.5); 3 pigs wander bounded x34-43 y10-17.
-- Pond water x46-60 y21-32 blocks movement. Some rail fences solid (e.g. x24-25 y16); pen/bed border fences are NOT solid (hero can walk into the pen).
+## Maps
+- farm 64×40: exit x30-33 y0 → village (spawn 31.5,36.5). Beds pre-tilled (G.crops.farm).
+- village 64×40: exit x30-33 y39 → farm. Plaza ~y14-20, torii shrine y6-8, festival beds x28-30+33-35 y9-10
+  (Sunpetal-only, gated by `flags.haveSunseed`). NPCs: bram (32,17), sari shop stall (39,16.8), vilo (26,18), nana (37,18.5).
+- NPC `meta.id` gates dialogs in `DIALOGS{}`; `meta.portrait` key drives the animated portrait box.
 
-## Known gaps to look for (as of PR #1)
-- No watering action in the preview: E on a dry crop plants a new seed on the next empty soil cell instead; crops freeze at stage 2 and never reach harvest stage via gameplay. Harvest code works if stage is forced (`crops['x,y'].stage=5` → E → +12g).
-- Chest needs an E press, not contact-open (differs from Unity prefab behavior).
+## Controls
+WASD/arrows move, Shift/RUN run, E/A interact (+advance dialog), T/T+ skip hour, B/I bag, Q cycles selected seed, Esc closes panels. Touch UI auto-shows (joystick + A/BAG/RUN/T+).
+
+## Main quest chain (for E2E)
+1. Met Bram (vo_bram1) → 2. plant 3 seeds → 3. harvest 4 → 4. sell 2 to Sari → 5. report to Bram (vo_bram2)
+→ 6. buy Sunpetal Seed 100g → 7. plant in shrine beds → water → next day `sunpetalBloom`
+→ 8. talk to Bram → vo_finale + festival state.
+
+## Fast-travel / cheat evals
+`loadMap('village',31.5,18.5)` to stand next to Bram; `G.gold=200`; `G.inv.crop[8]=5` to add crops;
+`G.flags.mq2done=true` to unlock the Sunpetal Seed in the shop.
+
+## Rebuild pipeline
+`gen_farm_slice.py` → map.json + sprites; `gen_village.py` → village.json; `bake_game.py` merges both into
+one atlas + inlines audio/icon → `farm_preview_build/index.html` (also copied to `apkproj/.../assets/www/`).
+APK: aapt2 compile/link + javac + d8 + `zip -0` classes.dex + zipalign + apksigner (keystore /tmp/cozy.keystore —
+recreate if /tmp was wiped: `keytool -genkeypair -alias cozy -storepass cozyfarm -keypass cozyfarm`).
