@@ -86,6 +86,7 @@ function interact(){
       if(c.crop>0){
         const n=c.crop, last=L.crop_frames[n].length-1;
         if(c.stage>=last-1){c.crop=0;c.stage=0;gold+=12;return}
+        if(!c.watered){c.watered=true;return}
       }
       continue;
     }
@@ -192,7 +193,7 @@ function render(ts){
     const k=cx+','+cy;const c=crops[k];
     if(c&&c.soil&&c.crop===0){promptTxt='E — tanam bibit ('+seeds+' sisa)';break}
     if(c&&c.crop>0){const last=L.crop_frames[c.crop].length-1;
-      if(c.stage>=last-1)promptTxt='E — panen (+12g)';else promptTxt=c.watered?'tumbuh… (disiram)':'kering — siram nanti?';break}
+      if(c.stage>=last-1)promptTxt='E — panen (+12g)';else promptTxt=c.watered?'tumbuh… (disiram)':'E — siram tanaman';break}
   }
   if(!promptTxt)for(const[cx,cy]of near(1)){
     for(const o of objs){const m=o.meta||{};
