@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Sunpetal Valley</title>
 <style>
-  html,body{margin:0;height:100%;background:#10101a;overflow:hidden;font-family:'Courier New',monospace;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#10101a;overflow:hidden;font-family:'Courier New',monospace;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   #game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;width:100vw;height:100vh}
   .hud{position:fixed;color:#fff;text-shadow:2px 2px 0 #000;font-size:14px;pointer-events:none;z-index:5}
   #hud{top:10px;left:10px;background:rgba(0,0,0,.5);padding:6px 10px;border:2px solid #000;border-radius:6px;line-height:1.45;display:flex;gap:8px;align-items:center}
@@ -125,7 +125,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v1.7</div></div></div>
+    <div class="ver">v1.8</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -210,6 +210,14 @@ function bgm(name){
 }
 // browsers block audio before first gesture — retry the queued track on any tap
 document.addEventListener('pointerdown',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
+document.addEventListener('touchstart',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
+
+/* universal tap: works whether the WebView fires pointer, touch, or only click events */
+function tapDedup(fn){let lt=0;return e=>{const n=Date.now();if(n-lt<420)return;lt=n;fn(e)}}
+function onTap(el,fn){if(!el)return;const h=tapDedup(fn);
+  if(window.PointerEvent)el.addEventListener('pointerdown',h);
+  el.addEventListener('touchstart',h,{passive:false});
+  el.addEventListener('click',h);}
 function sfx(name){if(!SET.sfx||!AUDIO[name])return;const a=new Audio(AUDIO[name]);a.volume=.8;a.play().catch(()=>{})}
 // ---- save / load -----------------------------------------------------------
 function save(){
@@ -414,7 +422,7 @@ function toggleBag(v){
   document.querySelectorAll('#baglist .iico').forEach(c=>{const s=IMG[c.dataset.k];if(!s)return;
     const g=c.getContext('2d');g.imageSmoothingEnabled=false;
     const k=Math.min(26/s.w,26/s.h);g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,(28-s.w*k)/2,(28-s.h*k)/2,s.w*k,s.h*k)});
-  document.querySelectorAll('#baglist .sel-seed').forEach(r=>r.addEventListener('pointerdown',()=>{
+  document.querySelectorAll('#baglist .sel-seed').forEach(r=>onTap(r,()=>{
     G.selSeed=+r.dataset.seed;toggleBag(true);hudRender()}));
 }
 function cycleSeed(){
@@ -761,57 +769,86 @@ async function boot(){
   const cont=()=>{if(G.state!=='title')return;
     if(loadSave()){G.state='play';$('title').style.display='none';bgm('music_day');toast('Welcome back to Sunpetal Valley')}
     else toast('No save found');};
-  $('mnew').addEventListener('pointerdown',e=>{e.stopPropagation();newGame()});
-  $('mcont').addEventListener('pointerdown',e=>{e.stopPropagation();cont()});
-  $('mset').addEventListener('pointerdown',e=>{e.stopPropagation();openSettings()});
+  onTap($('mnew'),()=>newGame());
+  onTap($('mcont'),()=>cont());
+  onTap($('mset'),()=>openSettings());
   if(hasSave())$('mcont').style.display='block';
-  $('setmusic').addEventListener('pointerdown',e=>{SET.music=SET.music?0:1;saveSet();openSettings();if(!SET.music&&BGM){BGM.pause();BGM=null}else if(SET.music&&G.state==='play')bgm(BGMNAME||'music_day')});
-  $('setsfx').addEventListener('pointerdown',e=>{SET.sfx=SET.sfx?0:1;saveSet();openSettings()});
-  $('setback').addEventListener('pointerdown',e=>{$('setov').style.display='none'});
+  onTap($('setmusic'),()=>{SET.music=SET.music?0:1;saveSet();openSettings();if(!SET.music&&BGM){BGM.pause();BGM=null}else if(SET.music&&G.state==='play')bgm(BGMNAME||'music_day')});
+  onTap($('setsfx'),()=>{SET.sfx=SET.sfx?0:1;saveSet();openSettings()});
+  onTap($('setback'),()=>{$('setov').style.display='none'});
+  onTap($('dlg'),()=>{if(G.state==='dlg')dlgAdvance()});
   addEventListener('keydown',e=>{if(G.state==='intro'&&e.key.toLowerCase()==='e')introNext()});
   // tap to advance intro / dialog
-  cv.addEventListener('pointerdown',e=>{
-    if(G.state==='intro')introNext();
-    else if(G.state==='dlg')dlgAdvance();
-    else if(G.state==='play'&&e.pointerType==='touch'&&e.clientX<innerWidth*0.6&&e.clientY>innerHeight*0.3&&fjid===null){
-      // floating joystick: touch anywhere on the lower-left to move
-      fjid=e.pointerId;joyBase={x:e.clientX,y:e.clientY};
-      const j=$('joy');j.style.left=(e.clientX-65)+'px';j.style.top=(e.clientY-65)+'px';j.style.bottom='auto';
+  // unified canvas handler: pointer + touch + click all funnel here
+  const cvTap=tapDedup(()=>{if(G.state==='intro')introNext();else if(G.state==='dlg')dlgAdvance()});
+  const cvDown=e=>{
+    if(G.state==='intro'||G.state==='dlg'){cvTap();return}
+    if(G.state!=='play')return;
+    const pt=e.touches&&e.touches[0]?e.touches[0]:e;
+    const isRealTouch=e.pointerId!==undefined||(e.touches&&e.touches.length>0);
+    if(isRealTouch&&pt.clientX<innerWidth*0.62&&pt.clientY>innerHeight*0.32&&fjid===null){
+      // floating joystick: touch anywhere on the lower-left to walk
+      fjid=e.pointerId!==undefined?e.pointerId:'t'+pt.identifier;
+      joyBase={x:pt.clientX,y:pt.clientY};
+      const j=$('joy');j.style.left=(pt.clientX-65)+'px';j.style.top=(pt.clientY-65)+'px';j.style.bottom='auto';
       try{cv.setPointerCapture(fjid)}catch(_){}
-      e.preventDefault();}});
-  cv.addEventListener('pointermove',e=>{if(e.pointerId!==fjid)return;
-    let dx=e.clientX-joyBase.x,dy=e.clientY-joyBase.y;const d=Math.hypot(dx,dy),mx=65;
+      if(e.preventDefault)e.preventDefault();}};
+  const cvMove=e=>{
+    if(fjid===null)return;
+    let pt=null;
+    if(e.touches){for(const t of e.touches)if('t'+t.identifier===fjid)pt=t;}
+    else if(e.pointerId===fjid)pt=e;
+    if(!pt)return;
+    let dx=pt.clientX-joyBase.x,dy=pt.clientY-joyBase.y;const d=Math.hypot(dx,dy),mx=65;
     if(d>mx){dx*=mx/d;dy*=mx/d}
-    const knob=$('knob');knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
-    joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx);e.preventDefault()});
-  const fjend=e=>{if(e.pointerId!==fjid)return;fjid=null;joy.x=joy.y=joy.mag=0;
-    const j=$('joy'),knob=$('knob');knob.style.transform='translate(-50%,-50%)';
-    j.style.left='24px';j.style.top='auto';j.style.bottom='28px'};
-  cv.addEventListener('pointerup',fjend);cv.addEventListener('pointercancel',fjend);
+    $('knob').style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+    joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx);
+    if(e.preventDefault)e.preventDefault()};
+  const cvEnd=e=>{
+    if(fjid===null)return;
+    let done=false;
+    if(e.changedTouches){for(const t of e.changedTouches)if('t'+t.identifier===fjid)done=true;}
+    else if(e.pointerId===fjid)done=true;
+    if(!done)return;
+    fjid=null;joy.x=joy.y=joy.mag=0;
+    $('knob').style.transform='translate(-50%,-50%)';
+    const j=$('joy');j.style.left='24px';j.style.top='auto';j.style.bottom='28px'};
+  cv.addEventListener('pointerdown',cvDown);
+  cv.addEventListener('touchstart',cvDown,{passive:false});
+  cv.addEventListener('click',cvDown);
+  cv.addEventListener('pointermove',cvMove);cv.addEventListener('touchmove',cvMove,{passive:false});
+  cv.addEventListener('pointerup',cvEnd);cv.addEventListener('pointercancel',cvEnd);
+  cv.addEventListener('touchend',cvEnd);cv.addEventListener('touchcancel',cvEnd);
   requestAnimationFrame(loop);
 }
 /* ------------------------------ touch ------------------------------------- */
 const joy={x:0,y:0,mag:0};
 let fjid=null, joyBase={x:0,y:0};
 (function(){
-  const joyEl=$('joy'),knob=$('knob');let jid=null;
+  const joyEl=$('joy'),knob=$('knob');let jid=null,jtid=null;
   const setK=(dx,dy)=>knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
-  joyEl.addEventListener('pointerdown',e=>{jid=e.pointerId;joyEl.setPointerCapture(jid);e.preventDefault()});
-  joyEl.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;
+  const jmove=(cx,cy)=>{
     const r=joyEl.getBoundingClientRect();
-    let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+    let dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2);
     const d=Math.hypot(dx,dy),mx=r.width/2;
-    if(d>mx){dx*=mx/d;dy*=mx/d}setK(dx,dy);joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx)});
-  const end=e=>{if(e.pointerId!==jid)return;jid=null;setK(0,0);joy.x=joy.y=joy.mag=0};
-  joyEl.addEventListener('pointerup',end);joyEl.addEventListener('pointercancel',end);
-  $('btnA').addEventListener('pointerdown',e=>{e.preventDefault();interact()});
-  $('btnRun').addEventListener('pointerdown',e=>{e.preventDefault();K['run']=true});
-  $('btnRun').addEventListener('pointerup',()=>K['run']=false);
-  $('btnRun').addEventListener('pointercancel',()=>K['run']=false);
-  $('btnDay').addEventListener('pointerdown',e=>{e.preventDefault();skipHour()});
-  $('btnBag').addEventListener('pointerdown',e=>{e.preventDefault();
-    if(G.state==='play')toggleBag(true);else if(G.state==='bag')toggleBag(false);
-    else if(G.state==='play')cycleSeed()});
+    if(d>mx){dx*=mx/d;dy*=mx/d}setK(dx,dy);joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx)};
+  const jreset=()=>{jid=jtid=null;setK(0,0);joy.x=joy.y=joy.mag=0};
+  joyEl.addEventListener('pointerdown',e=>{jid=e.pointerId;try{joyEl.setPointerCapture(jid)}catch(_){ }e.preventDefault()});
+  joyEl.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;jmove(e.clientX,e.clientY)});
+  joyEl.addEventListener('pointerup',e=>{if(e.pointerId===jid)jreset()});
+  joyEl.addEventListener('pointercancel',e=>{if(e.pointerId===jid)jreset()});
+  // touch fallback for WebViews without PointerEvent
+  joyEl.addEventListener('touchstart',e=>{jtid=e.changedTouches[0].identifier;e.preventDefault()},{passive:false});
+  joyEl.addEventListener('touchmove',e=>{for(const t of e.touches)if(t.identifier===jtid){jmove(t.clientX,t.clientY);e.preventDefault()}},{passive:false});
+  const jte=e=>{for(const t of e.changedTouches)if(t.identifier===jtid)jreset()};
+  joyEl.addEventListener('touchend',jte);joyEl.addEventListener('touchcancel',jte);
+  onTap($('btnA'),()=>interact());
+  onTap($('btnDay'),()=>skipHour());
+  onTap($('btnBag'),()=>{if(G.state==='play')toggleBag(true);else if(G.state==='bag')toggleBag(false)});
+  const runOn=()=>K['run']=true,runOff=()=>K['run']=false;
+  $('btnRun').addEventListener('pointerdown',runOn);$('btnRun').addEventListener('touchstart',runOn,{passive:true});
+  $('btnRun').addEventListener('pointerup',runOff);$('btnRun').addEventListener('pointercancel',runOff);
+  $('btnRun').addEventListener('touchend',runOff);$('btnRun').addEventListener('touchcancel',runOff);
 })();
 boot();
 </script>

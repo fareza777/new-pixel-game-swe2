@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Sunpetal Valley</title>
+<style>
+  html,body{margin:0;height:100%;background:#10101a;overflow:hidden;font-family:'Courier New',monospace;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  #game{display:block;image-rendering:pixelated;image-rendering:crisp-edges;width:100vw;height:100vh}
+  .hud{position:fixed;color:#fff;text-shadow:2px 2px 0 #000;font-size:14px;pointer-events:none;z-index:5}
+  #hud{top:10px;left:10px;background:rgba(0,0,0,.5);padding:6px 10px;border:2px solid #000;border-radius:6px;line-height:1.45;display:flex;gap:8px;align-items:center}
+  #hud b{color:#ffd76e}
+  #quest{top:10px;right:10px;background:rgba(20,16,40,.65);padding:6px 10px;border:2px solid #c89b5a;border-radius:6px;
+    font-size:12px;max-width:44vw;text-align:right;color:#ffe9c4}
+  @media (max-width:460px){ #quest{top:70px;max-width:46vw} }
+  #quest b{color:#ffd76e;display:block;font-size:13px}
+  #toast{bottom:200px;left:50%;transform:translateX(-50%);background:rgba(30,60,30,.85);border:2px solid #9fd0ff;
+    color:#eafbe0;padding:7px 14px;border-radius:8px;font-size:14px;display:none;z-index:6;max-width:80vw;text-align:center}
+  #prompt{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#000a;color:#fff;
+    padding:6px 14px;border:2px solid #fff8;border-radius:6px;font-size:14px;display:none;z-index:5;white-space:nowrap}
+  /* dialog box with portrait (Harvest Moon style) */
+  #dlg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(92vw,560px);
+    background:#241809f2;color:#ffe9c4;border:3px solid #c89b5a;border-radius:10px;display:none;z-index:8;
+    box-shadow:0 0 0 3px #000, 0 8px 24px #000a}
+  #dlg .inner{display:flex;gap:10px;padding:10px}
+  #dport{width:64px;height:64px;flex:0 0 64px;background:#3a2a14;border:2px solid #c89b5a;border-radius:8px;
+    image-rendering:pixelated;image-rendering:crisp-edges;overflow:hidden}
+  #dname{color:#ffd76e;font-weight:bold;font-size:13px;margin-bottom:3px}
+  #dtext{font-size:14px;line-height:1.5;min-height:40px}
+  #dnext{position:absolute;right:10px;bottom:6px;color:#ffd76e;font-size:12px;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:.2}}
+  /* full-screen overlays */
+  .ovl{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10}
+  #title{background:#0c0f1c}
+  #tcv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+  #tinner{position:relative;text-align:center;z-index:2}
+  #tlogo{width:96px;height:96px;image-rendering:pixelated;border-radius:20px;border:3px solid #ffd76e;
+    box-shadow:0 6px 24px #000c;margin-bottom:14px}
+  #tinner h1{font-size:30px;color:#ffd76e;text-shadow:3px 3px 0 #704018,6px 6px 0 #0008;margin:0;letter-spacing:2px}
+  #tinner .sub{color:#9fd0ff;font-size:13px;margin-top:4px}
+  #tmenu{margin-top:22px;display:flex;flex-direction:column;gap:10px;align-items:center}
+  .mbtn{color:#fff;font-size:16px;padding:9px 30px;border:2px solid #c89b5a;border-radius:8px;background:#241809cc;
+    min-width:180px;cursor:pointer;text-shadow:1px 1px 0 #000}
+  .mbtn:active{background:#4a3a1a}
+  .mbtn.off{opacity:.4;pointer-events:none}
+  #loadmsg{color:#888;font-size:13px;margin-top:10px}
+  .ver{margin-top:8px;font-size:11px;color:#667;letter-spacing:1px}
+  /* inventory / bag */
+  #bag{background:rgba(10,10,20,.92);z-index:9}
+  #bag .panel{background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:14px;min-width:260px;max-width:86vw;color:#ffe9c4}
+  #bag h3{margin:0 0 8px;color:#ffd76e;font-size:15px}
+  .invrow{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;border-bottom:1px dotted #5a4525}
+  .invrow .ct{color:#9fd0ff}
+  .invsec{color:#8fbf8f;font-size:12px;margin:8px 0 2px;letter-spacing:1px}
+  /* shop */
+  #shop{background:rgba(10,10,20,.9);z-index:9}
+  #shop .panel{background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:12px;width:min(92vw,380px);color:#ffe9c4}
+  #shop h3{margin:0;color:#ffd76e;font-size:15px}
+  #shopgold{text-align:right;color:#ffd76e;font-size:13px;margin:4px 0}
+  .tabrow{display:flex;gap:8px;margin:8px 0}
+  .tab{flex:1;text-align:center;padding:6px;border:2px solid #c89b5a;border-radius:6px;font-size:13px;cursor:pointer;color:#cbb}
+  .tab.on{background:#c89b5a;color:#241809;font-weight:bold}
+  .srow{display:flex;justify-content:space-between;align-items:center;padding:7px 6px;border-bottom:1px dotted #5a4525;font-size:14px;cursor:pointer;border-radius:4px}
+  .srow:hover{background:#3a2a14}
+  .srow .pr{color:#ffd76e}
+  .srow.sel{background:#4a3a1a}
+  #shopmsg{font-size:12px;color:#9fd0ff;min-height:16px;margin-top:4px}
+  .xbtn{position:absolute;top:14px;right:16px;color:#fff;font-size:22px;cursor:pointer;padding:6px 12px;
+    border:2px solid #fff6;border-radius:8px;background:#0008}
+  /* touch controls */
+  #touch{display:none;position:fixed;inset:0;z-index:7;pointer-events:none}
+  body.touchmode.ingame #touch{display:block}
+  #joy{position:absolute;left:24px;bottom:28px;width:120px;height:120px;border-radius:50%;
+    background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);pointer-events:auto;touch-action:none}
+  #knob{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;
+    background:rgba(255,255,255,.35);transform:translate(-50%,-50%)}
+  .btn{position:absolute;width:62px;height:62px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:22px;color:#fff;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none;
+    box-shadow:0 3px 0 rgba(0,0,0,.4),inset 0 2px 6px rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5)}
+  .btn small{font-size:9px;font-weight:bold;letter-spacing:.5px;opacity:.9;margin-top:1px}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+  #btnA{right:22px;bottom:32px;width:72px;height:72px;background:radial-gradient(circle at 35% 30%,#e07050,#a03c20)}
+  #btnBag{right:106px;bottom:84px;width:52px;height:52px;background:radial-gradient(circle at 35% 30%,#5090d0,#204080);font-size:19px}
+  #btnRun{right:22px;bottom:122px;width:52px;height:52px;background:radial-gradient(circle at 35% 30%,#9060c8,#482878);font-size:16px}
+  #btnDay{right:106px;bottom:150px;width:52px;height:52px;background:radial-gradient(circle at 35% 30%,#d8a040,#704810);font-size:16px}
+  #joy{width:130px;height:130px;background:radial-gradient(circle,rgba(255,255,255,.06) 40%,rgba(255,255,255,.14));border:3px solid rgba(255,255,255,.28)}
+  #knob{width:52px;height:52px;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),rgba(180,180,200,.35));
+    border:2px solid rgba(255,255,255,.5);box-shadow:0 3px 8px rgba(0,0,0,.4)}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud" class="hud"></div>
+<div id="quest" class="hud"></div>
+<div id="toast" class="hud"></div>
+<div id="prompt"></div>
+<div id="dlg"><div class="inner"><canvas id="dport" width="64" height="64"></canvas>
+  <div style="flex:1"><div id="dname"></div><div id="dtext"></div></div></div>
+  <div id="dnext">▼ next</div></div>
+
+<div id="bag" class="ovl"><div class="xbtn" onclick="toggleBag(false)">✕</div>
+  <div class="panel"><h3>🎒 Bag</h3><div id="baglist"></div></div></div>
+
+<div id="shop" class="ovl"><div class="xbtn" onclick="closeShop()">✕</div>
+  <div class="panel"><h3>🌻 Sari's Market</h3><div id="shopgold"></div>
+    <div class="tabrow"><div class="tab on" id="tabBuy" onclick="shopTab('buy')">BUY SEEDS</div>
+      <div class="tab" id="tabSell" onclick="shopTab('sell')">SELL CROPS</div></div>
+    <div id="shoprows"></div><div id="shopmsg"></div></div></div>
+
+<div id="touch">
+  <div id="joy"><div id="knob"></div></div>
+  <div class="btn" id="btnA">🌱<small>ACTION</small></div>
+  <div class="btn" id="btnBag">🎒<small>BAG</small></div>
+  <div class="btn" id="btnRun">»<small>RUN</small></div>
+  <div class="btn" id="btnDay">☾<small>SLEEP</small></div>
+</div>
+
+<div id="title" class="ovl" style="display:flex"><canvas id="tcv"></canvas>
+  <div id="tinner"><img id="tlogo" src="__ICON__" alt="icon">
+    <h1>SUNPETAL VALLEY</h1>
+    <div class="sub">a farming life-sim RPG</div>
+    <div id="tmenu">
+      <div class="mbtn" id="mnew">✦ New Game</div>
+      <div class="mbtn" id="mcont" style="display:none">↻ Continue</div>
+      <div class="mbtn" id="mset">⚙ Settings</div>
+    </div>
+    <div id="loadmsg">loading…</div>
+    <div class="ver">v__VER__</div></div></div>
+
+<div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
+  <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
+    <h3 style="margin:0 0 10px;color:#ffd76e;font-size:16px">⚙ Settings</h3>
+    <div class="srow" id="setmusic" style="display:flex;justify-content:space-between;padding:8px 4px;cursor:pointer"><span>Music</span><span class="pr" id="setmusicv">ON</span></div>
+    <div class="srow" id="setsfx" style="display:flex;justify-content:space-between;padding:8px 4px;cursor:pointer"><span>Sound FX</span><span class="pr" id="setsfxv">ON</span></div>
+    <div class="srow" id="setback" style="display:flex;justify-content:center;padding:10px 4px;cursor:pointer;color:#9fd0ff">← Back</div>
+  </div></div>
+
+<script>
+'use strict';
+const T=16, isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0||matchMedia('(pointer:coarse)').matches;
+const cv=document.getElementById('game'), ctx=cv.getContext('2d');
+let SCALE=3,VIEW_W=26,VIEW_H=15;
+function fit(){
+  cv.width=innerWidth;cv.height=innerHeight;
+  VIEW_W=cv.width<cv.height?15:26; VIEW_H=cv.width<cv.height?24:15;
+  SCALE=Math.max(2,Math.floor(Math.min(cv.width/(VIEW_W*T),cv.height/(VIEW_H*T))));
+}
+addEventListener('resize',fit);fit();
+if(isTouch)document.body.classList.add('touchmode');
+// failsafe: some WebViews don't report touch until first touch — enable controls on first contact
+addEventListener('touchstart',()=>document.body.classList.add('touchmode'),{once:true,passive:true});
+addEventListener('pointerdown',e=>{if(e.pointerType==='touch')document.body.classList.add('touchmode')});
+
+/* ============ INLINED DATA (no fetch — works in WebView file://) ============ */
+const MAPS=__MDATA__;          // {farm:{…}, village:{…}} each: order,tiles,objects,solid,water,spawn,exits,tilled
+const ADATA=__ADATA__;
+const ATLAS_SRC='__ATLAS_SRC__';
+const AUDIO=__AUDIO__;         // name -> data:audio/mpeg;base64,…
+const ART=__ART__;             // intro slide art -> data:image/png;base64,…
+/* =========================================================================== */
+
+let ATLAS=null; const IMG={};  // IMG[key]={sx,sy,w,h}
+let SPR={};                    // merged sprite key -> atlas rect name
+
+/* ------------------------------ game state ------------------------------ */
+const CROPS={1:'Turnip',3:'Carrot',8:'Tomato',13:'Pumpkin',18:'Cabbage',21:'Melon',22:'Sunpetal'};
+const SEED_PRICE={1:4,3:6,8:8,13:14,18:10,21:10,22:100};
+const CROP_PRICE={1:8,3:12,8:16,13:28,18:20,21:22};
+const G={
+  state:'title',            // title,intro,play,festival,end
+  map:'farm', L:null, solid:null, water:null, objs:null,
+  hero:{x:0,y:0,dir:'DOWN',t:0,move:false},
+  gold:20, day:1, clock:7*60,
+  inv:{seed:{1:3,3:2,8:2}, crop:{}},
+  selSeed:1,
+  crops:{},                  // mapId -> {x,y->{crop,stage,watered}}
+  flags:{},
+  dlg:null, shop:null, bag:false,
+  tutStep:0, vo:null, fade:0, promptTxt:''
+};
+const TUT=[
+  "Move: left stick / WASD",
+  "Follow the road north — to Sunpetal Village",
+  "Find Mayor Bram in the plaza & talk (A / E)",
+  "Return to the farm — stand on a garden bed & press A to plant",
+  "Press A again on a dry sprout to water it",
+  "Skip time (T+) until tomorrow, then harvest with A",
+  "Sell your harvest to Sari at the market stall"];
+const STORY=[
+ ["vo_intro1","Long ago, the valley of Sunpetal bloomed with golden flowers — and every summer, the whole village danced beneath the Festival of Light.","intro1"],
+ ["vo_intro2","But seasons passed. The fields grew quiet, and the festival lanterns faded… one by one.","intro2"],
+ ["vo_intro3","Now, a letter has carried you home — to your grandfather's old farm, at the edge of the valley.","intro3"],
+ ["vo_intro4","Grow the land. Grow friendships. And when the Sunpetal blooms again… the valley will remember.","intro4"]];
+let introI=-1, introT=0, introWait=0;
+const ARTIMG={};   // filled at boot
+
+function playVO(n){ if(G.vo){G.vo.pause();G.vo=null}
+  if(AUDIO[n]){G.vo=new Audio(AUDIO[n]);const p=G.vo.play();if(p&&p.catch)p.catch(()=>{if(G.vo)G.vo._dead=true})} }
+// ---- music & sfx ------------------------------------------------------------
+let BGM=null,BGMNAME='';
+const SET=JSON.parse(localStorage.getItem('spv_set')||'{"music":1,"sfx":1}');
+function saveSet(){localStorage.setItem('spv_set',JSON.stringify(SET))}
+let PENDING_BGM='';
+function bgm(name){
+  if(!SET.music){if(BGM){BGM.pause();BGM=null}BGMNAME=name;return}
+  if(BGMNAME===name&&BGM&&!BGM.paused)return;BGMNAME=name;
+  if(BGM){BGM.pause();BGM=null}
+  if(AUDIO[name]){BGM=new Audio(AUDIO[name]);BGM.loop=true;BGM.volume=.45;
+    const p=BGM.play();if(p&&p.catch)p.catch(()=>{PENDING_BGM=name;BGM=null})}
+}
+// browsers block audio before first gesture — retry the queued track on any tap
+document.addEventListener('pointerdown',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
+document.addEventListener('touchstart',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
+
+/* universal tap: works whether the WebView fires pointer, touch, or only click events */
+function tapDedup(fn){let lt=0;return e=>{const n=Date.now();if(n-lt<420)return;lt=n;fn(e)}}
+function onTap(el,fn){if(!el)return;const h=tapDedup(fn);
+  if(window.PointerEvent)el.addEventListener('pointerdown',h);
+  el.addEventListener('touchstart',h,{passive:false});
+  el.addEventListener('click',h);}
+function sfx(name){if(!SET.sfx||!AUDIO[name])return;const a=new Audio(AUDIO[name]);a.volume=.8;a.play().catch(()=>{})}
+// ---- save / load -----------------------------------------------------------
+function save(){
+  if(G.state==='intro'||G.state==='title')return;
+  const s={v:1,map:G.map,x:G.hero.x,y:G.hero.y,dir:G.hero.dir,gold:G.gold,day:G.day,clock:G.clock,
+    inv:G.inv,selSeed:G.selSeed,flags:G.flags,crops:G.crops,tutStep:G.tutStep};
+  try{localStorage.setItem('spv_save',JSON.stringify(s))}catch(e){}
+}
+function hasSave(){try{return !!localStorage.getItem('spv_save')}catch(e){return false}}
+function loadSave(){
+  try{const s=JSON.parse(localStorage.getItem('spv_save'));if(!s)return false;
+    loadMap(s.map,s.x,s.y);G.hero.dir=s.dir||'DOWN';G.gold=s.gold;G.day=s.day;G.clock=s.clock;
+    G.inv=s.inv;G.selSeed=s.selSeed;G.flags=s.flags;G.crops=s.crops;G.tutStep=s.tutStep;
+    return true}catch(e){return false}
+}
+function openSettings(){$('setov').style.display='flex';
+  $('setmusicv').textContent=SET.music?'ON':'OFF';$('setsfxv').textContent=SET.sfx?'ON':'OFF'}
+
+/* ------------------------------ map handling ---------------------------- */
+function loadMap(id,sx,sy){
+  G.map=id; const M=MAPS[id]; G.L=M;
+  G.solid=new Set(M.solid); G.water=new Set(M.water||[]);
+  G.objs=M.objects.map(o=>({...o,hx:o.x,hy:o.y,ph:Math.random()*10}));
+  if(!G.crops[id]){G.crops[id]={}; (M.tilled||[]).forEach(c=>G.crops[id][c]={crop:0,stage:0,watered:false,soil:true});}
+  G.hero.x=sx; G.hero.y=sy;
+}
+function blocked(x,y){
+  if(x<0||y<0||x>=G.L.W||y>=G.L.H)return true;
+  return G.solid.has(Math.floor(x)+','+Math.floor(y))||G.water.has(Math.floor(x)+','+Math.floor(y));
+}
+function collide(nx,ny){
+  return blocked(nx-0.28,ny-0.18)||blocked(nx+0.28,ny-0.18)||blocked(nx-0.28,ny+0.05)||blocked(nx+0.28,ny+0.05);
+}
+const near=r=>{const o=[],cx=Math.floor(G.hero.x),cy=Math.floor(G.hero.y);
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)o.push([cx+dx,cy+dy]);return o};
+
+/* ------------------------------ quests ---------------------------------- */
+function questText(){
+  const f=G.flags;
+  if(f.festival)return ["The Festival Returns","Sunpetal Valley blooms again — keep farming & enjoy the valley!"];
+  if(f.sunpetalBloom)return ["Festival of Light","Show Mayor Bram the blooming Sunpetal!"];
+  if(f.sunpetalPlanted)return ["Festival of Light","Water the Sunpetal & let it grow overnight"];
+  if(f.haveSunseed)return ["The Sunpetal Seed","Plant it in the shrine beds by the torii gate"];
+  if(f.mq2done)return ["The Sunpetal Seed","Buy the Sunpetal Seed (100g) from Sari's stall"];
+  if((f.sold2||0)>=2)return ["A Worthy Farmer","Report your first sales to Mayor Bram"];
+  if((f.harvested||0)>=4)return ["Green Thumb","Sell 2 crops to Sari at the market stall"];
+  if(f.mq1done)return ["Green Thumb","Harvest 4 grown crops"];
+  if(f.metBram)return ["First Seeds","Plant 3 seeds on the farm beds & water them"];
+  return ["A New Beginning","Go north to the village & meet Mayor Bram"];
+}
+function tutTick(){
+  const s=G.tutStep,f=G.flags;
+  if(s===0&&G.hero.move)G.tutStep=1;
+  else if(s===1&&G.map==='village')G.tutStep=2;
+  else if(s===2&&f.metBram)G.tutStep=3;
+  else if(s===3&&f.planted)G.tutStep=4;
+  else if(s===4&&f.watered)G.tutStep=5;
+  else if(s===5&&f.harvested>0)G.tutStep=6;
+  else if(s===6&&f.sold2)G.tutStep=7;
+}
+const $=id=>document.getElementById(id);
+
+/* ------------------------------ dialog ---------------------------------- */
+const DIALOGS={
+ bram:f=>f.festival?["The festival lives because of you, kid. Sunpetal Valley thanks you."]:
+   f.sunpetalBloom?[null,"vo_finale","The Sunpetal blooms… after all these years.","Come — everyone to the shrine. The Festival of Light returns tonight!"]:
+   f.sunpetalPlanted?["Tend it well, kid. A Sunpetal needs water and a night of dreaming."]:
+   f.haveSunseed?["You got the seed! Plant it in the beds by the torii gate — that's holy ground."]:
+   f.mq2done?["Sari's stall has what you need. The Sunpetal Seed — a hundred gold. Worth every coin."]:
+   f.sold2?[null,"vo_bram2","Ha! Look at that — real crops, from real work.","You're your grandfather's grandchild, all right.","Now listen: the village needs a Sunpetal for the festival.","Sari sells the seed — but you'll need a hundred gold. Work the farm, kid."]:
+   f.metBram?["The beds on your farm are tilled and ready. Plant seeds — A on the soil.","Mira keeps an eye on the fields. Old Fen dotes on that pond. Say hello sometime."]:
+   [null,"vo_bram1","Welcome home, kid. Your grandfather left this farm to you.","He was the finest farmer this valley ever had.","The land remembers him — and now, it's waiting for you.","Grow something wonderful. Then come find me again."],
+ sari:f=>f.sunpetalBloom?["The stall sells out every festival — thanks to farmers like you!"]:
+   f.mq2done&&!f.haveSunseed?["Looking for the Sunpetal Seed? I have the very last one — 100 gold.","It's a legend, kid. Plant it by the shrine and watch."]:
+   f.metSari?["Fresh seeds, fair prices. Festival season is coming — stock up!","Your grandfather bought his first seeds right here, you know."]:
+   [null,"vo_sari1","Fresh seeds, fair prices! Festival season is coming — stock up, kid.","Your grandfather bought his first seeds right here, you know."],
+ vilo:f=>f.sunpetalBloom?["I danced at the festival as a child. Tonight I dance again!"]:
+   f.metVilo?["They say a Sunpetal only blooms for a heart that truly loves the land.","The shrine watches over us. Even in the dark years, it never fell."]:
+   [null,"vo_vilo1","They say a Sunpetal only blooms for a heart that truly loves the land.","The shrine watches over us. Even in the dark years, it never fell."],
+ nana:f=>f.sunpetalBloom?["Golden petals! Just like the stories my grandmother told…"]:
+   f.metAll?["You met everyone! Sweet child — here's a little something for the road."]:
+   f.metNana?["A new face! Don't be shy — say hello to Bram, Sari, Fen and Mira too."]:
+   [null,"vo_nana1","A new face! Don't be shy, dear — say hello to everyone.","You'll find Bram by the fountain, Sari at the stall, Mira in the fields, Fen by the pond."],
+ mira:f=>f.harvested>0?["Your first harvest! It only gets better from here."]:
+   ["Crops need water every day. Dry sprouts won't grow.","Plant, water, sleep, repeat — that's the whole secret!"],
+ fen:f=>f.fedFen?["Still tasting that harvest, ha! Bless you, kid."]:
+   f.harvested>0?["That basket smells fresh… spare one crop for an old man? (sell or gift — press A on me with a crop in your bag)"]:
+   ["This pond fed the village in the lean years. Respect the water, kid.","You look like your grandfather. Same stubborn chin."]
+};
+function talkTo(o){
+  const m=o.meta; const f=G.flags;
+  const lines=(DIALOGS[m.id]||(f=>[m.line||'…']))(f).slice();
+  // quest side-effects
+  if(m.id==='bram'&&!f.metBram){f.metBram=true}
+  if(m.id==='bram'&&(f.sold2||0)>=2&&!f.mq2done){f.mq2done=true}
+  if(m.id==='nana'){f.metNana=true;
+    if(f.metBram&&f.metSari&&f.metFen&&f.metMira&&!f.metAll){f.metAll=true;G.gold+=15;lines.push("(+15g — Nana's gift)")}}
+  if(m.id==='sari'){f.metSari=true}
+  if(m.id==='vilo'){f.metVilo=true}
+  if(m.id==='fen'){f.metFen=true;
+    // Fen's Favor — give any crop
+    const have=Object.keys(G.inv.crop).find(k=>G.inv.crop[k]>0);
+    if(!f.fedFen&&have){G.inv.crop[have]--;f.fedFen=true;G.gold+=25;sfx('sfx_coin');
+      startDlg(o,["Ohh— fresh from the field! You remembered an old man.","Bless you, kid. (+25g — Fen's favor)"]);return}}
+  if(m.id==='mira'){f.metMira=true}
+  if(m.id==='bram'&&f.sunpetalBloom&&!f.festival){f.festival=true;sfx('sfx_success');
+    startDlg(o,lines,festivalVisuals);return}
+  startDlg(o,lines);
+}
+function startDlg(o,lines,onEnd){
+  const vo=lines[0]===null?lines[1]:null;
+  G.dlg={npc:o.meta,lines:lines.filter(l=>l&&l!==vo&&l!==null),i:0,portrait:o.meta.portrait||o.key,vo,onEnd};
+  if(vo)playVO(vo);else sfx('sfx_talk');
+  G.state='dlg';
+}
+function dlgAdvance(){
+  const d=G.dlg; if(!d)return;
+  d.i++;sfx('sfx_talk');
+  if(d.i>=d.lines.length){const cb=d.onEnd;G.dlg=null;G.state='play';save();if(cb)cb()}
+}
+function drawPortrait(){
+  const pc=$('dport'),dpr=window.devicePixelRatio||1,S=Math.round(64*dpr);
+  if(pc.width!==S){pc.width=S;pc.height=S}
+  const pctx=pc.getContext('2d');
+  pctx.imageSmoothingEnabled=false;pctx.clearRect(0,0,S,S);
+  const d=G.dlg;if(!d)return;
+  // animated bust portrait (Harvest Moon style): head+shoulders, gentle bob
+  const id=d.portrait.replace('_portrait','');
+  const fr=[0,1].map(i=>IMG[id+'_down'+i]).filter(Boolean);
+  const s=fr.length?fr[Math.floor(Date.now()/420)%fr.length]:IMG[d.portrait];
+  if(!s)return;
+  // crop head+shoulders region (top ~75% for 20px npc frames, half for 32px frames)
+  const cw=s.w,ch=Math.round(s.h*(s.h<=20?0.75:0.5)),k=Math.max(1,Math.round(S/cw));
+  pctx.drawImage(ATLAS,s.sx,s.sy,cw,ch,(S-cw*k)/2,(S-ch*k)/2,cw*k,ch*k);
+}
+
+/* ------------------------------ shop ------------------------------------ */
+function openShop(){G.shop={tab:'buy'};G.state='shop';shopRender()}
+function closeShop(){G.shop=null;G.state='play';$('shop').style.display='none'}
+function shopTab(t){G.shop.tab=t;shopRender()}
+function shopRender(){
+  const g=G.shop;$('shop').style.display='flex';
+  $('tabBuy').className='tab'+(g.tab==='buy'?' on':'');$('tabSell').className='tab'+(g.tab==='sell'?' on':'');
+  $('shopgold').textContent='Gold: '+G.gold+'g';
+  const rows=$('shoprows');rows.innerHTML='';
+  if(g.tab==='buy'){
+    for(const id of [1,3,8,13,18,21]){
+      const r=document.createElement('div');r.className='srow';
+      r.innerHTML=`<span>${CROPS[id]} Seeds</span><span class="pr">${SEED_PRICE[id]}g</span>`;
+      r.onclick=()=>buySeed(id);rows.appendChild(r);}
+    const f=G.flags;
+    if(f.mq2done&&!f.haveSunseed&&!f.sunpetalPlanted){
+      const r=document.createElement('div');r.className='srow';
+      r.innerHTML=`<span>✦ Sunpetal Seed (legendary)</span><span class="pr">${SEED_PRICE[22]}g</span>`;
+      r.onclick=()=>buySeed(22);rows.appendChild(r);}
+  }else{
+    let any=false;
+    for(const id in G.inv.crop){if(G.inv.crop[id]<=0)continue;any=true;
+      const r=document.createElement('div');r.className='srow';
+      r.innerHTML=`<span>${CROPS[id]||'Crop'} ×${G.inv.crop[id]}</span><span class="pr">sell ${CROP_PRICE[id]}g</span>`;
+      r.onclick=()=>sellCrop(+id);rows.appendChild(r);}
+    if(!any)rows.innerHTML='<div style="padding:10px;color:#998">Your bag has no crops yet.</div>';
+  }
+}
+function buySeed(id){
+  if(G.gold<SEED_PRICE[id]){$('shopmsg').textContent="Not enough gold.";return}
+  G.gold-=SEED_PRICE[id];G.inv.seed[id]=(G.inv.seed[id]||0)+1;sfx('sfx_coin');
+  if(id===22){G.flags.haveSunseed=true;sfx('sfx_success');$('shopmsg').textContent="The legendary Sunpetal Seed! Plant it by the torii shrine."}
+  else $('shopmsg').textContent="Bought "+CROPS[id]+" Seeds.";
+  shopRender();hudRender();save();
+}
+function sellCrop(id){
+  if(!G.inv.crop[id])return;
+  G.inv.crop[id]--;G.gold+=CROP_PRICE[id];sfx('sfx_coin');
+  const f=G.flags;f.sold2=(f.sold2||0)+1;
+  $('shopmsg').textContent="Sold a "+(CROPS[id]||'crop')+" for "+CROP_PRICE[id]+"g.";
+  shopRender();hudRender();save();
+}
+/* ------------------------------ bag -------------------------------------- */
+function toggleBag(v){
+  G.bag=v===undefined?!G.bag:v; $('bag').style.display=G.bag?'flex':'none';
+  if(!G.bag){if(G.state==='bag')G.state='play';return}
+  if(G.state==='play')G.state='bag';
+  const ic=key=>`<canvas class="iico" width="28" height="28" data-k="${key}"></canvas>`;
+  let h='<div class="invsec">TOOLS</div>';
+  for(const t of ['🌱 Hoe — till & plant','💧 Watering Can — water crops','🧺 Basket — harvest & sell','📜 Valley Letter — from Grandpa'])
+    h+=`<div class="invrow"><span>${t}</span><span class="ct">keepsake</span></div>`;
+  h+='<div class="invsec">SEEDS — tap row to select</div>';
+  let any=false;
+  for(const id in G.inv.seed)if(G.inv.seed[id]>0){any=true;
+    const cf=(MAPS.farm.crop_frames[id]||[]);
+    h+=`<div class="invrow sel-seed" data-seed="${id}" style="display:flex;align-items:center;gap:8px;cursor:pointer">${ic(cf[0]||'') }<span>${CROPS[id]} Seeds ${+id===+G.selSeed?'◀':''}</span><span class="ct" style="margin-left:auto">x${G.inv.seed[id]}</span></div>`}
+  if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
+  h+='<div class="invsec">CROPS — sell at the market stall</div>';any=false;
+  for(const id in G.inv.crop)if(G.inv.crop[id]>0){any=true;
+    const cf=(MAPS.farm.crop_frames[id]||[]);
+    h+=`<div class="invrow" style="display:flex;align-items:center;gap:8px">${ic(cf[cf.length-1]||'')}<span>${CROPS[id]}</span><span class="ct" style="margin-left:auto">x${G.inv.crop[id]}</span></div>`}
+  if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
+  h+=`<div class="invsec">GOLD</div><div class="invrow"><span>🪙 Coins</span><span class="ct">${G.gold}g</span></div>`;
+  $('baglist').innerHTML=h;
+  // draw item icons + wire seed selection
+  document.querySelectorAll('#baglist .iico').forEach(c=>{const s=IMG[c.dataset.k];if(!s)return;
+    const g=c.getContext('2d');g.imageSmoothingEnabled=false;
+    const k=Math.min(26/s.w,26/s.h);g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,(28-s.w*k)/2,(28-s.h*k)/2,s.w*k,s.h*k)});
+  document.querySelectorAll('#baglist .sel-seed').forEach(r=>onTap(r,()=>{
+    G.selSeed=+r.dataset.seed;toggleBag(true);hudRender()}));
+}
+function cycleSeed(){
+  const ids=Object.keys(G.inv.seed).filter(k=>G.inv.seed[k]>0).map(Number).sort((a,b)=>a-b);
+  if(!ids.length)return;
+  const i=ids.indexOf(+G.selSeed);G.selSeed=ids[(i+1)%ids.length];hudRender();
+}
+
+/* ------------------------------ interact --------------------------------- */
+function interact(){
+  if(G.state==='dlg'){dlgAdvance();return}
+  if(G.state!=='play')return;
+  for(const[cx,cy]of near(1)){
+    const k=cx+','+cy, c=G.crops[G.map][k];
+    if(c&&c.soil){
+      if(c.crop===0){
+        if(G.map==='village'){ // festival beds: Sunpetal only
+          if(G.flags.haveSunseed&&!G.flags.sunpetalPlanted){c.crop=22;c.stage=1;c.watered=false;
+            G.flags.sunpetalPlanted=true;return}
+          toast("These shrine beds are sacred — only a Sunpetal may grow here.");return}
+        if((G.inv.seed[G.selSeed]||0)>0){c.crop=+G.selSeed;c.stage=1;c.watered=false;G.inv.seed[G.selSeed]--;sfx('sfx_plant');
+          G.flags.plantedCount=(G.flags.plantedCount||0)+1;
+          if(G.flags.plantedCount>=3)G.flags.mq1done=true;
+          G.flags.planted=true;if(!G.inv.seed[G.selSeed])cycleSeed();hudRender();return}
+        toast("No "+CROPS[G.selSeed]+" seeds left — buy more at Sari's stall (press BAG to switch seeds).");return}
+      if(c.crop>0){
+        const last=(MAPS[G.map].crop_frames[c.crop]||[]).length-1;
+        if(c.crop===22&&c.stage>=last){toast('The Sunpetal blooms — tell Mayor Bram!');return}
+        if(c.stage>=last-1){G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;
+          G.flags.harvested=(G.flags.harvested||0)+1;
+          toast('Harvested a '+CROPS[c.crop]+'!');c.crop=0;c.stage=0;sfx('sfx_harvest');hudRender();save();return}
+        if(!c.watered){c.watered=true;G.flags.watered=true;sfx('sfx_water');return}
+      }
+      continue;
+    }
+    for(const o of G.objs){
+      if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-cy)<1.2){
+        const m=o.meta||{};
+        if(m.kind==='chest'&&!o.opened){o.opened=true;o.key='chest_o';G.gold+=m.gold||0;sfx('sfx_coin');hudRender();return}
+        if(m.kind==='npc'){
+          if(m.id==='sari'&&G.flags.metBram){talkTo(o);openShopPending=true;return}
+          talkTo(o);return}
+        if(m.kind==='pig'||m.kind==='animal'){o.heart=60;return}
+      }
+    }
+  }
+}
+let openShopPending=false;
+
+/* ------------------------------ festival -------------------------------- */
+function festivalVisuals(){
+  G.state='festival';G.festT=0;bgm('music_title');
+  // gather NPCs at the shrine plaza (village map)
+  const spots={bram:[31.5,10.5],sari:[29.5,11.5],vilo:[33.5,11.5],nana:[30.5,12.5],fen:[32.5,12.5]};
+  if(G.map!=='village')loadMap('village',31.5,13.5);
+  for(const o of G.objs){const m=o.meta||{};
+    if(spots[m.id]){o.x=spots[m.id][0];o.y=spots[m.id][1];o.anim={frames:[m.id+'_up0'],fps:1}}
+    if(m.kind==='npc'){/* keep frames */}}
+  // light every torch
+  for(const o of G.objs){const m=o.meta||{};if(m.light)m.light=true}
+}
+function festivalRender(ts){
+  // golden wash + rising petals
+  render(ts);
+  const t=ts/1000;
+  ctx.fillStyle='rgba(255,190,80,.12)';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#ffd76e';
+  for(let i=0;i<40;i++){const px=(i*97+t*40)%cv.width,py=cv.height-((t*30+i*61)%(cv.height+40));
+    ctx.fillRect(px,py,3,3)}
+  ctx.fillStyle='#000a';ctx.fillRect(0,cv.height-90,cv.width,90);
+  ctx.fillStyle='#ffd76e';ctx.font='bold 20px monospace';ctx.textAlign='center';
+  ctx.fillText('✦ THE FESTIVAL OF LIGHT RETURNS ✦',cv.width/2,cv.height-52);
+  ctx.font='13px monospace';ctx.fillStyle='#ffe9c4';
+  ctx.fillText('Sunpetal Valley blooms again — thanks to you.',cv.width/2,cv.height-28);
+  ctx.textAlign='left';
+}
+
+/* ------------------------------ update ----------------------------------- */
+const K={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();K[k]=true;
+  if(k==='e')interact();if(k==='t'){skipHour()}
+  if(k==='b'||k==='i')toggleBag();if(k==='q')cycleSeed();
+  if(k==='escape'){toggleBag(false);closeShop()}
+});
+addEventListener('keyup',e=>K[e.key.toLowerCase()]=false);
+function skipHour(){G.clock+=60;dayTick();save()}
+function dayTick(){
+  if(G.clock>=24*60){G.clock-=24*60;G.day++;
+    for(const mid in G.crops)for(const k in G.crops[mid]){const c=G.crops[mid][k];
+      if(c.crop>0&&c.watered){const last=(MAPS[mid].crop_frames[c.crop]||[]).length-1;c.stage=Math.min(c.stage+1,last);
+        if(c.crop===22&&c.stage>=last)G.flags.sunpetalBloom=true}
+      c.watered=false}
+    toast('Day '+G.day+' — crops grew overnight');}
+}
+function toast(msg){const el=$('toast');el.textContent=msg;el.style.display='block';
+  clearTimeout(toast._t);toast._t=setTimeout(()=>el.style.display='none',2600)}
+
+let last=0;
+function loop(ts){
+  const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+  document.body.classList.toggle('ingame',G.state==='play');
+  if(G.state==='title'){titleRender(ts);requestAnimationFrame(loop);return}
+  if(G.state==='intro'){introRender(ts,dt);requestAnimationFrame(loop);return}
+  if(G.state==='festival'){festivalRender(ts);requestAnimationFrame(loop);return}
+  if(G.state!=='play'&&G.state!=='dlg'&&G.state!=='bag'&&G.state!=='shop'){requestAnimationFrame(loop);return}
+  // time passes only while playing (not in dialogs/menus)
+  if(G.state==='play'){G.clock+=dt*8;dayTick()}
+  // move
+  let mx=(K['a']||K['arrowleft']?-1:0)+(K['d']||K['arrowright']?1:0);
+  let my=(K['w']||K['arrowup']?-1:0)+(K['s']||K['arrowdown']?1:0);
+  if(joy.mag>0.15){mx=joy.x*joy.mag;my=joy.y*joy.mag}
+  const canMove=G.state==='play';
+  const sp=((K['shift']||K['run'])?5.4:3.2)*(joy.mag>0.15?Math.max(.4,joy.mag):1);
+  G.hero.move=canMove&&!!(mx||my);
+  if(canMove&&(mx||my)){
+    const l=Math.hypot(mx,my);mx/=l;my/=l;
+    if(Math.abs(mx)>Math.abs(my))G.hero.dir=mx<0?'LEFT':'RIGHT';else G.hero.dir=my<0?'UP':'DOWN';
+    if(!collide(G.hero.x+mx*sp*dt,G.hero.y))G.hero.x+=mx*sp*dt;
+    if(!collide(G.hero.x,G.hero.y+my*sp*dt))G.hero.y+=my*sp*dt;
+    G.hero.t+=dt;
+      // map exits
+    const hx=Math.floor(G.hero.x),hy=Math.floor(G.hero.y);
+    for(const e of(G.L.exits||[]))if(hx>=e.x0&&hx<=e.x1&&hy>=e.y0&&hy<=e.y1){
+      loadMap(e.to,e.sx,e.sy);sfx('sfx_door');toast(G.map==='village'?'Sunpetal Village':'Grandfather\'s Farm');save();break}
+    document.body.classList.toggle('ingame',true);
+  }
+  // animals wander
+  for(const o of G.objs){const m=o.meta||{};
+    if(m.kind==='animal'&&o.key.indexOf('bird')===0){
+      o.ph-=dt;
+      if(o.ph<=0){o.ph=0.8+Math.random()*2.2;o.d=Math.floor(Math.random()*5)}
+      const dd=['down','left','right','up'][o.d%4]||'down';
+      const key0=o.key.split('_')[0];
+      if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
+        const nx=o.x+dx*1.1*dt,ny=o.y+dy*1.1*dt;
+        if(Math.hypot(nx-o.hx,ny-o.hy)<2.2&&!blocked(nx,ny)){o.x=nx;o.y=ny}
+        o.anim={frames:[key0+'_'+dd+'0',key0+'_'+dd+'1',key0+'_'+dd+'2'],fps:7}}
+      else o.anim={frames:[key0+'_down1'],fps:1};
+    }
+    if(m.kind==='pig'&&m.wander){o.ph-=dt;
+      if(o.ph<=0){o.ph=1.5+Math.random()*3;o.d=Math.floor(Math.random()*5)}
+      if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
+        const nx=o.x+dx*.7*dt,ny=o.y+dy*.7*dt;
+        if(nx>34&&nx<43&&ny>10&&ny<17){o.x=nx;o.y=ny}
+        const pre=o.key.startsWith('pigb')?'pigb':'pig';
+        o.anim={frames:[pre+'_'+['down','left','right','up'][o.d]+i(0),pre+'_'+['down','left','right','up'][o.d]+'1',pre+'_'+['down','left','right','up'][o.d]+'2'].filter(f=>IMG[f]),fps:6}}
+      else o.anim={frames:[o.key],fps:1}}}
+  tutTick();
+  render(ts);
+  if(openShopPending&&G.state==='play'){openShopPending=false;openShop()}
+  requestAnimationFrame(loop);
+}
+const i=n=>String(n);
+
+/* ------------------------------ render ----------------------------------- */
+function drawTile(key,cx,cy,camX,camY){
+  const s=IMG[key];if(!s)return;
+  ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,Math.round(camX+cx*T*SCALE),Math.round(camY+cy*T*SCALE),s.w*SCALE,s.h*SCALE);
+}
+function render(ts){
+  ctx.imageSmoothingEnabled=false;ctx.fillStyle='#10101a';ctx.fillRect(0,0,cv.width,cv.height);
+  const offX=Math.round(cv.width/2-G.hero.x*T*SCALE),offY=Math.round(cv.height/2-G.hero.y*T*SCALE);
+  const minX=Math.min(0,cv.width-G.L.W*T*SCALE),minY=Math.min(0,cv.height-G.L.H*T*SCALE);
+  const camX=Math.max(minX,Math.min(0,offX)),camY=Math.max(minY,Math.min(0,offY));
+  const L=G.L;
+  for(const name of L.order){const d=L.tiles[name];if(!d)continue;
+    for(const k in d){const[x,y]=k.split(',').map(Number);drawTile(d[k],x,y,camX,camY)}}
+  for(const k in L.tiles.decor){const[x,y]=k.split(',').map(Number);drawTile(L.tiles.decor[k],x,y,camX,camY)}
+  // crops
+  const crops=G.crops[G.map]||{};
+  for(const k in crops){const c=crops[k];if(!c.crop)continue;
+    const[x,y]=k.split(',').map(Number);
+    const fr=MAPS[G.map].crop_frames[c.crop];if(!fr)continue;
+    const key=fr[Math.min(c.stage,fr.length-1)],s=IMG[key];if(!s)continue;
+    if(c.crop===22&&c.stage>=fr.length-1){ // sunpetal golden glow
+      ctx.globalCompositeOperation='lighter';
+      const g=ctx.createRadialGradient(camX+x*T*SCALE+8*SCALE,camY+y*T*SCALE,4,camX+x*T*SCALE+8*SCALE,camY+y*T*SCALE,30*SCALE/2);
+      g.addColorStop(0,'rgba(255,215,110,.5)');g.addColorStop(1,'rgba(255,215,110,0)');
+      ctx.fillStyle=g;ctx.fillRect(camX+x*T*SCALE-20,camY+y*T*SCALE-30,50*SCALE,50*SCALE);
+      ctx.globalCompositeOperation='source-over';}
+    ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,
+      Math.round(camX+x*T*SCALE-s.w*SCALE/2+8*SCALE),
+      Math.round(camY+y*T*SCALE-(s.h-16)*SCALE),s.w*SCALE,s.h*SCALE);}
+  // objects + hero sorted by y
+  const draw=G.objs.concat([{key:'_h',x:G.hero.x,y:G.hero.y,hero:true}]);
+  draw.sort((a,b)=>a.y-b.y);
+  for(const o of draw){
+    let key=o.key;
+    if(o.hero)key=G.hero.move?`hero_walk_${G.hero.dir}${Math.floor(G.hero.t*8)%4}`:`hero_idle_${G.hero.dir}0`;
+    else if(o.anim){const fr=o.anim.frames;key=fr[Math.floor(ts/1000*o.anim.fps)%fr.length]}
+    const s=IMG[key];if(!s)continue;
+    const dw=s.w*SCALE,dh=s.h*SCALE;
+    const px=Math.round(camX+o.x*T*SCALE-dw/2),py=Math.round(camY+o.y*T*SCALE-dh+T*SCALE*.9);
+    ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,px,py,dw,dh);
+    if(o.heart>0){o.heart--;ctx.font='bold 12px monospace';ctx.fillStyle='#f66';ctx.fillText('<3',px+dw/2-4,py-4)}
+  }
+  hudRender();
+  promptScan();
+  // night tint + lights
+  const h=G.clock/60;let a=0;
+  if(h<5.5||h>21)a=.38;else if(h<7)a=.38*(7-h)/1.5;else if(h>19)a=.38*(h-19)/2;
+  if(G.flags.festival)a=Math.min(a,.18);
+  if(a>0){ctx.fillStyle=`rgba(10,10,50,${a})`;ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.globalCompositeOperation='lighter';
+    for(const o of G.objs){const m=o.meta||{};if(!m.light)continue;
+      const s=IMG[o.key];if(!s)continue;
+      const px=camX+o.x*T*SCALE,py=camY+o.y*T*SCALE;
+      const g=ctx.createRadialGradient(px,py,4,px,py,3*T*SCALE);
+      g.addColorStop(0,'rgba(255,190,90,.55)');g.addColorStop(1,'rgba(255,190,90,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,3*T*SCALE,0,7);ctx.fill()}
+    ctx.globalCompositeOperation='source-over'}
+  if(G.state==='dlg'&&G.dlg){
+    $('dlg').style.display='block';
+    $('dname').textContent=G.dlg.npc.name||'???';
+    $('dtext').textContent=G.dlg.lines[G.dlg.i]||'';
+    drawPortrait();
+    $('dnext').style.display=G.dlg.i<G.dlg.lines.length-1?'block':'block';
+    $('dnext').textContent=G.dlg.i<G.dlg.lines.length-1?'▼ next':'▼ close';
+  }else $('dlg').style.display='none';
+}
+let _hudCache='';
+function hudRender(){
+  const h=G.clock/60,hh=String(Math.floor(h)).padStart(2,'0'),mm=String(Math.floor(G.clock%60)).padStart(2,'0');
+  const q=questText();
+  const html=`${G.day}|${hh}:${mm}|${G.gold}|${G.selSeed}|${G.inv.seed[G.selSeed]||0}|${q[0]}|${q[1]}|${G.tutStep}`;
+  if(html===_hudCache)return;_hudCache=html;   // skip DOM churn → no HUD flicker
+  const picon=IMG['hero_idle_DOWN0'];
+  $('hud').innerHTML=`<canvas id="hico" width="26" height="26" style="image-rendering:pixelated"></canvas>
+    <span><b>Day ${G.day}</b> ${hh}:${mm}<br><b>${G.gold}g</b> · ${CROPS[G.selSeed]} Seeds x${G.inv.seed[G.selSeed]||0}</span>`;
+  const hc=$('hico').getContext('2d');hc.imageSmoothingEnabled=false;
+  if(picon)hc.drawImage(ATLAS,picon.sx,picon.sy,picon.w,picon.h,0,0,26,26);
+  $('quest').innerHTML=`<b>📜 ${q[0]}</b>${q[1]}`;
+  const tt=$('toast');
+  if(G.tutStep<TUT.length&&tt.style.display!=='block'&&G.state==='play'){
+    tt.textContent='▸ '+TUT[G.tutStep];tt.style.display='block';}
+  else if(G.tutStep>=TUT.length&&tt._auto){tt.style.display='none'}
+  tt._auto=G.tutStep<TUT.length;
+}
+function promptScan(){
+  if(G.state!=='play'){$('prompt').style.display='none';return}
+  const BTN=isTouch?'A':'E';let txt='';
+  for(const[cx,cy]of near(1)){
+    const k=cx+','+cy,c=(G.crops[G.map]||{})[k];
+    if(c&&c.soil){
+      if(c.crop===0){txt=G.map==='village'?(G.flags.haveSunseed&&!G.flags.sunpetalPlanted?BTN+' · plant the Sunpetal':'✦ sacred beds — Sunpetal only'):BTN+' · Plant '+CROPS[G.selSeed]+' seeds (x'+(G.inv.seed[G.selSeed]||0)+')';break}
+      const fr=MAPS[G.map].crop_frames[c.crop],last=fr?fr.length-1:0;
+      if(c.crop===22&&c.stage>=last){txt='✦ Sunpetal in bloom';break}
+      if(c.stage>=last-1){txt=BTN+' · Harvest '+CROPS[c.crop]+' (Basket)';break}
+      txt=c.watered?'growing… (watered ✓)':BTN+' · Water '+CROPS[c.crop]+' (Watering Can)';break}
+  }
+  if(!txt)outer:for(const[cx,cy]of near(1)){
+    for(const o of G.objs){const m=o.meta||{};
+      if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-cy)<1.2){
+        if(m.kind==='chest'&&!o.opened){txt=BTN+' — open chest';break outer}
+        if(m.kind==='npc'){txt=BTN+' — talk to '+(m.name||'villager');break outer}
+        if(m.kind==='pig'||m.kind==='animal'){txt=BTN+' — pet '+(m.name||'animal');break outer}}}}
+  $('prompt').style.display=txt?'block':'none';$('prompt').textContent=txt;
+}
+/* ------------------------------ title / intro ---------------------------- */
+let mapCv={};
+function renderMapCanvas(id){
+  const M=MAPS[id],S=2,c=document.createElement('canvas');
+  c.width=M.W*T*S;c.height=M.H*T*S;const g=c.getContext('2d');g.imageSmoothingEnabled=false;
+  for(const name of M.order){const d=M.tiles[name];for(const k in d){
+    const[x,y]=k.split(',').map(Number),s=IMG[d[k]];if(!s)continue;
+    g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,x*T*S,y*T*S,s.w*S,s.h*S)}}
+  for(const k in M.tiles.decor){const[x,y]=k.split(',').map(Number),s=IMG[M.tiles.decor[k]];if(!s)continue;
+    g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,x*T*S,y*T*S,s.w*S,s.h*S)}
+  const os=M.objects.slice().sort((a,b)=>a.y-b.y);
+  for(const o of os){const key=o.anim?o.anim.frames[0]:o.key,s=IMG[key];if(!s)continue;
+    g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,o.x*T*S-s.w*S/2,o.y*T*S-s.h*S+T*S*.9,s.w*S,s.h*S)}
+  return c;
+}
+function titleRender(ts){
+  const t=$('tcv'),g=t.getContext('2d');
+  t.width=cv.width;t.height=cv.height;g.imageSmoothingEnabled=false;
+  const mc=mapCv.village;if(!mc){g.fillStyle='#0c0f1c';g.fillRect(0,0,t.width,t.height);return}
+  // slow pan across the village
+  const vw=t.width,vh=t.height;
+  const k=Math.max(vw/mc.width,vh/mc.height)*1.15;
+  const sw=vw/k,sh=vh/k;
+  const px=(Math.sin(ts/24000)*.5+.5)*(mc.width-sw);
+  const py=(Math.cos(ts/30000)*.5+.5)*(mc.height-sh);
+  g.drawImage(mc,px,py,sw,sh,0,0,vw,vh);
+  g.fillStyle='rgba(8,8,24,.45)';g.fillRect(0,0,vw,vh);
+}
+function introRender(ts,dt){
+  ctx.imageSmoothingEnabled=false;ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,cv.height);
+  if(introI<0)introI=0;
+  const sl=STORY[introI],im=ARTIMG[sl[2]];
+  const vw=cv.width,vh=cv.height;
+  if(im){ // cover-fit art + slow drift (ken burns)
+    const k=1.08+0.06*Math.sin(ts/14000);
+    const s=Math.max(vw/im.width,vh/im.height)*k;
+    const dx=(vw-im.width*s)/2+Math.sin(ts/9000)*14,dy=(vh-im.height*s)/2+Math.cos(ts/11000)*10;
+    ctx.drawImage(im,dx,dy,im.width*s,im.height*s);
+  }
+  ctx.fillStyle='rgba(0,0,0,.18)';ctx.fillRect(0,0,vw,vh);
+  // letterbox
+  ctx.fillStyle='#000';ctx.fillRect(0,0,vw,60);ctx.fillRect(0,vh-150,vw,150);
+  // narration text typewriter
+  introT+=dt;
+  const txt=sl[1],n=Math.min(txt.length,Math.floor(introT*40));
+  ctx.fillStyle='#ffe9c4';ctx.font='15px Courier New';ctx.textAlign='center';
+  wrapText(ctx,txt.slice(0,n),vw/2,vh-120,vw*.8,22);
+  ctx.fillStyle='#888';ctx.font='12px Courier New';
+  ctx.fillText('auto-playing  ·  tap to skip',vw/2,vh-16);
+  ctx.textAlign='left';
+  // auto-advance: when text fully shown AND voice line finished → next slide
+  if(n>=txt.length){
+    introWait+=dt;
+    const voDone=!AUDIO[sl[0]]||!G.vo||G.vo.ended||G.vo._dead;
+    if((voDone&&introWait>1.2)||introWait>12){introWait=0;introNext();return} // never stall on blocked audio
+  }
+}
+function wrapText(g,text,x,y,maxW,lh){
+  const words=text.split(' ');let line='',yy=y;
+  for(const w of words){const t=line+w+' ';
+    if(g.measureText(t).width>maxW&&line){g.fillText(line,x,yy);line=w+' ';yy+=lh}
+    else line=t}
+  g.fillText(line,x,yy);
+}
+function introNext(){
+  introI++;introT=0;introWait=0;
+  if(introI>=STORY.length){beginPlay();return}
+  playVO(STORY[introI][0]);
+}
+function beginPlay(){
+  if(G.vo){G.vo.pause()}
+  $('title').style.display='none';G.state='play';bgm('music_day');save();
+  toast('Welcome to Sunpetal Valley');
+}
+/* ------------------------------ boot -------------------------------------- */
+async function boot(){
+  ATLAS=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.src=ATLAS_SRC});
+  for(const k in ART)ARTIMG[k]=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.src=ART[k]});
+  for(const mid in MAPS)for(const k in MAPS[mid].sprites){
+    const f=MAPS[mid].sprites[k],r=ADATA[f];if(r)IMG[k]={w:r[2],h:r[3],sx:r[0],sy:r[1]}}
+  loadMap('farm',MAPS.farm.spawn.x,MAPS.farm.spawn.y);
+  mapCv.farm=renderMapCanvas('farm');mapCv.village=renderMapCanvas('village');
+  $('loadmsg').textContent='';
+  const newGame=()=>{if(G.state!=='title')return;
+    G.state='intro';introI=-1;introNext();bgm('music_title');
+    $('title').style.display='none';};
+  const cont=()=>{if(G.state!=='title')return;
+    if(loadSave()){G.state='play';$('title').style.display='none';bgm('music_day');toast('Welcome back to Sunpetal Valley')}
+    else toast('No save found');};
+  onTap($('mnew'),()=>newGame());
+  onTap($('mcont'),()=>cont());
+  onTap($('mset'),()=>openSettings());
+  if(hasSave())$('mcont').style.display='block';
+  onTap($('setmusic'),()=>{SET.music=SET.music?0:1;saveSet();openSettings();if(!SET.music&&BGM){BGM.pause();BGM=null}else if(SET.music&&G.state==='play')bgm(BGMNAME||'music_day')});
+  onTap($('setsfx'),()=>{SET.sfx=SET.sfx?0:1;saveSet();openSettings()});
+  onTap($('setback'),()=>{$('setov').style.display='none'});
+  onTap($('dlg'),()=>{if(G.state==='dlg')dlgAdvance()});
+  addEventListener('keydown',e=>{if(G.state==='intro'&&e.key.toLowerCase()==='e')introNext()});
+  // tap to advance intro / dialog
+  // unified canvas handler: pointer + touch + click all funnel here
+  const cvTap=tapDedup(()=>{if(G.state==='intro')introNext();else if(G.state==='dlg')dlgAdvance()});
+  const cvDown=e=>{
+    if(G.state==='intro'||G.state==='dlg'){cvTap();return}
+    if(G.state!=='play')return;
+    const pt=e.touches&&e.touches[0]?e.touches[0]:e;
+    const isRealTouch=e.pointerId!==undefined||(e.touches&&e.touches.length>0);
+    if(isRealTouch&&pt.clientX<innerWidth*0.62&&pt.clientY>innerHeight*0.32&&fjid===null){
+      // floating joystick: touch anywhere on the lower-left to walk
+      fjid=e.pointerId!==undefined?e.pointerId:'t'+pt.identifier;
+      joyBase={x:pt.clientX,y:pt.clientY};
+      const j=$('joy');j.style.left=(pt.clientX-65)+'px';j.style.top=(pt.clientY-65)+'px';j.style.bottom='auto';
+      try{cv.setPointerCapture(fjid)}catch(_){}
+      if(e.preventDefault)e.preventDefault();}};
+  const cvMove=e=>{
+    if(fjid===null)return;
+    let pt=null;
+    if(e.touches){for(const t of e.touches)if('t'+t.identifier===fjid)pt=t;}
+    else if(e.pointerId===fjid)pt=e;
+    if(!pt)return;
+    let dx=pt.clientX-joyBase.x,dy=pt.clientY-joyBase.y;const d=Math.hypot(dx,dy),mx=65;
+    if(d>mx){dx*=mx/d;dy*=mx/d}
+    $('knob').style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+    joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx);
+    if(e.preventDefault)e.preventDefault()};
+  const cvEnd=e=>{
+    if(fjid===null)return;
+    let done=false;
+    if(e.changedTouches){for(const t of e.changedTouches)if('t'+t.identifier===fjid)done=true;}
+    else if(e.pointerId===fjid)done=true;
+    if(!done)return;
+    fjid=null;joy.x=joy.y=joy.mag=0;
+    $('knob').style.transform='translate(-50%,-50%)';
+    const j=$('joy');j.style.left='24px';j.style.top='auto';j.style.bottom='28px'};
+  cv.addEventListener('pointerdown',cvDown);
+  cv.addEventListener('touchstart',cvDown,{passive:false});
+  cv.addEventListener('click',cvDown);
+  cv.addEventListener('pointermove',cvMove);cv.addEventListener('touchmove',cvMove,{passive:false});
+  cv.addEventListener('pointerup',cvEnd);cv.addEventListener('pointercancel',cvEnd);
+  cv.addEventListener('touchend',cvEnd);cv.addEventListener('touchcancel',cvEnd);
+  requestAnimationFrame(loop);
+}
+/* ------------------------------ touch ------------------------------------- */
+const joy={x:0,y:0,mag:0};
+let fjid=null, joyBase={x:0,y:0};
+(function(){
+  const joyEl=$('joy'),knob=$('knob');let jid=null,jtid=null;
+  const setK=(dx,dy)=>knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+  const jmove=(cx,cy)=>{
+    const r=joyEl.getBoundingClientRect();
+    let dx=cx-(r.left+r.width/2),dy=cy-(r.top+r.height/2);
+    const d=Math.hypot(dx,dy),mx=r.width/2;
+    if(d>mx){dx*=mx/d;dy*=mx/d}setK(dx,dy);joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx)};
+  const jreset=()=>{jid=jtid=null;setK(0,0);joy.x=joy.y=joy.mag=0};
+  joyEl.addEventListener('pointerdown',e=>{jid=e.pointerId;try{joyEl.setPointerCapture(jid)}catch(_){ }e.preventDefault()});
+  joyEl.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;jmove(e.clientX,e.clientY)});
+  joyEl.addEventListener('pointerup',e=>{if(e.pointerId===jid)jreset()});
+  joyEl.addEventListener('pointercancel',e=>{if(e.pointerId===jid)jreset()});
+  // touch fallback for WebViews without PointerEvent
+  joyEl.addEventListener('touchstart',e=>{jtid=e.changedTouches[0].identifier;e.preventDefault()},{passive:false});
+  joyEl.addEventListener('touchmove',e=>{for(const t of e.touches)if(t.identifier===jtid){jmove(t.clientX,t.clientY);e.preventDefault()}},{passive:false});
+  const jte=e=>{for(const t of e.changedTouches)if(t.identifier===jtid)jreset()};
+  joyEl.addEventListener('touchend',jte);joyEl.addEventListener('touchcancel',jte);
+  onTap($('btnA'),()=>interact());
+  onTap($('btnDay'),()=>skipHour());
+  onTap($('btnBag'),()=>{if(G.state==='play')toggleBag(true);else if(G.state==='bag')toggleBag(false)});
+  const runOn=()=>K['run']=true,runOff=()=>K['run']=false;
+  $('btnRun').addEventListener('pointerdown',runOn);$('btnRun').addEventListener('touchstart',runOn,{passive:true});
+  $('btnRun').addEventListener('pointerup',runOff);$('btnRun').addEventListener('pointercancel',runOff);
+  $('btnRun').addEventListener('touchend',runOff);$('btnRun').addEventListener('touchcancel',runOff);
+})();
+boot();
+</script>
+</body>
+</html>
