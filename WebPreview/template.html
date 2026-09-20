@@ -334,8 +334,8 @@ function drawPortrait(){
   const fr=[0,1].map(i=>IMG[id+'_down'+i]).filter(Boolean);
   const s=fr.length?fr[Math.floor(Date.now()/420)%fr.length]:IMG[d.portrait];
   if(!s)return;
-  // crop top half of frame (head+shoulders) and scale by whole device pixels → crisp, fills the box
-  const cw=s.w,ch=Math.round(s.h/2),k=Math.max(1,Math.round(S/cw));
+  // crop head+shoulders region (top ~75% for 20px npc frames, half for 32px frames)
+  const cw=s.w,ch=Math.round(s.h*(s.h<=20?0.75:0.5)),k=Math.max(1,Math.round(S/cw));
   pctx.drawImage(ATLAS,s.sx,s.sy,cw,ch,(S-cw*k)/2,(S-ch*k)/2,cw*k,ch*k);
 }
 
