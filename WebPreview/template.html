@@ -137,7 +137,7 @@
 
 <script>
 'use strict';
-const T=16, isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0;
+const T=16, isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0||matchMedia('(pointer:coarse)').matches;
 const cv=document.getElementById('game'), ctx=cv.getContext('2d');
 let SCALE=3,VIEW_W=26,VIEW_H=15;
 function fit(){
@@ -147,6 +147,9 @@ function fit(){
 }
 addEventListener('resize',fit);fit();
 if(isTouch)document.body.classList.add('touchmode');
+// failsafe: some WebViews don't report touch until first touch — enable controls on first contact
+addEventListener('touchstart',()=>document.body.classList.add('touchmode'),{once:true,passive:true});
+addEventListener('pointerdown',e=>{if(e.pointerType==='touch')document.body.classList.add('touchmode')});
 
 /* ============ INLINED DATA (no fetch — works in WebView file://) ============ */
 const MAPS=__MDATA__;          // {farm:{…}, village:{…}} each: order,tiles,objects,solid,water,spawn,exits,tilled
@@ -192,17 +195,21 @@ let introI=-1, introT=0, introWait=0;
 const ARTIMG={};   // filled at boot
 
 function playVO(n){ if(G.vo){G.vo.pause();G.vo=null}
-  if(AUDIO[n]){G.vo=new Audio(AUDIO[n]);G.vo.play().catch(()=>{})} }
+  if(AUDIO[n]){G.vo=new Audio(AUDIO[n]);const p=G.vo.play();if(p&&p.catch)p.catch(()=>{if(G.vo)G.vo._dead=true})} }
 // ---- music & sfx ------------------------------------------------------------
 let BGM=null,BGMNAME='';
 const SET=JSON.parse(localStorage.getItem('spv_set')||'{"music":1,"sfx":1}');
 function saveSet(){localStorage.setItem('spv_set',JSON.stringify(SET))}
+let PENDING_BGM='';
 function bgm(name){
   if(!SET.music){if(BGM){BGM.pause();BGM=null}BGMNAME=name;return}
-  if(BGMNAME===name&&BGM)return;BGMNAME=name;
+  if(BGMNAME===name&&BGM&&!BGM.paused)return;BGMNAME=name;
   if(BGM){BGM.pause();BGM=null}
-  if(AUDIO[name]){BGM=new Audio(AUDIO[name]);BGM.loop=true;BGM.volume=.45;BGM.play().catch(()=>{})}
+  if(AUDIO[name]){BGM=new Audio(AUDIO[name]);BGM.loop=true;BGM.volume=.45;
+    const p=BGM.play();if(p&&p.catch)p.catch(()=>{PENDING_BGM=name;BGM=null})}
 }
+// browsers block audio before first gesture — retry the queued track on any tap
+document.addEventListener('pointerdown',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
 function sfx(name){if(!SET.sfx||!AUDIO[name])return;const a=new Audio(AUDIO[name]);a.volume=.8;a.play().catch(()=>{})}
 // ---- save / load -----------------------------------------------------------
 function save(){
@@ -386,20 +393,29 @@ function toggleBag(v){
   G.bag=v===undefined?!G.bag:v; $('bag').style.display=G.bag?'flex':'none';
   if(!G.bag){if(G.state==='bag')G.state='play';return}
   if(G.state==='play')G.state='bag';
+  const ic=key=>`<canvas class="iico" width="28" height="28" data-k="${key}"></canvas>`;
   let h='<div class="invsec">TOOLS</div>';
-  for(const t of ['🌱 Hoe','💧 Watering Can','🧺 Basket','📜 Valley Letter'])
+  for(const t of ['🌱 Hoe — till & plant','💧 Watering Can — water crops','🧺 Basket — harvest & sell','📜 Valley Letter — from Grandpa'])
     h+=`<div class="invrow"><span>${t}</span><span class="ct">keepsake</span></div>`;
-  h+='<div class="invsec">SEEDS</div>';
+  h+='<div class="invsec">SEEDS — tap row to select</div>';
   let any=false;
   for(const id in G.inv.seed)if(G.inv.seed[id]>0){any=true;
-    h+=`<div class="invrow"><span>${CROPS[id]} Seeds ${+id===+G.selSeed?'◀':''}</span><span class="ct">x${G.inv.seed[id]}</span></div>`}
+    const cf=(MAPS.farm.crop_frames[id]||[]);
+    h+=`<div class="invrow sel-seed" data-seed="${id}" style="display:flex;align-items:center;gap:8px;cursor:pointer">${ic(cf[0]||'') }<span>${CROPS[id]} Seeds ${+id===+G.selSeed?'◀':''}</span><span class="ct" style="margin-left:auto">x${G.inv.seed[id]}</span></div>`}
   if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
-  h+='<div class="invsec">CROPS</div>';any=false;
+  h+='<div class="invsec">CROPS — sell at the market stall</div>';any=false;
   for(const id in G.inv.crop)if(G.inv.crop[id]>0){any=true;
-    h+=`<div class="invrow"><span>${CROPS[id]}</span><span class="ct">x${G.inv.crop[id]}</span></div>`}
+    const cf=(MAPS.farm.crop_frames[id]||[]);
+    h+=`<div class="invrow" style="display:flex;align-items:center;gap:8px">${ic(cf[cf.length-1]||'')}<span>${CROPS[id]}</span><span class="ct" style="margin-left:auto">x${G.inv.crop[id]}</span></div>`}
   if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
-  h+=`<div class="invsec">GOLD</div><div class="invrow"><span>Coins</span><span class="ct">${G.gold}g</span></div>`;
+  h+=`<div class="invsec">GOLD</div><div class="invrow"><span>🪙 Coins</span><span class="ct">${G.gold}g</span></div>`;
   $('baglist').innerHTML=h;
+  // draw item icons + wire seed selection
+  document.querySelectorAll('#baglist .iico').forEach(c=>{const s=IMG[c.dataset.k];if(!s)return;
+    const g=c.getContext('2d');g.imageSmoothingEnabled=false;
+    const k=Math.min(26/s.w,26/s.h);g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,(28-s.w*k)/2,(28-s.h*k)/2,s.w*k,s.h*k)});
+  document.querySelectorAll('#baglist .sel-seed').forEach(r=>r.addEventListener('pointerdown',()=>{
+    G.selSeed=+r.dataset.seed;toggleBag(true);hudRender()}));
 }
 function cycleSeed(){
   const ids=Object.keys(G.inv.seed).filter(k=>G.inv.seed[k]>0).map(Number).sort((a,b)=>a-b);
@@ -642,11 +658,11 @@ function promptScan(){
   for(const[cx,cy]of near(1)){
     const k=cx+','+cy,c=(G.crops[G.map]||{})[k];
     if(c&&c.soil){
-      if(c.crop===0){txt=G.map==='village'?(G.flags.haveSunseed&&!G.flags.sunpetalPlanted?BTN+' — plant the Sunpetal':'✦ sacred beds — Sunpetal only'):BTN+' — plant '+CROPS[G.selSeed]+' (x'+(G.inv.seed[G.selSeed]||0)+')';break}
+      if(c.crop===0){txt=G.map==='village'?(G.flags.haveSunseed&&!G.flags.sunpetalPlanted?BTN+' · plant the Sunpetal':'✦ sacred beds — Sunpetal only'):BTN+' · Plant '+CROPS[G.selSeed]+' seeds (x'+(G.inv.seed[G.selSeed]||0)+')';break}
       const fr=MAPS[G.map].crop_frames[c.crop],last=fr?fr.length-1:0;
       if(c.crop===22&&c.stage>=last){txt='✦ Sunpetal in bloom';break}
-      if(c.stage>=last-1){txt=BTN+' — harvest '+CROPS[c.crop];break}
-      txt=c.watered?'growing… (watered)':BTN+' — water the '+CROPS[c.crop];break}
+      if(c.stage>=last-1){txt=BTN+' · Harvest '+CROPS[c.crop]+' (Basket)';break}
+      txt=c.watered?'growing… (watered ✓)':BTN+' · Water '+CROPS[c.crop]+' (Watering Can)';break}
   }
   if(!txt)outer:for(const[cx,cy]of near(1)){
     for(const o of G.objs){const m=o.meta||{};
@@ -708,8 +724,9 @@ function introRender(ts,dt){
   ctx.textAlign='left';
   // auto-advance: when text fully shown AND voice line finished → next slide
   if(n>=txt.length){
-    const voDone=!AUDIO[sl[0]]||!G.vo||G.vo.ended;
-    if(voDone){introWait+=dt;if(introWait>1.2){introWait=0;introNext();return}}
+    introWait+=dt;
+    const voDone=!AUDIO[sl[0]]||!G.vo||G.vo.ended||G.vo._dead;
+    if((voDone&&introWait>1.2)||introWait>12){introWait=0;introNext();return} // never stall on blocked audio
   }
 }
 function wrapText(g,text,x,y,maxW,lh){
@@ -755,11 +772,27 @@ async function boot(){
   // tap to advance intro / dialog
   cv.addEventListener('pointerdown',e=>{
     if(G.state==='intro')introNext();
-    else if(G.state==='dlg')dlgAdvance();});
+    else if(G.state==='dlg')dlgAdvance();
+    else if(G.state==='play'&&e.pointerType==='touch'&&e.clientX<innerWidth*0.6&&e.clientY>innerHeight*0.3&&fjid===null){
+      // floating joystick: touch anywhere on the lower-left to move
+      fjid=e.pointerId;joyBase={x:e.clientX,y:e.clientY};
+      const j=$('joy');j.style.left=(e.clientX-65)+'px';j.style.top=(e.clientY-65)+'px';j.style.bottom='auto';
+      try{cv.setPointerCapture(fjid)}catch(_){}
+      e.preventDefault();}});
+  cv.addEventListener('pointermove',e=>{if(e.pointerId!==fjid)return;
+    let dx=e.clientX-joyBase.x,dy=e.clientY-joyBase.y;const d=Math.hypot(dx,dy),mx=65;
+    if(d>mx){dx*=mx/d;dy*=mx/d}
+    const knob=$('knob');knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
+    joy.x=dx/mx;joy.y=dy/mx;joy.mag=Math.min(1,d/mx);e.preventDefault()});
+  const fjend=e=>{if(e.pointerId!==fjid)return;fjid=null;joy.x=joy.y=joy.mag=0;
+    const j=$('joy'),knob=$('knob');knob.style.transform='translate(-50%,-50%)';
+    j.style.left='24px';j.style.top='auto';j.style.bottom='28px'};
+  cv.addEventListener('pointerup',fjend);cv.addEventListener('pointercancel',fjend);
   requestAnimationFrame(loop);
 }
 /* ------------------------------ touch ------------------------------------- */
 const joy={x:0,y:0,mag:0};
+let fjid=null, joyBase={x:0,y:0};
 (function(){
   const joyEl=$('joy'),knob=$('knob');let jid=null;
   const setK=(dx,dy)=>knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
