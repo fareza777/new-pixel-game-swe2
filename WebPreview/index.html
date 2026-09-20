@@ -12,6 +12,7 @@
   #hud b{color:#ffd76e}
   #quest{top:10px;right:10px;background:rgba(20,16,40,.65);padding:6px 10px;border:2px solid #c89b5a;border-radius:6px;
     font-size:12px;max-width:44vw;text-align:right;color:#ffe9c4}
+  @media (max-width:460px){ #quest{top:70px;max-width:46vw} }
   #quest b{color:#ffd76e;display:block;font-size:13px}
   #toast{bottom:200px;left:50%;transform:translateX(-50%);background:rgba(30,60,30,.85);border:2px solid #9fd0ff;
     color:#eafbe0;padding:7px 14px;border-radius:8px;font-size:14px;display:none;z-index:6;max-width:80vw;text-align:center}
@@ -23,7 +24,7 @@
     box-shadow:0 0 0 3px #000, 0 8px 24px #000a}
   #dlg .inner{display:flex;gap:10px;padding:10px}
   #dport{width:64px;height:64px;flex:0 0 64px;background:#3a2a14;border:2px solid #c89b5a;border-radius:8px;
-    image-rendering:pixelated;overflow:hidden}
+    image-rendering:pixelated;image-rendering:crisp-edges;overflow:hidden}
   #dname{color:#ffd76e;font-weight:bold;font-size:13px;margin-bottom:3px}
   #dtext{font-size:14px;line-height:1.5;min-height:40px}
   #dnext{position:absolute;right:10px;bottom:6px;color:#ffd76e;font-size:12px;animation:blink 1s infinite}
@@ -124,9 +125,9 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v1.3</div></div></div>
+    <div class="ver">v1.5</div></div></div>
 
-<div id="setov" class="ovl">
+<div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
     <h3 style="margin:0 0 10px;color:#ffd76e;font-size:16px">⚙ Settings</h3>
     <div class="srow" id="setmusic" style="display:flex;justify-content:space-between;padding:8px 4px;cursor:pointer"><span>Music</span><span class="pr" id="setmusicv">ON</span></div>
@@ -323,17 +324,19 @@ function dlgAdvance(){
   if(d.i>=d.lines.length){const cb=d.onEnd;G.dlg=null;G.state='play';save();if(cb)cb()}
 }
 function drawPortrait(){
-  const pc=$('dport'),pctx=pc.getContext('2d');
-  pctx.imageSmoothingEnabled=false;pctx.clearRect(0,0,64,64);
+  const pc=$('dport'),dpr=window.devicePixelRatio||1,S=Math.round(64*dpr);
+  if(pc.width!==S){pc.width=S;pc.height=S}
+  const pctx=pc.getContext('2d');
+  pctx.imageSmoothingEnabled=false;pctx.clearRect(0,0,S,S);
   const d=G.dlg;if(!d)return;
-  // animated bust portrait (Harvest Moon style): head+shoulders crop, gentle bob
+  // animated bust portrait (Harvest Moon style): head+shoulders, gentle bob
   const id=d.portrait.replace('_portrait','');
   const fr=[0,1].map(i=>IMG[id+'_down'+i]).filter(Boolean);
   const s=fr.length?fr[Math.floor(Date.now()/420)%fr.length]:IMG[d.portrait];
   if(!s)return;
-  const ch=Math.min(20,s.h);            // top 20px of the 16x32 frame = bust
-  const k=64/(ch*0.9);
-  pctx.drawImage(ATLAS,s.sx,s.sy,s.w,ch,(64-s.w*k)/2,64-ch*k-2,s.w*k,ch*k);
+  // integer device-pixel scale keeps sprites crisp on hi-DPI screens (legs clipped by overflow)
+  const k=Math.max(1,Math.round(S/s.w*2.6));
+  pctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,(S-s.w*k)/2,-s.h*k*0.02,s.w*k,s.h*k);
 }
 
 /* ------------------------------ shop ------------------------------------ */
