@@ -334,9 +334,9 @@ function drawPortrait(){
   const fr=[0,1].map(i=>IMG[id+'_down'+i]).filter(Boolean);
   const s=fr.length?fr[Math.floor(Date.now()/420)%fr.length]:IMG[d.portrait];
   if(!s)return;
-  // integer device-pixel scale keeps sprites crisp on hi-DPI screens (legs clipped by overflow)
-  const k=Math.max(1,Math.round(S/s.w*2.6));
-  pctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,(S-s.w*k)/2,-s.h*k*0.02,s.w*k,s.h*k);
+  // crop top half of frame (head+shoulders) and scale by whole device pixels → crisp, fills the box
+  const cw=s.w,ch=Math.round(s.h/2),k=Math.max(1,Math.round(S/cw));
+  pctx.drawImage(ATLAS,s.sx,s.sy,cw,ch,(S-cw*k)/2,(S-ch*k)/2,cw*k,ch*k);
 }
 
 /* ------------------------------ shop ------------------------------------ */
