@@ -2389,7 +2389,11 @@ function interact(){
     if(!o.tamed){o.tamed=true;G.petDay['sprout']=G.day;sfx('sfx_success');
       startDlg(o,["The sproutling blinks — then giggles like raindrops on a leaf.","It wraps a leaf-finger around your thumb.","[The sproutling has chosen you! It will follow you around the valley]"]);return}
     G.petDay['sprout']=G.day;o.follow=true;o.heart=50;sfx('sfx_talk');
-    toast('🌱 The sproutling hops after you, delighted');return}
+    if(G.clock/60<9&&!G.flags['sprgift'+G.day]){G.flags['sprgift'+G.day]=1;
+      const inS=Object.keys(CROP_SEASON).filter(k=>CROP_SEASON[k].includes(season()));const sid=+inS[G.day%inS.length];
+      G.inv.seed[sid]=(G.inv.seed[sid]||0)+1;
+      toast('🌱 The sproutling digs a seed packet from its leaf — for you! (+'+CROPS[sid]+' Seeds)')}
+    else toast('🌱 The sproutling hops after you, delighted');return}
   if(m.kind==='fbooth'){
     if(G.flags['fbooth'+G.day]){sfx('sfx_deny');toast('🎪 One treat per festival — savor it!');return}
     G.flags['fbooth'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+25);sfx('sfx_eat');
