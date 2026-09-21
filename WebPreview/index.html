@@ -895,7 +895,7 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_vane&&!G.objs.some(o=>o.fid==='vane0'))
     G.objs.push({key:'vane',x:16.8,y:11.2,anchor:'bc',meta:{kind:'vane',name:'the weather vane'},fid:'vane0',hx:16.8,hy:11.2,ph:0});
   if(id==='farm'&&G.flags.bl_scare&&!G.objs.some(o=>o.fid==='scr0'))
-    G.objs.push({key:'scrow',x:26.5,y:14.5,meta:{kind:'deco',name:'the scarecrow — the crows keep their distance'},fid:'scr0',hx:26.5,hy:14.5,ph:0});
+    G.objs.push({key:'scrow',x:26.5,y:14.5,meta:{kind:G.weather==='windy'?'scarewink':'deco',name:'the scarecrow — the crows keep their distance'},fid:'scr0',hx:26.5,hy:14.5,ph:0});
   if(id==='farm'&&G.flags.bl_hive&&!G.objs.some(o=>o.fid==='hive0'))
     G.objs.push({key:'hive',x:30.5,y:8.5,meta:{kind:'forage',item:'honey',name:'honeycomb from your hive'},fid:'hive0',hx:30.5,hy:8.5,ph:0});
   if(season()===2){
@@ -2259,7 +2259,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2722,6 +2722,10 @@ function interact(){
         {label:'\U0001F454 Vote Bram',cb:()=>{G.flags.vote='bram';G.hearts.bram=Math.min(10,(G.hearts.bram||0)+1);toast('You slip your ballot in. Bram beams.');save()}},
         {label:'\U0001F3A9 Vote Pip',cb:()=>{G.flags.vote='pip';G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);toast('You slip your ballot in. Pip does a little hop.');save()}}]);
     return}
+  if(m.kind==='scarewink'){
+    if(G.flags['scw'+G.day]){toast('🌾 The scarecrow faces the wind, perfectly still. Perfectly.');return}
+    G.flags['scw'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_talk');
+    startDlg(o,["🌾 The wind turns the scarecrow's brim — for a heartbeat it tips its hat to you.","...probably just the wind. Probably.",'(+5⚡)']);return}
   if(m.kind==='cookie'){
     if(G.flags['ck'+G.day]){toast('🍪 The jar rests — Hazel refills it each morning');return}
     G.flags['ck'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_eat');
@@ -4089,6 +4093,7 @@ function promptScan(){
       else if(m.kind==='fbooth')txt=G.flags['fbooth'+G.day]?'🎪 The booth has packed up its treats':BTN+' · 🎪 Take '+m.tname+' (free treat)'
       else if(m.kind==='laundry')txt=G.weather==='wind'?(G.flags['lau'+G.day]?'🧺 The line is quiet now':BTN+' · 🧺 Check the laundry line'):'🧺 The laundry line';
       else if(m.kind==='ballot')txt=BTN+' · 🗳 Cast your vote';
+      else if(m.kind==='scarewink')txt=G.flags['scw'+G.day]?'🌾 Scarecrow':BTN+' · 🌾 Greet the scarecrow';
       else if(m.kind==='cookie')txt=G.flags['ck'+G.day]?'🍪 Cookie jar (empty)':BTN+' · 🍪 Take a cookie';
       else if(m.kind==='qvein')txt=G.flags.qvein?'💎 empty seam':BTN+' · 💎 Crack the quartz seam';
       else if(m.kind==='totem')txt=G.flags['tot'+G.day]?'🗿 Farm totem':BTN+' · 🗿 Greet the farm totem';
