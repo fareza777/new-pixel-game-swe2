@@ -468,6 +468,12 @@ function loadMap(id,sx,sy){
   if(id==='village'&&G.day%7===0){G.objs.push({key:'table_01',x:30.5,y:13.6,meta:{kind:'contest',name:'the Harvest Contest table'},fid:'contest0'});G.solid.add('30,13');G.solid.add('31,13')}
   if(id==='river'&&!G.objs.some(o=>o.fid==='goldpan'))
     G.objs.push({key:'goldore',x:6.5,y:12.5,meta:{kind:'goldpan',name:'a glittering gravel bar'},fid:'goldpan',hx:6.5,hy:12.5,ph:0});
+  if(id==='river'&&G.flags.tomDone&&G.clock/60>=9&&G.clock/60<17){
+    if(!G.objs.some(o=>o.meta&&o.meta.id==='tom'))
+      G.objs.push({key:'tom_down0',x:4.5,y:9.5,anchor:'bc',meta:{kind:'npc',id:'tom',name:'Tom',portrait:'tom_portrait'},fid:'tomferry',hx:4.5,hy:9.5,ph:0});}
+  if(id==='islet'&&G.flags.tomDone&&G.clock/60>=9&&G.clock/60<19){
+    if(!G.objs.some(o=>o.meta&&o.meta.id==='tom'))
+      G.objs.push({key:'tom_down0',x:10.5,y:8.5,anchor:'bc',meta:{kind:'npc',id:'tom',name:'Tom',portrait:'tom_portrait'},fid:'tomferry2',hx:10.5,hy:8.5,ph:0});}
   if(id==='river'&&G.clock/60>=19&&G.clock/60<22){
     if(!G.objs.some(o=>o.fid==='cfire'))
       G.objs.push({key:'fire_f0',x:9.5,y:15.5,anchor:'bc',anim:{frames:['fire_f0','fire_f1','fire_f2'],fps:5},meta:{kind:'cfire',name:"Tom's campfire"},fid:'cfire',hx:9.5,hy:15.5,ph:0});
@@ -986,6 +992,14 @@ function talkTo(o){
         lines.unshift("A "+ITEMS[crave].name+"! Exactly what I was craving — the river provides, through you. (+35g, +1 ♥)")}
       else lines.unshift("Craving a "+ITEMS[crave].name+" today — bring me one and I'll pay a fair price.")}}
   if(m.id==='tom'){
+    if(f.tomDone&&(G.clock/60>=9&&G.clock/60<19)&&(G.map==='river'||G.map==='islet')){
+      sfx('sfx_door');
+      if(G.map==='river'){startDlg(o,["Aye, hop in — the Pearl Isle run is free for you, kid.","Watch the line of the current… and we're off.",
+                                     "[Tom ferries you across to Pearl Isle]"]);
+        setTimeout(()=>{if(G.map==='river')loadMap('islet',9.5,10.5)},1600);return}
+      else{startDlg(o,["Back to the riverbank? Easy crossing today.","Mind the crab pots — off we go.",
+                       "[Tom ferries you back to the Riverside]"]);
+        setTimeout(()=>{if(G.map==='islet')loadMap('river',5.5,9.5)},1600);return}}
     if(!f.tomQ){f.tomQ=true}
     else if(!f.tomDone&&(G.inv.item.rfish||0)>=2){
       f.tomDone=true;f.tomsBait=true;G.inv.item.rfish-=2;G.gold+=60;G.stats.quests++;sfx('sfx_success');
