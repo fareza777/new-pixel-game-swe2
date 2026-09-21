@@ -1415,6 +1415,9 @@ function talkTo(o){
     lines.unshift("Here — a leftover sandwich from the basket. Picnics taste better shared! (+15⚡)")}
   if(m.id==='vilo'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel's lemonade + river breeze — this is the life, kid.")}
+  if(m.id==='pip'&&G.flags.firstSnow===1&&!f.snowGreet){
+    f.snowGreet=1;G.flags.firstSnow=2;
+    lines.unshift('IT SNOWED! It snowed it snowed it SNOWED! Race you to the fort — first one there gets the good snowballs!');return}
   if(m.id==='pip'&&season()===3&&G.day%7===3&&G.map==='village'){
     const hits=G.flags['snowhit'+G.day]||0;
     if((G.inv.item.snowball||0)>0&&hits<3){
@@ -3263,6 +3266,10 @@ function dayTick(){
     if((G.prevWeather==='rain'||G.prevWeather==='storm')&&G.weather==='sun'){G.rainbowDay=G.day;setTimeout(()=>toast('🌈 A rainbow arcs over the valley — the sky is smiling on your farm'),1600)}
     const wr2=Math.random();G.nextWeather=season()===3?(wr2<0.35?'snow':wr2<0.5?'wind':'sun'):(wr2<0.08?'storm':wr2<0.29?'rain':wr2<0.47?'wind':wr2<0.58?'fog':'sun');
   if(G.flags.crowed){G.flags.crowed=false;setTimeout(()=>toast('🐦 A crow raided your field overnight — a ripe crop is gone!'),1500)}
+  if(season()===3&&!G.flags.firstSnow){G.flags.firstSnow=1;
+    setTimeout(()=>toast('❄ FIRST SNOW! The valley wears white — Pip has already claimed the fort by the plaza'),1200);
+    if(G.map==='farm'&&!G.objs.some(o=>o.fid==='snow0'))
+      G.objs.push({key:'pip_down0',x:24.5,y:12.5,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'snow0',hx:24.5,hy:12.5,ph:0})}
   evalDeeds();
   if(G.flags.letterTo){const lt=G.flags.letterTo;G.flags.letterTo=null;
     G.hearts[lt]=Math.min(10,(G.hearts[lt]||0)+1);checkKindred(lt);
