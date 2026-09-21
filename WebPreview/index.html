@@ -1327,6 +1327,14 @@ function talkTo(o){
       G.inv.item.rfish-=2;f.hq3=true;G.stats.quests++;G.gold+=50;sfx('sfx_success');
       G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);
       lines.push('Silverleaf fish — the Friday Grill is ON. Grilled River Fish joins the menu. (+50g, +2 ♥)')}}
+  if(m.id==='fen'&&!f['fentale'+G.day]){
+    f['fentale'+G.day]=1;f.fenTale=(f.fenTale||0)+1;
+    const TALES=['Did I ever tell you about the Kingfish under the old bridge? Three winters I chased him. He still sends a postcard every thaw.',
+                 'Once I hooked something that pulled back — turned out to be Tom, snagged mid-nap on the far bank. We still argue about who caught whom.',
+                 'The moon fish bites only when the night is quiet enough to hear your own heart. Cast soft, kid.',
+                 'Your grandfather taught me the river knot. Taught me patience, too — though he had twice the fish and half the luck.'];
+    lines.push('“'+TALES[f.fenTale%TALES.length]+'”');
+    if(f.fenTale===4){f.fenLesson=1;lines.push('...and that, kid, is how you really hold the rod. Try it. (+5% catch, forever)')}}
   if(m.id==='fen'&&G.day%7===6&&G.clock/60>=14&&G.clock/60<18&&!f['tour'+G.day]){
     f['tour'+G.day]=1;G.flags.tourEnd=Date.now()+90000;
     lines.unshift("TOURNEY DAY! Rules are simple: one fish, ninety seconds, right here. GO!")
@@ -2033,7 +2041,7 @@ function interact(){
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
     swing('rod',best.cx+.5,best.cy+.5);sfx('sfx_water');
-    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fid=_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';collect(fid);
+    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fid=_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';collect(fid);
       G.inv.item[fid]=(G.inv.item[fid]||0)+1;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',6);
       toast(fid==='eel'?'⚡ A Night Eel! It writhes silver in the dark — worth 55g':fid==='icefish'?'🐟 Caught a Frostfish through the ice! Worth 30g':fid==='rfish'?'🐟 Caught a River Fish! Bigger — worth 25g':'🐟 Caught a Pond Fish! Sell it at Sari\'s stall');}
     else toast('🐟 It got away… try again');
