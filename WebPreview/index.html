@@ -445,7 +445,7 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_wagon)G.objs.push({key:'wagon',x:52,y:20.6,meta:{kind:'deco',name:'Farm Wagon'},fid:'bl_wagon',hx:52,hy:20.6,ph:0});
   if(id==='farm'&&G.flags.horse&&!G.objs.some(o=>o.fid==='horse1'))
     G.objs.push({key:'horse_down0',x:45.5,y:14.5,meta:{kind:'horse',name:'Chestnut Mare'},fid:'horse1',hx:45.5,hy:14.5,ph:0});
-  if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'deco',name:'Hay Bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
+  if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
   if(id==='farm')for(const d of FARMDECOR)if(G.flags[d.id]){
     const dd={key:d.spr,x:d.x,y:d.y,meta:{kind:'deco',name:d.name},fid:d.id,hx:d.x,hy:d.y,ph:0};
     if(d.id==='fdec_barrel'){dd.meta.kind='barrel';dd.meta.name='the rain barrel'}
@@ -2008,7 +2008,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2447,6 +2447,12 @@ function interact(){
       G.inv.item[gift[0]]=(G.inv.item[gift[0]]||0)+1;sfx('sfx_pick');
       toast('🧺 The wind snatched something onto your line — '+gift[1]+'!');return}
     toast(G.weather==='wind'?'🧺 Shirts dance on the line — you\u2019ve checked today':'🧺 Laundry sways gently');return}
+  if(m.kind==='hay'){
+    const hr=G.clock/60;
+    if(hr<13||hr>=16){toast('🌾 The bale smells of sun — best at midday');return}
+    if(G.flags['hay'+G.day]){toast('🌾 Straw in your hair already');return}
+    G.flags['hay'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_talk');
+    toast('🌾 You sink into the warm hay — the world slows for a moment (+10⚡)');return}
   if(m.kind==='parade'){
     if(G.flags['pard'+G.day]){toast('🐾 The parade basks in the lantern light');return}
     G.flags['pard'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
@@ -3515,6 +3521,7 @@ function promptScan(){
       else if(m.kind==='sprout')txt=b.o.tamed?BTN+' · 🌱 Pat the sproutling':BTN+' · 🌱 Greet the sproutling'
       else if(m.kind==='fbooth')txt=G.flags['fbooth'+G.day]?'🎪 The booth has packed up its treats':BTN+' · 🎪 Take '+m.tname+' (free treat)'
       else if(m.kind==='laundry')txt=G.weather==='wind'?(G.flags['lau'+G.day]?'🧺 The line is quiet now':BTN+' · 🧺 Check the laundry line'):'🧺 The laundry line';
+      else if(m.kind==='hay')txt=(G.clock/60>=13&&G.clock/60<16)?(G.flags['hay'+G.day]?'🌾 The bale holds your shape':BTN+' · 🌾 Nap in the hay'):'🌾 The hay bale — golden at midday';
       else if(m.kind==='picnic')txt=(G.clock/60>=10&&G.clock/60<15)?(G.flags['pic'+G.day]?'🧺 The blanket rests in the sun':BTN+' · 🧺 Have a picnic'):'🧺 Your picnic blanket — best at lunch';
       else if(m.kind==='maple')txt=G.forageDay['maple|'+b.o.fid]===G.day?'🍁 The bucket hangs empty till tomorrow':BTN+' · 🍁 Collect maple sap';
       else if(m.kind==='pulpit')txt=G.flags['pulp'+G.day]?'🏛 The crate stands quiet now':BTN+' · 🏛 Hear the Mayor\u2019s address';
