@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.08</div></div></div>
+    <div class="ver">v4.09</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -415,6 +415,8 @@ function loadMap(id,sx,sy){
   // eggs laid by petted hens appear at the coop each morning
   // villagers keep hours — plaza empties at night, everyone home by the fire
   const nighth=(G.clock/60>=20||G.clock/60<6);
+  if(id==='village'&&(G.weather==='sun'||G.weather==='wind')&&G.clock/60>=13&&G.clock/60<18&&!G.objs.some(o=>o.fid==='ea0'))
+    G.objs.push({key:'easel',x:31.5,y:14.2,anchor:'bc',meta:{kind:'easel',name:'Vilo\u2019s spare easel, paints left out'},fid:'ea0',hx:31.5,hy:14.2,ph:0});
   if(id==='village'&&G.day%28===25&&G.clock/60>=17&&G.clock/60<23){
     if(!G.objs.some(o=>o.fid==='sol0'))
       G.objs.push({key:'bonfire',x:12.5,y:11.5,anchor:'c',meta:{kind:'solstice',name:'the solstice fire'},fid:'sol0',hx:12.5,hy:11.5,ph:0});
@@ -2286,7 +2288,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2749,6 +2751,12 @@ function interact(){
         {label:'\U0001F454 Vote Bram',cb:()=>{G.flags.vote='bram';G.hearts.bram=Math.min(10,(G.hearts.bram||0)+1);toast('You slip your ballot in. Bram beams.');save()}},
         {label:'\U0001F3A9 Vote Pip',cb:()=>{G.flags.vote='pip';G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);toast('You slip your ballot in. Pip does a little hop.');save()}}]);
     return}
+  if(m.kind==='easel'){
+    if(G.flags['paint'+G.day]){toast('🎨 The canvas is wet — one painting a day.');return}
+    G.flags['paint'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');swing('seeds',o.x,o.y);
+    if(Math.random()<.3){G.inv.item.sketch=(G.inv.item.sketch||0)+1;collect('sketch');
+      startDlg(o,['🎨 You paint the fountain at golden hour — it almost glows.','Vilo would call it "promising." It IS promising. (+6⚡, a sellable sketch)'])}
+    else startDlg(o,['🎨 You paint the plaza — the colors run a little wild.','Not your best, but the breeze was nice. (+6⚡)']);return}
   if(m.kind==='haynap'){
     if(G.flags['nap'+G.day]){toast('🌾 The hay is tousled — one good nap a day is plenty.');return}
     const h=G.clock/60;
@@ -4178,6 +4186,7 @@ function promptScan(){
       else if(m.kind==='fbooth')txt=G.flags['fbooth'+G.day]?'🎪 The booth has packed up its treats':BTN+' · 🎪 Take '+m.tname+' (free treat)'
       else if(m.kind==='laundry')txt=G.weather==='wind'?(G.flags['lau'+G.day]?'🧺 The line is quiet now':BTN+' · 🧺 Check the laundry line'):'🧺 The laundry line';
       else if(m.kind==='ballot')txt=BTN+' · 🗳 Cast your vote';
+      else if(m.kind==='easel')txt=G.flags['paint'+G.day]?'🎨 Wet canvas':BTN+' · 🎨 Paint the plaza';
       else if(m.kind==='haynap')txt=G.flags['nap'+G.day]?'🌾 Hay pile':BTN+' · 🌾 Nap in the hay';
       else if(m.kind==='pparcel')txt=BTN+' · 📦 Open the parcel';
       else if(m.kind==='pbench')txt=G.flags['pbn'+G.day]?'🪑 Pond bench':BTN+' · ✨ Sit by the pond (clear nights)';
