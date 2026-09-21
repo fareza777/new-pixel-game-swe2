@@ -240,6 +240,23 @@ const RECIPES=[
       {id:'hcake',need:{honey:1,c10:1}},
       {id:'fsalad',need:{herb:1,berry:1,apple:1}}];
 const RECIPE_SAY={soup:'🍲 Cooked a Hearty Soup! (+35⚡ / 22g)',jam:'🍓 Simmered Berry Jam! (+20⚡ / 20g)',custard:"🍮 Whisked a Frostberry Custard — Hazel's recipe! (+30⚡ / 48g)",chowder:'🍜 Simmered Silverleaf Chowder — winter in a bowl! (+38⚡ / 55g)',htea:"🍵 Brewed Honey-Mint Tea — Nana's comfort (+25⚡ / 32g)",tart:'🥧 Baked a Strawberry Tart — spring on a plate! (+36⚡ / 52g)',steg:'🍆 Baked Stuffed Eggplant — Cora’s favorite! (+40⚡ / 50g)',cheese:'You churn a wheel of Farm Cheese — smells amazing!',stew:"🐟 Brewed Fisher's Stew! (+28⚡ / 30g)",grill:'🔥 Grilled River Fish! (+26⚡ / 40g)',salad:'🥗 Tossed a Garden Salad! (+24⚡ / 30g)',pie:'🥧 Baked a Pumpkin Pie — golden crust! (+45⚡ / 65g)',bq:'💐 Tied a Moonbloom Bouquet — smells like the whole valley!',apie:'🥧 Baked an Apple Pie — orchard-fresh! (+42⚡ / 55g)',hcake:'🍰 Drizzled a Honey Cake! (+40⚡ / 55g)',fsalad:'🥙 Packed a Forest Lunch! (+35⚡ / 45g)'};
+const KEEPSAKE={bram:['A mayoral seal — Bram considers you family.',()=>{G.gold+=100}],
+  sari:["Sari's silver locket — 'Grandma's market is yours too now.'",()=>{G.inv.seed['25']=(G.inv.seed['25']||0)+3}],
+  vilo:["Vilo's pocket watch — 'Slow down and enjoy the river, kid.'",()=>{G.flags.viloWatch=1}],
+  nana:["Nana's recipe ring — 'The herbs answer to you now.'",()=>{G.flags.nanaRing=1}],
+  mira:["Mira's sketch of your farm — 'I draw what I love.'",()=>{G.inv.item.posy=(G.inv.item.posy||0)+3}],
+  pip:["Pip's captain badge — 'We're officially best friends forever!'",()=>{G.inv.item.candy=(G.inv.item.candy||0)+3}],
+  fen:["Fen's oldest lure — 'She's brought me luck for thirty years. Yours now.'",()=>{G.flags.lure=1}],
+  wren:["Wren's pressed flower book — 'Page one is yours.'",()=>{G.inv.item.starflower=(G.inv.item.starflower||0)+2}],
+  luna:["Luna's star chart — 'The sky knows your name now.'",()=>{G.flags.lunaCharm=1}],
+  hazel:["Hazel's cast-iron pan — 'Cook with love, dear.'",()=>{G.flags.cookbook=true;G.inv.item.chowder=(G.inv.item.chowder||0)+1}],
+  cora:["Cora's lucky nail — 'Hammered into every building in town.'",()=>{G.inv.item.ibar=(G.inv.item.ibar||0)+2}],
+  elle:["Elle's thimble — 'A stitch in time, a friend for life.'",()=>{G.inv.item.wool=(G.inv.item.wool||0)+2}],
+  mart:["Mart's debt marker — 'You drive a hard bargain, friend. Paid in full.'",()=>{G.gold+=80}]};
+function checkKindred(id){
+  if((G.hearts[id]||0)>=10&&!G.flags['kin_'+id]&&KEEPSAKE[id]){
+    G.flags['kin_'+id]=1;const k=KEEPSAKE[id];k[1]();
+    setTimeout(()=>toast('💛 Kindred Spirit — '+(VNAME[id]||id)+': '+k[0]),1200)}}
 const DEEDS=[
   ['first_harvest','🌱 First Harvest','harvest a crop',()=>(G.stats.crops||0)>=1],
   ['angler','🎣 Angler','catch 10 fish',()=>(G.stats.fish||0)>=10],
@@ -250,7 +267,8 @@ const DEEDS=[
   ['archivist','🏺 Archivist','donate 15 entries to the Archive',()=>Object.keys(G.flags).filter(k=>k.indexOf('don_')===0).length>=15],
   ['chef','🍳 Kitchen Heart','cook 8 different recipes',()=>RECIPES.filter(r=>(G.col[r.id]||0)>0).length>=8],
   ['legend','👑 Legend Angler','land a Pond Kingfish or Golden Koi',()=>(G.col.kingfish||0)+(G.col.goldfish||0)>0],
-  ['philanthropist','🏛 Town Patron','fully fund the plaza beautification',()=>(G.flags.fundTier||0)>=3]];
+  ['philanthropist','🏛 Town Patron','fully fund the plaza beautification',()=>(G.flags.fundTier||0)>=3],
+  ['kindred','💛 Kindred','earn a villager’s keepsake',()=>Object.keys(G.flags).some(k=>k.indexOf('kin_')===0)]];
 function evalDeeds(){for(const d of DEEDS){if(!G.flags['deed_'+d[0]]&&d[3]()){G.flags['deed_'+d[0]]=1;toast('🏅 Deed earned: '+d[0].replace(/_/g,' ')+' — '+d[1])}}}
 const BDAY={pip:4,bram:6,sari:10,vilo:14,nana:19,mira:23,fen:26,wren:17,luna:25,hazel:8,mart:12,cora:18,elle:22};
 const VNAME={luna:'Luna',shrine:'Forest Shrine',elder:'Elder Tree',bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',fen:'Fen',pip:'Pip',mart:'Mart',wren:'Wren',hazel:'Hazel',cora:'Cora',elle:'Elle'};
@@ -684,7 +702,7 @@ function talkTo(o){
   if(isBirthday(m.id))lines.unshift("Today's my birthday, actually — the valley's been so kind to me.")
   // friendship: +1 ♥ the first time you chat each day
   if(G.talkDay[m.id]!==G.day){G.talkDay[m.id]=G.day;
-    G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);
+    G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
   // quest side-effects
   if(m.id==='bram'&&!f.metBram){f.metBram=true}
@@ -1180,6 +1198,8 @@ function toggleBag(v){
     h+=`<div class="invrow"><span>🎁 Gifts given</span><span class="ct" style="margin-left:auto">${st.gifts||0}</span></div>`;
     h+=`<div class="invrow"><span>🪙 Lifetime earnings</span><span class="ct" style="margin-left:auto">${st.gold||0}g</span></div>`;
     h+=`<div class="invrow"><span>❤ Friendship</span><span class="ct" style="margin-left:auto">${hearts}♥ total</span></div>`;
+    const kin=Object.keys(G.flags).filter(k=>k.indexOf('kin_')===0).length;
+    if(kin)h+=`<div class="invrow"><span>💛 Kindred spirits</span><span class="ct" style="margin-left:auto">${kin}</span></div>`;
     const pet=G.petDay['cat']===G.day;
     h+=`<div class="invrow"><span>🐈 Mochi</span><span class="ct" style="margin-left:auto">${pet?'purring today':'wants a pat'}</span></div>`;
     h+=`<div class="invrow"><span>🐔 Hens</span><span class="ct" style="margin-left:auto">${G.coopEggs||0} eggs laid</span></div>`;
@@ -1386,7 +1406,7 @@ function interact(){
       const loved=giftBq?false:(LOVES[m.id]||[]).includes(gid);
       const isB=isBirthday(m.id),base=giftBq?4:(loved?4:2);
       G.talkDay[hk]=G.day;if(giftBq)G.inv.item.bq--;else if(giftIt)G.inv.item[giftIt]--;else G.inv.crop[giftCrop]--;
-      G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+base);G.stats.gifts++;
+      G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+base);G.stats.gifts++;checkKindred(m.id);
       sfx('sfx_success');swing('basket',o.x,o.y);
       if(isB)G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+3);
       const nm=giftIt?ITEMS[giftIt].name:(giftCrop?CROPS[giftCrop]:'a Moonbloom Bouquet');
