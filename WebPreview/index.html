@@ -925,6 +925,10 @@ function talkTo(o){
       G.inv.item.rfish-=2;f.hq3=true;G.stats.quests++;G.gold+=50;sfx('sfx_success');
       G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);
       lines.push('Silverleaf fish — the Friday Grill is ON. Grilled River Fish joins the menu. (+50g, +2 ♥)')}}
+  if(m.id==='fen'&&G.day%7===6&&G.clock/60>=14&&G.clock/60<18&&!f['tour'+G.day]){
+    f['tour'+G.day]=1;G.flags.tourEnd=Date.now()+90000;
+    lines.unshift("TOURNEY DAY! Rules are simple: one fish, ninety seconds, right here. GO!")
+    lines.push("...catch it and I'll make it worth your while.");}
   if(m.id==='fen'){f.metFen=true;
     // Fen's Favor — give any crop
     const have=Object.keys(G.inv.crop).find(k=>G.inv.crop[k]>0);
@@ -1507,6 +1511,8 @@ function interact(){
   const best=pickAction();
   if(!best)return;
   if(best.kind==='fish'){
+    if(G.flags.tourEnd){if(Date.now()<G.flags.tourEnd){G.flags.tourEnd=0;G.gold+=40;G.hearts.fen=Math.min(10,(G.hearts.fen||0)+1);sfx('sfx_success');toast('🏆 TOURNEY WON! Fen whoops and presses 40g into your palm (+1♥)')}
+      else{G.flags.tourEnd=0;toast('⏱ Tourney’s over — Fen tips his hat. Next Saturday!')}}
     if(season()===3&&G.map!=='river'){toast('❄️ The water is iced over — the river\'s ice hole still fishes');return}
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
