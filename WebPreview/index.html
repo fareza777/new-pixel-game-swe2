@@ -3081,6 +3081,12 @@ function dayTick(){
      if(G.flags.rooster)bits.unshift('🐓 The rooster greets the dawn');
      if(G.flags.fjar){G.sta=Math.min(100+(G.maxsta||0),G.sta+4);bits.unshift('🏮 slept softly by firefly light (+4⚡)')}
      if(G.honorSale){G.gold+=G.honorSale;G.stats.gold+=G.honorSale;bits.unshift('🧺 honor box earned +'+G.honorSale+'g');G.honorSale=0}
+     if(G.flags.bl_barn&&G.flags.mochiHome){
+       if(G.petDay['cat']===yesterday){if(Math.random()<.25){G.inv.item.cheese=(G.inv.item.cheese||0)+1;bits.unshift('🐈 Mochi left a gift cheese by the barn door')}}
+       else if(Math.random()<.35){const sneaky=['cheese','mayo','jam'].find(k=>(G.inv.item[k]||0)>0);
+         if(sneaky){G.inv.item[sneaky]--;bits.unshift('🐭 mice got into the stores — your '+ITEMS[sneaky].name.toLowerCase()+' is gone (pet Mochi to scare them off)')}}}
+     if(G.flags.bl_barn&&!G.flags.mochiHome&&Math.random()<.15){const sneaky=['cheese','mayo','jam'].find(k=>(G.inv.item[k]||0)>0);
+       if(sneaky){G.inv.item[sneaky]--;bits.unshift('🐭 mice nibbled your '+ITEMS[sneaky].name.toLowerCase()+' — a farm cat would fix this')}}
      if(G.coopEggs>0)bits.push('🥚 '+G.coopEggs+' egg'+(G.coopEggs>1?'s':'')+' at the coop');
      if(G.milkCans>0)bits.push('🥛 milk waiting');
      if(G.flags.truffleReady)bits.push('🐷 truffle in the pen');
