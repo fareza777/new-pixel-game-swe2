@@ -1157,6 +1157,14 @@ function talkTo(o){
   if(m.id==='elle'&&!f.woolScarf&&(G.inv.item.wool||0)>=2){
     G.inv.item.wool-=2;f.woolScarf=true;G.maxsta=(G.maxsta||100)+10;
     lines.unshift(null,'vo_elle2',"Wait — is that Molly's wool? Give it here… there. A scarf, warm as a hearth. (+10 energy forever)")}
+  if(m.id==='bram'&&!f.valleyheart){
+    const ALL=['bram','sari','vilo','nana','mira','pip','fen','wren','luna','hazel','cora','elle','mart','tom'];
+    if(ALL.every(nid=>(G.hearts[nid]||0)>=8)){
+      f.valleyheart=1;G.gold+=200;G.maxsta=(G.maxsta||0)+12;G.stats.quests++;sfx('sfx_success');
+      lines.length=0;
+      lines.push("Kid. Every heart in Sunpetal beats warm for you — I've watched it happen, season by season.")
+      lines.push("Tonight the whole village feasts at the Lantern in YOUR honor. And Hazel's cooking everything.")
+      lines.push("Bram presses a gold pendant into your palm — HEART OF THE VALLEY. (+200g, +12 max energy)")}}
   if(m.id==='bram'&&!f.archivist&&G.flags.gwatch&&G.flags.meteorCharm&&G.flags.herbarium&&G.flags.postcardAlbum&&f.hideChamp){
     f.archivist=true;G.gold+=300;G.maxsta=(G.maxsta||0)+10;G.stats.quests++;sfx('sfx_success');
     lines.length=0;
