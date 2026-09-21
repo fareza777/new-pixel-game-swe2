@@ -427,6 +427,10 @@ function loadMap(id,sx,sy){
   if(id==='farm')for(const d of FARMDECOR)if(G.flags[d.id])
     G.objs.push({key:d.spr,x:d.x,y:d.y,meta:{kind:'deco',name:d.name},fid:d.id,hx:d.x,hy:d.y,ph:0});
   if(id==='river'&&season()!==3)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='penguin'));
+  if(id==='farm'&&(G.weather==='rain'||G.weather==='storm')&&G.clock/60>=18&&G.clock/60<22){
+    [[28.5,20.5],[33.5,22.5],[30.5,23.5]].forEach((pt,i)=>{
+      if(!G.objs.some(o=>o.fid==='chfr'+i))
+        G.objs.push({key:'frog_down'+i%3,x:pt[0],y:pt[1],meta:{kind:'chorus',name:'a singing pond frog'},fid:'chfr'+i,hx:pt[0],hy:pt[1],ph:i});});}
   if(id==='farm'&&season()===1){
     [[30.5,19.5],[32.5,21.5],[29.5,22.5],[33.5,20.5]].forEach((pt,i)=>{
       const fid='lily'+i;
@@ -1690,7 +1694,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2084,6 +2088,10 @@ function interact(){
     G.flags['kite'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
     if(m.anim)m.anim.i=(m.anim.i||0)+1;
     toast("🪁 You run the line — the kite climbs! (+10⚡)");G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);checkKindred('pip');save();return}
+  if(m.kind==='chorus'){
+    if(G.flags['chorus'+G.day]){toast('🐸 Ribbit ribbit — encore tomorrow');return}
+    G.flags['chorus'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');
+    toast('🐸 The pond frogs sing you a rain-song — soul soothed (+6⚡)');hudRender();save();return}
   if(m.kind==='cfire'){
     if(G.flags['cfire'+G.day]){sfx('sfx_deny');toast('🔥 Already warmed through');return}
     G.flags['cfire'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
@@ -2888,6 +2896,7 @@ function promptScan(){
       else if(m.kind==='spage')txt=BTN+' · 🎵 Take the songbook page'
       else if(m.kind==='piano')txt=G.flags['piano'+G.day]?'🎹 The keys rest for today':BTN+' · 🎹 Play a tune'
       else if(m.kind==='horse')txt=BTN+' · 🐎 Ride the mare'
+      else if(m.kind==='chorus')txt=G.flags['chorus'+G.day]?'🐸 The chorus hums on':BTN+' · 🐸 Listen to the frog chorus'
       else if(m.kind==='cfire')txt=G.flags['cfire'+G.day]?'🔥 The fire crackles low — warm enough':BTN+' · 🔥 Warm up at Tom’s fire'
       else if(m.kind==='mtrunk')txt=G.flags.mtrunk?'📦 Just keepsakes now — letters and a faded photo':BTN+' · 📦 Open the memory trunk'
       else if(m.kind==='wish')txt=G.flags['wish'+G.day]?'🏮 Your wish is already drifting skyward':BTN+' · 🏮 Release a wish'
