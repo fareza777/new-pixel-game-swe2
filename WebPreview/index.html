@@ -2233,7 +2233,13 @@ function interact(){
     G.mounted=true;sfx('sfx_talk');toast('🐎 You swing up — she canters when you run');hudRender();return}
   if(m.kind==='piano'){
     if(G.flags['piano'+G.day]){sfx('sfx_deny');toast('🎹 One song a day — the keys need rest');return}
-    G.flags['piano'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');
+    G.flags['piano'+G.day]=1;sfx('sfx_success');
+    if(G.day%7===6&&G.clock/60>=19){  // Restday evening — Hazel sings along
+      G.gold+=40;G.sta=Math.min(100+(G.maxsta||0),G.sta+15);
+      G.hearts.hazel=Math.min(10,(G.hearts.hazel||0)+1);
+      startDlg(o,["You strike the first chords — and Hazel's voice joins from behind the bar.","The whole inn hums the chorus. Coins clink into the tip jar.",
+                  "[A duet! +40g tips, +15⚡, +1 ♥ Hazel]"]);return}
+    G.sta=Math.min(100+(G.maxsta||0),G.sta+6);
     toast('🎹 A warm little melody fills the inn (+6⚡)');hudRender();save();return}
   if(m.kind==='spage'){
     const si=m.sp;G.flags['sp'+si]=1;
