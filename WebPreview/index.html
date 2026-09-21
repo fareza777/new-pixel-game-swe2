@@ -942,6 +942,9 @@ function talkTo(o){
       "The day he found you were coming, he danced in the rain. First time I ever saw him cry. Happy tears, dear."][wk];
     if(!f['story'+G.day]){f['story'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_talk');
       lines.unshift("Story night, dear — pull up a chair. "+stories+" (felt warmer already, +8⚡)");}}
+  if(m.id==='mira'&&G.flags.fainted>0&&!f.medkit){
+    f.medkit=1;sfx('sfx_success');
+    lines.unshift("You fainted on me once — not again. Here, my field medkit: bandages, smelling salts, a little chocolate. Next collapse is on the house. (+0g)")}
   if(m.id==='mira'&&G.map==='mirahouse'&&G.day%7===1&&G.clock/60>=20&&G.clock/60<23&&!f['check'+G.day]){
     f['check'+G.day]=1;
     const fee=(G.hearts.mira||0)>=4?0:20;
@@ -1621,15 +1624,15 @@ function faint(){
   if(G.state!=='play')return;
   if(G.flags.fainted===G.day){G.sta=5;return}
   G.flags.fainted=G.day;
-  const fee=Math.min(G.gold,15);G.gold-=fee;
-  G.sta=35;G.clock=Math.min(G.clock+240,23*60);
+  const fee=G.flags.medkit?0:Math.min(G.gold,15);G.gold-=fee;
+  G.sta=G.flags.medkit?55:35;G.clock=Math.min(G.clock+240,23*60);
   hudRender();
   loadMap('mirahouse',7.5,10.5);
   setTimeout(()=>{
     if(G.state!=='play')return;
     startDlg({meta:{id:'mira',name:'Mira',portrait:'npc5_portrait'}},[
       "Easy now — breathe. You collapsed out in the fields.",
-      fee>0?"I patched you up — that'll be "+fee+"g for the tonic. Worth it, trust me.":"I patched you up — and don't worry about a fee, you look like you need it more than I do.",
+      G.flags.medkit?"The medkit I gave you did half the work — on the house, always.":"I patched you up"+(fee>0?" — that'll be "+fee+"g for the tonic. Worth it, trust me.":" — and don't worry about a fee, you look like you need it more than I do."),
       "The farm will wait, little seedling. Eat something warm and rest before you push that hard again."]);
   },800);
 }
