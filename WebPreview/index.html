@@ -550,6 +550,8 @@ function loadMap(id,sx,sy){
   if(id==='village'&&G.day%7===0){G.objs.push({key:'table_01',x:30.5,y:13.6,meta:{kind:'contest',name:'the Harvest Contest table'},fid:'contest0'});G.solid.add('30,13');G.solid.add('31,13')}
   if(id==='river'&&!G.objs.some(o=>o.fid==='skip0'))
     G.objs.push({key:'flatstone',x:9.5,y:11.5,meta:{kind:'skip',name:'a flat skipping stone'},fid:'skip0',hx:9.5,hy:11.5,ph:0});
+  if(id==='river'&&G.day%7===0&&G.clock/60>=14&&G.clock/60<18&&!G.objs.some(o=>o.fid==='skc_p'))
+    G.objs.push({key:'pip_down0',x:8.5,y:11.5,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'skc_p',hx:8.5,hy:11.5,ph:0});
   if(id==='river'&&!G.objs.some(o=>o.fid==='goldpan'))
     G.objs.push({key:'goldore',x:6.5,y:12.5,meta:{kind:'goldpan',name:'a glittering gravel bar'},fid:'goldpan',hx:6.5,hy:12.5,ph:0});
   if(id==='river'&&G.prevWeather==='storm')
@@ -2867,7 +2869,13 @@ function interact(){
   if(m.kind==='skip'){
     if(G.flags['skip'+G.day]){toast('🪨 The river is calm — the best stones are already skipped');return}
     G.flags['skip'+G.day]=1;G.sta=Math.min((G.maxsta||0)+100,(G.sta||0)+5);sfx('sfx_talk');
-    const n=2+Math.floor(Math.random()*4);
+    let n=2+Math.floor(Math.random()*4);
+    const pip=G.objs.some(o=>o.fid==='skc_p');
+    if(pip){
+      const pb=3+(G.day%4); // Pip's throw today
+      if(n>pb){G.gold+=15;G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);
+        toast('🪨 '+n+' skips! Pip whoops and throws you his prize coin — beat his '+pb+'! (+15g, +1♥)');return}
+      toast('🪨 '+n+' skips — Pip grins: "Beat my '+pb+' next Sunday, easy."');return}
     toast('🪨 *plip plip plip* — '+n+' clean skips across the water! (+5⚡)');
     G.stats.skipBest=Math.max(G.stats.skipBest||0,n);return}
   if(m.kind==='goldpan'){
