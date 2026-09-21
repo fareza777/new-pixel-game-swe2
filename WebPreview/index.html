@@ -807,7 +807,7 @@ function loadMap(id,sx,sy){
         G.objs.push({key:pid+'_down0',x:8.6+i*1.0,y:10.2,anchor:'bc',meta:{kind:'npc',id:pid,name:VNAME[pid],portrait:pid+'_portrait'},fid:'mem_'+pid,hx:8.6+i*1.0,hy:10.2,ph:i})});}
   if(id==='hill'&&G.flags.elderBloom){const t=G.objs.find(o=>o.meta&&o.meta.kind==='elder');if(t)t.key='eldertree_b'}
   if(id==='hill'&&G.flags.elderBloom&&!G.objs.some(o=>o.meta&&o.meta.kind==='sprout'))
-    G.objs.push({key:'sprout',x:13.5,y:10.5,meta:{kind:'sprout',name:'a little sproutling',id:'sprout'},fid:'sprout0',hx:13.5,hy:10.5,ph:0});
+    G.objs.push({key:(G.petDay.sprout&&G.day-G.petDay.sprout>=14)?'sunfl':'sprout',x:13.5,y:10.5,meta:{kind:'sprout',name:'a little sproutling',id:'sprout'},fid:'sprout0',hx:13.5,hy:10.5,ph:0});
   if(id==='farm'&&fullmoon()&&G.clock/60>=20&&G.clock/60<23&&!G.flags.granGhost&&!G.objs.some(o=>o.fid==='grang'))
     G.objs.push({key:'ghost',x:14.5,y:8.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'grang',name:'???',portrait:'ghost_portrait'},fid:'grang',hx:14.5,hy:8.5,ph:0});
   if(id==='farm'&&G.day%28===7&&G.clock/60>=19&&G.flags.gusMet&&!G.objs.some(o=>o.meta&&o.meta.id==='gus'))
@@ -2684,11 +2684,15 @@ function interact(){
     if(m.anim)m.anim.i=(m.anim.i||0)+1;
     toast("🪁 You run the line — the kite climbs! (+10⚡)");G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);checkKindred('pip');save();return}
   if(m.kind==='sprout'){
-    if(!o.tamed){o.tamed=true;G.petDay['sprout']=G.day;sfx('sfx_success');
+    if(!G.flags.sproutTamed){o.tamed=true;G.flags.sproutTamed=1;G.petDay['sprout']=G.day;if(!G.petDay.sprout0)G.petDay.sprout0=G.day;sfx('sfx_success');
       startDlg(o,["The sproutling blinks — then giggles like raindrops on a leaf.","It wraps a leaf-finger around your thumb.","[The sproutling has chosen you! It will follow you around the valley]"]);return}
     G.petDay['sprout']=G.day;o.follow=true;o.heart=50;sfx('sfx_talk');
+    if(!G.flags.sproutBloom&&G.petDay.sprout0&&G.day-G.petDay.sprout0>=14){G.flags.sproutBloom=1;o.key='sunfl';o.bloom=1;
+      startDlg(o,["🌻 The sproutling's leaf-crown opens into petals overnight — it bloomed!","It dances in a circle, scattering pollen like tiny stars.","[Your sproutling has grown — its gift seeds are rarer now]"]);return}
     if(G.clock/60<9&&!G.flags['sprgift'+G.day]){G.flags['sprgift'+G.day]=1;
-      const inS=Object.keys(CROP_SEASON).filter(k=>CROP_SEASON[k].includes(season()));const sid=+inS[G.day%inS.length];
+      let inS=Object.keys(CROP_SEASON).filter(k=>CROP_SEASON[k].includes(season()));
+      if(G.flags.sproutBloom)inS=Object.keys(CROP_SEASON);   // bloomed sproutling knows every seed
+      const sid=+inS[G.day%inS.length];
       G.inv.seed[sid]=(G.inv.seed[sid]||0)+1;
       toast('🌱 The sproutling digs a seed packet from its leaf — for you! (+'+CROPS[sid]+' Seeds)')}
     else toast('🌱 The sproutling hops after you, delighted');return}
