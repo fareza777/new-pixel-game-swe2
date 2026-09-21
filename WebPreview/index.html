@@ -518,6 +518,15 @@ function loadMap(id,sx,sy){
   if(id==='inn'&&G.day%7===5){const hd=G.clock/60;
     if(hd>=17&&hd<22){const INN={bram:[4.5,7.6],sari:[13.5,7.6],vilo:[13.5,9.2]};
       for(const k in INN){G.objs.push({key:k+'_down0',x:INN[k][0],y:INN[k][1],anchor:'bc',anim:{frames:[k+'_down0',k+'_down1',k+'_down2',k+'_down1'],fps:6},meta:{kind:'npc',id:k,name:{bram:'Mayor Bram',sari:'Sari',vilo:'Vilo'}[k],portrait:k+'_portrait'},fid:'inn_'+k})}}}
+  if(id==='forest'&&((G.day-1)%28)+1===11&&G.clock/60>=17&&G.clock/60<21){
+    const guests=[['pip',11.5,20.8],['nana',14.5,22.5],['fen',9.5,21.8]];
+    guests.forEach(([pid,px2,py2],i)=>{if(!G.objs.some(o=>o.meta&&o.meta.id===pid))
+      G.objs.push({key:pid+'_down0',x:px2,y:py2,anchor:'bc',meta:{kind:'npc',id:pid,name:{pip:'Pip',nana:'Nana',fen:'Old Fen'}[pid],portrait:pid==='fen'?'npc20_portrait':pid+'_portrait'},fid:'elb_'+pid,hx:px2,hy:py2,ph:i})});
+    if(!G.objs.some(o=>o.fid==='elm0'))
+      G.objs.push({key:'elm_down0',x:12.5,y:21.8,anchor:'bc',meta:{kind:'npc',id:'elm',name:'Elm',portrait:'elm_portrait'},fid:'elm0',hx:12.5,hy:21.8,ph:0,
+        anim:{frames:['elm_down0','elm_down1','elm_down2','elm_down1'],fps:6}});
+    if(!G.objs.some(o=>o.fid==='bf_elm'))
+      G.objs.push({key:'bonfire',x:11.5,y:22.8,anchor:'bc',meta:{kind:'deco',name:'the birthday fire'},fid:'bf_elm',hx:11.5,hy:22.8,ph:0})}
   if(id==='forest'&&G.clock/60>=8&&G.clock/60<17&&!G.objs.some(o=>o.fid==='elm0'))
     G.objs.push({key:'elm_down0',x:14.5,y:20.5,anchor:'bc',meta:{kind:'npc',id:'elm',name:'Elm',portrait:'elm_portrait'},fid:'elm0',hx:14.5,hy:20.5,ph:0,
       anim:{frames:['elm_down0','elm_down1','elm_down2','elm_down1'],fps:6}});
@@ -1142,6 +1151,10 @@ function talkTo(o){
       G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_success');
       lines.push('Star-metal! You actually found one — here, your reward. (+50g, +2 ♥)')}}
   if(m.id==='luna')f.metLuna=true;
+  if(m.id==='elm'&&((G.day-1)%28)+1===11&&!f['elmbday'+G.day]){
+    f['elmbday'+G.day]=1;G.hearts.elm=Math.min(10,(G.hearts.elm||0)+2);
+    G.inv.item.cduck=(G.inv.item.cduck||0)+1;sfx('sfx_success');
+    lines.unshift("*The whole yard goes quiet — Pip lights a sparkler on a stump-cake* — Sixty-two years, and nobody ever… You all came down here for me? Here — take this little duck. Warm from the knife, like my heart tonight. (+2 ♥, Carved Duck)")}
   if(m.id==='elm'&&!f.elmDone&&(G.inv.item.acorn||0)>=3){
     f.elmQ=true;f.elmDone=true;G.inv.item.acorn-=3;G.stats.quests++;
     G.inv.item.carvedowl=(G.inv.item.carvedowl||0)+1;G.hearts.elm=Math.min(10,(G.hearts.elm||0)+3);sfx('sfx_success');
@@ -2676,6 +2689,7 @@ function dayTick(){
   if(G.day%7===1){const TSPOTS2=['the farm pond','the forest clearing','the river bend','the hilltop'];
     setTimeout(()=>toast('🗺 Pip was seen digging near '+TSPOTS2[(G.day*3)%4]+' — he buried something shiny again!'),1100)}
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
+  if(((G.day-1)%28)+1===11)setTimeout(()=>toast('🪵 It\u2019s Elm\u2019s birthday — the valley sneaks to his cabin this evening (17:00-21:00)'),1250);
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
   if(G.day%28===14)setTimeout(()=>toast('🎪 Seasonal Festival this evening at the plaza (17:00-22:00) — free treats!'),1500);
   if((G.day-1)%7===4)setTimeout(()=>toast('📋 Census Day — Bram wants everyone greeted today'),1300);
