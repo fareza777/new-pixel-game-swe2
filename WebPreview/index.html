@@ -1215,7 +1215,10 @@ function buyOutfit(gd){
     G.gold-=gd.price;G.flags['outfit_'+gd.n]=true;sfx('sfx_coin');
     $('shopmsg').textContent="Elle grins: '"+gd.name+" is yours — fresh off the bolt!'"}
   G.flags.outfitsBought=true;G.outfit=gd.n;sfx('sfx_success');
-  $('shopmsg').textContent="You change into "+gd.name+". Suits you!";shopRender();hudRender();save()}
+  if(!G.flags.rainbowScarf&&[2,3,4,5].every(n=>G.flags['outfit_'+n])){
+    G.flags.rainbowScarf=1;G.inv.item.ribbon=(G.inv.item.ribbon||0)+1;G.maxsta=(G.maxsta||0)+5;
+    $('shopmsg').textContent="Every color in your wardrobe! Elle drapes a hand-dyed RAINBOW SCARF over your shoulders — +5 max energy."}
+  else $('shopmsg').textContent="You change into "+gd.name+". Suits you!";shopRender();hudRender();save()}
 const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture — petted animals give double produce'},
              {flag:'bl_silo',name:'Feed Silo',price:150,sub:'auto-feeds the hens — eggs even if you forget'},
              {flag:'bl_steel',name:'Steel Toolset',price:180,ore:3,sub:'needs Copper + 3 ore — chores cost 2 less energy'},
