@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.03</div></div></div>
+    <div class="ver">v4.04</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -3930,10 +3930,13 @@ function render(ts){
         ctx.restore();ctx.globalAlpha=1;}}
     else G.swing=null;}
   if(G.fx&&G.fx.length){
-    for(const p of G.fx){p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life--;
+    for(const p of G.fx){p.x+=p.vx;p.y+=p.vy;p.vy+=p.grav!==undefined?p.grav:.12;p.life--;
       if(p.life>0){ctx.globalAlpha=Math.min(1,p.life/18);ctx.fillStyle=p.color;
         ctx.fillRect(camX+p.x*T*SCALE,camY+p.y*T*SCALE,p.sz*SCALE,p.sz*SCALE);}}
     ctx.globalAlpha=1;G.fx=G.fx.filter(p=>p.life>0);}
+  // farmhouse chimney smoke — cold mornings puff pale rings over the roof
+  if(G.map==='farm'&&!G.L.indoor&&(season()===3||(G.clock/60>=5&&G.clock/60<11))){
+    if(Math.random()<.10)G.fx.push({x:28.4+(Math.random()-.5)*.3,y:8.1,vx:.01+Math.random()*.02,vy:-.045-Math.random()*.02,life:60+Math.random()*30,color:'#d8d4cc',sz:4,grav:-.004})}
   // festival fireworks over the plaza on Festival Eve (day%28===0), 22:00-midnight
   if(G.map==='village'&&G.day%28===0&&G.clock/60>=22&&G.clock/60<24){
     if(Math.random()<.06){const COLS=['#ffd76e','#ff8a8a','#8ad4ff','#aaffa0','#e0a0ff'];
