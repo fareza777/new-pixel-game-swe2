@@ -433,6 +433,9 @@ function loadMap(id,sx,sy){
     if(d.spr==='lamp01')G.objs[G.objs.length-1].meta.light=true;}
   if(id==='house')for(const cd2 of(G.cords||[]))
     G.objs.push({key:cd2.spr,x:cd2.x,y:cd2.y,meta:{kind:'deco'},fid:cd2.id,hx:cd2.x,hy:cd2.y,ph:0});
+  if(id==='farm'&&G.day%7===0&&G.clock/60>=9&&G.clock/60<17&&!G.objs.some(o=>o.fid==='swap0')){
+    G.objs.push({key:'crate_01',x:8.5,y:15.5,anchor:'bc',meta:{kind:'swap',name:"Pip's swap stand"},fid:'swap0',hx:8.5,hy:15.5,ph:0});
+    G.objs.push({key:'pip_down0',x:9.5,y:15.5,anchor:'bc',meta:{kind:'deco',name:'Pip, minding his swap stand'},fid:'swap_p',hx:9.5,hy:15.5,ph:0});}
   if(id==='farm'&&G.flags.bl_barn){G.objs.push({key:'barn',x:57,y:8.6,meta:{kind:'deco',name:'The Old Barn'},fid:'bl_barn',hx:57,hy:8.6,ph:0});
     for(let bx=54;bx<=59;bx++)for(let by=5;by<=8;by++)G.solid.add(bx+','+by);
     G.objs.push({key:'doormat',x:57,y:9.2,meta:{kind:'deco'}});
@@ -2211,7 +2214,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2665,6 +2668,16 @@ function interact(){
         {label:'\U0001F454 Vote Bram',cb:()=>{G.flags.vote='bram';G.hearts.bram=Math.min(10,(G.hearts.bram||0)+1);toast('You slip your ballot in. Bram beams.');save()}},
         {label:'\U0001F3A9 Vote Pip',cb:()=>{G.flags.vote='pip';G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);toast('You slip your ballot in. Pip does a little hop.');save()}}]);
     return}
+  if(m.kind==='swap'){
+    const FORG=['mushroom','berry','herb','shell','flower'];
+    const have=FORG.filter(i=>(G.inv.item[i]||0)>0);
+    if(have.length<2){startDlg(o,["Pip's swap stand! The sign says: TWO FORAGEABLES FOR ONE SURPRISE SEED PACKET.","'Mushrooms, berries, shells, flowers — anything wild counts!'"]);return}
+    G.inv.item[have[0]]--;G.inv.item[have[1]]--;
+    const seedIds=[1,3,6,8,10,13,16,18,21,23,24,25,26];
+    const sid=seedIds[Math.floor(Math.random()*seedIds.length)];
+    G.inv.seed[sid]=(G.inv.seed[sid]||0)+1;sfx('sfx_success');swing('basket',o.x,o.y);
+    G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);
+    toast('🔄 Pip swaps you a packet of '+CROPS[sid]+' seeds! "Fair trade!" (+1 ♥)');save();return}
   if(m.kind==='memorial'){
     if(G.flags['mem'+G.day]){toast('🕯 The lantern still glows — the stories have been told');return}
     G.flags['mem'+G.day]=1;sfx('sfx_talk');
@@ -3975,6 +3988,7 @@ function promptScan(){
       else if(m.kind==='fbooth')txt=G.flags['fbooth'+G.day]?'🎪 The booth has packed up its treats':BTN+' · 🎪 Take '+m.tname+' (free treat)'
       else if(m.kind==='laundry')txt=G.weather==='wind'?(G.flags['lau'+G.day]?'🧺 The line is quiet now':BTN+' · 🧺 Check the laundry line'):'🧺 The laundry line';
       else if(m.kind==='ballot')txt=BTN+' · 🗳 Cast your vote';
+      else if(m.kind==='swap')txt=BTN+' · 🔄 Swap forage for seeds';
       else if(m.kind==='memorial')txt=BTN+' · 🕯 Join the memorial';
       else if(m.kind==='btn')txt=BTN+' · 🪡 Pocket the brass button';
       else if(m.kind==='rcut')txt=BTN+' · 🎀 Cut the dedication ribbon';
