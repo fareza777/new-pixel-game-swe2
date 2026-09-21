@@ -865,6 +865,15 @@ function talkTo(o){
       f.wrenDone=true;G.inv.item.starflower-=3;G.gold+=60;G.stats.quests++;
       G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_success');
       lines.push('Three perfect blooms! Into the press they go — here, for the climb. (+60g, +2 ♥)')}}
+  if(m.id==='wren'&&f.wrenDone&&!f.wrenHerb){
+    const miss=['posy','orchid','mshroom'].filter(i=>(G.inv.item[i]||0)<1);
+    if(!miss.length){f.wrenHerb=true;G.inv.item.posy--;G.inv.item.orchid--;G.inv.item.mshroom--;
+      G.inv.item.ribbon=(G.inv.item.ribbon||0)+0;G.gold+=120;G.stats.quests++;
+      G.hearts.wren=Math.min(10,(G.hearts.wren||0)+3);sfx('sfx_success');G.flags.herbarium=1;
+      lines.push("A posy, a moon mushroom, AND a glasshouse orchid — the page is complete!")
+      lines.push("She presses them under glass and hands you the Herbarium Plate — and 120g for the museum of her heart. (+120g, +3 ♥)")
+      lines.push("'...Grandfather used to bring me flowers, you know. He'd have liked you.'")}
+    else lines.unshift("Now — the rarest page: a plaza posy, a glasshouse orchid, and a moon mushroom. Take your time.")}
   if(m.id==='wren')f.metWren=true;
   if(m.id==='fen'&&!f.fenRiver&&(G.inv.item&&G.inv.item.rfish>0)){
     G.inv.item.rfish--;f.fenRiver=true;G.stats.quests++;G.flags.lure=true;
