@@ -511,6 +511,8 @@ function loadMap(id,sx,sy){
   if(id==='inn'&&G.day%7===5){const hd=G.clock/60;
     if(hd>=17&&hd<22){const INN={bram:[4.5,7.6],sari:[13.5,7.6],vilo:[13.5,9.2]};
       for(const k in INN){G.objs.push({key:k+'_down0',x:INN[k][0],y:INN[k][1],anchor:'bc',anim:{frames:[k+'_down0',k+'_down1',k+'_down2',k+'_down1'],fps:6},meta:{kind:'npc',id:k,name:{bram:'Mayor Bram',sari:'Sari',vilo:'Vilo'}[k],portrait:k+'_portrait'},fid:'inn_'+k})}}}
+  if(id==='forest'&&G.clock/60>=6&&G.clock/60<11&&!G.objs.some(o=>o.fid==='wrenW'))
+    G.objs.push({key:'wren_down0',x:10.5,y:7.5,anchor:'bc',meta:{kind:'npc',id:'wren',name:'Wren',portrait:'wren_portrait'},fid:'wrenW',hx:10.5,hy:7.5,ph:0});
   if(id==='forest'&&G.clock/60<8&&!G.flags['chor'+G.day]){G.flags['chor'+G.day]=1;
     G.sta=Math.min(G.maxsta||100,(G.sta||0)+8);sfx('sfx_talk');
     toast('🐦 The dawn chorus — a hundred little voices greet the morning (+8⚡)')}
