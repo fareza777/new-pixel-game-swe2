@@ -1667,7 +1667,22 @@ function interact(){
         if(G.blessedFor===G.day+1){startDlg(o,["Another streak crosses the sky. You've already wished tonight — watch them fall instead."])}
         else{G.blessedFor=G.day+1;
           startDlg(o,["A meteor stitches the dark — you wish before it fades.","Somewhere, seeds stir in their rows.","[Tomorrow will be a lucky day: crops grow +1 stage]"])}}
-      else startDlg(o,["Through the brass lens: clusters of stars over the valley.","Luna says a meteor shower visits every ninth night."]);return}
+      else{
+        const CONS=[["The Ladle","Seven stars like a soup spoon — sailors once steered by it."],
+        ["The Sleeping Deer","A doe folded among her fawns. She only shows herself to the patient."],
+        ["The Lanternfly","A swarm-shaped scatter over the south field — it blinks if you stare."],
+        ["The Brass Kettle","Steam forever rising toward the north star. Luna's favorite."],
+        ["The Twin Herons","Two birds mid-flight, wingtip to wingtip — the valley's old symbol."],
+        ["Grandfather's Plough","Low on the horizon, furrows of faint stars. Someone must have loved him."]];
+        G.flags.cons=G.flags.cons||{};
+        const next=CONS.find(c=>!G.flags.cons[c[0]]);
+        if(next){G.flags.cons[next[0]]=1;const n=Object.keys(G.flags.cons).length;
+          const lines=["You take the eyepiece. Luna leans in beside you, pointing.","'"+next[0]+"' — "+next[1],
+            "[Constellation "+n+"/6 recorded in your journal]"];
+          if(n>=6){G.flags.meteorCharm=1;G.inv.item.starore=(G.inv.item.starore||0)+1;
+            lines.push("Luna beams. 'The whole sky knows your name now.'","She hangs a Meteor Charm around the telescope — meteor nights will gift you an extra star ore. (+1 Star Ore)")}
+          startDlg(o,lines)}
+        else startDlg(o,["Through the brass lens: the whole atlas you mapped together.","Luna says a meteor shower visits every ninth night."]);return}}
     toast('🔭 The telescope is for nights — come back after 19:00');return}
   if(m.kind==='shrine'){
     if(G.flags.shrineBless){G.sta=Math.min(G.maxsta||100,G.sta+10);sfx('sfx_harvest');toast('🙏 The shrine hums softly. (+10 energy)');return}
