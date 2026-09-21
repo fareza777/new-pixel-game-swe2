@@ -152,7 +152,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v2.03</div></div></div>
+    <div class="ver">v2.04</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -560,6 +560,8 @@ function loadMap(id,sx,sy){
     if(MSPOTS[id])MSPOTS[id].forEach((pt,i)=>{
       if(!G.flags['mshr'+G.day+i]&&!G.objs.some(o=>o.fid==='mshr'+i))
         G.objs.push({key:'mshroom',x:pt[0],y:pt[1],meta:{kind:'forage',item:'mshroom',name:'a moon mushroom — it glows faintly',one:i},fid:'mshr'+i,hx:pt[0],hy:pt[1],ph:i});});}
+  if(id==='hill'&&!G.objs.some(o=>o.fid==='bench0'))
+    G.objs.push({key:'hillbench',x:20.5,y:9.5,meta:{kind:'bench',name:'the hilltop bench'},fid:'bench0',hx:20.5,hy:9.5,ph:0});
   const GPAGES={farm:[51.5,9.5],village:[8.5,33.5],forest:[16.5,4.5],river:[20.5,23.5],hill:[14.5,9.4],cave:[15.5,12.5],orchard:[21.5,14.5]};
   if(GPAGES[id]){const gi=Object.keys(GPAGES).indexOf(id);
     if(!G.flags['gp'+gi]&&!G.objs.some(o=>o.fid==='gp'+gi))
@@ -1432,7 +1434,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -1739,6 +1741,14 @@ function interact(){
     G.inv.crop[cid]--;G.smSeed=+cid;G.smBusy=true;G.smReady=G.day+1;
     sfx('sfx_cook');swing('basket',o.x,o.y);
     toast('🌱 '+CROPS[cid]+' goes in — 2 seed packets tomorrow');hudRender();save();return}
+  if(m.kind==='bench'){
+    const h=G.clock/60,sun=h>=17&&h<19.5;
+    if(G.flags['bench'+G.day]===1){toast(sun?'🌅 The sky burns gold and rose. You could sit here forever.':'🌤 You sit a while, watching the clouds drift.');return}
+    G.flags['bench'+G.day]=1;
+    if(sun){G.sta=Math.min(100+(G.maxsta||0),G.sta+12);sfx('sfx_success');
+      toast('🌅 You watch the sun melt into the valley. Everything feels possible. (+12⚡)')}
+    else toast('🌤 You sit a while — the valley hums below. Come back at sunset (17-19h) for a real treat.');
+    save();return}
   if(m.kind==='cart'){
     const dests={farm:[['village','Village gate',3.5,17.5],['cave','Old Mine',17.5,5.4]],
                  village:[['farm','Farm gate',52.5,19.4],['cave','Old Mine',17.5,5.4]],
@@ -2503,6 +2513,7 @@ function promptScan(){
       else if(m.kind==='contest')txt=BTN+' · 🏆 Enter the Harvest Contest';
       else if(m.kind==='radio')txt=BTN+' · 📻 Tune the radio';
       else if(m.kind==='seedmk')txt=G.smReady&&G.smReady<=G.day?BTN+' · 🌱 Collect seeds':(G.smBusy?BTN+' · ⚙ Still grinding':BTN+' · 🌱 Feed a crop to the seed maker')
+      else if(m.kind==='bench')txt=BTN+' · 🌅 Sit and watch the sky'
       else if(m.kind==='cart')txt=BTN+' · 🛒 Ride the minecart'
       else if(m.kind==='egg')txt=BTN+' · 🥚 Grab the painted egg'
       else if(m.kind==='kite')txt=BTN+' · 🪁 Fly the kite with Pip'
