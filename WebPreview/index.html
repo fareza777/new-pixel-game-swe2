@@ -1028,6 +1028,12 @@ function talkTo(o){
   if(m.id==='elle'&&!f.woolScarf&&(G.inv.item.wool||0)>=2){
     G.inv.item.wool-=2;f.woolScarf=true;G.maxsta=(G.maxsta||100)+10;
     lines.unshift(null,'vo_elle2',"Wait — is that Molly's wool? Give it here… there. A scarf, warm as a hearth. (+10 energy forever)")}
+  if(m.id==='bram'&&!f.archivist&&G.flags.gwatch&&G.flags.meteorCharm&&G.flags.herbarium&&G.flags.postcardAlbum&&f.hideChamp){
+    f.archivist=true;G.gold+=300;G.maxsta=(G.maxsta||0)+10;G.stats.quests++;sfx('sfx_success');
+    lines.length=0;
+    lines.push("Kid... every page, every star, every flower, every silly postcard — you've collected the whole valley.")
+    lines.push("Bram pins a brass badge to your collar — ARCHIVIST OF SUNPETAL VALLEY. (+300g, +10 max energy)")
+    lines.push("'Your grandfather kept every memory of this place. Now they live with you.'")}
   if(m.id==='bram'&&f.sunpetalBloom&&!f.festival){f.festival=true;sfx('sfx_success');
     startDlg(o,lines,festivalVisuals);return}
   startDlg(o,lines);
