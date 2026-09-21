@@ -533,6 +533,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'bird_left1',x:47.4,y:11.3,anchor:'bc',anim:{frames:['bird_left0','bird_left1','bird_left2','bird_left1'],fps:4},meta:{kind:'chicken',name:'Brown Hen'},fid:'hen2',hx:47.4,hy:11.3,ph:2});
   if(id==='cave3'&&(G.clock/60>=19||G.clock/60<5)&&!G.objs.some(o=>o.meta&&o.meta.id==='gus'))
     G.objs.push({key:'ghost',x:10.5,y:5.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'gus',name:'Old Gus',portrait:'ghost_portrait'},fid:'gus0',hx:10.5,hy:5.5,ph:0});
+  if(id==='hill'&&G.day%9===7&&G.clock/60<19&&G.forageDay['hill|crater']!==G.day&&!G.objs.some(o=>o.fid==='crater'))
+    G.objs.push({key:'goldstar',x:12.5,y:9.5,meta:{kind:'forage',item:'starore',name:'a still-warm meteor crater',double:'starore'},fid:'crater',hx:12.5,hy:9.5,ph:0});
   if(id==='hill'&&G.day%9===6&&(G.clock/60>=19||G.clock/60<5))
     [[11.5,4.4],[15.5,6.4],[9.5,7.4]].forEach((p,i)=>{
       if(G.forageDay['hill|sore'+i]!==G.day&&!G.objs.some(o=>o.fid==='sore'+i))
@@ -1841,6 +1843,10 @@ function interact(){
       G.inv.item[r.i]-=r.n;G.reqDay=G.day;G.stats.quests++;G.gold+=r.p;sfx('sfx_success');
       toast('📋 Request complete: '+r.n+'× '+ITEMS[r.i].name+' → +'+r.p+'g');hudRender();save();return}
     toast('📋 '+r.w+': bring '+r.n+'× '+(ITEMS[r.i]?ITEMS[r.i].name:r.i)+' (you have '+have+') → '+r.p+'g');return}
+  if(m.kind==='forage'&&m.double){
+    const n=2;G.inv.item[m.item]=(G.inv.item[m.item]||0)+n;G.forageDay[G.map+'|'+o.fid]=G.day;
+    const bi=G.objs.indexOf(o);if(bi>=0)G.objs.splice(bi,1);collect(m.item);sfx('sfx_success');
+    toast('🌠 The crater holds '+n+' Star Ore — still warm from the sky!');hudRender();save();return}
   if(m.kind==='forage'){
     if(G.forageDay[G.map+'|'+o.fid]===G.day){toast('Nothing left to gather here today.');return}
     if(!spendSta(1))return;
