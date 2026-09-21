@@ -1190,6 +1190,14 @@ function talkTo(o){
     G.flags['fline'+G.day+m.id]=1;
     const FL={bram:"A festival mid-season — your grandfather loved these most of all.",sari:"Sold out of ribbons by noon. Festivals are good for the soul AND the till.",nana:"I made extra tea. Go on, take a cup — the night is young.",vilo:"Even the river hums on festival nights, kid.",pip:"Booth treats are FREE tonight. I checked. Twice.",mira:"Eat, drink, be merry — doctor's orders for once.",fen:"Even fish jump for festival nights, or so I tell the tourists.",wren:"Everyone under the lamplight makes such a lovely sketch.",luna:"Festivals are the valley's own constellations — lights below mirroring above.",hazel:"Save room! There's a treat with your name on it at the booths.",cora:"I strung every lantern on this street. Every single one.",elle:"I dressed for the season — tell me the scarf doesn't match the lanterns.",mart:"Fine festival! I do love a town that knows how to gather.",tom:"Smells like my mother's festival stew. Don't tell her I said that."};
     const lf=FL[m.id];if(lf)putLine([null,lf]);}
+  if(m.id==='bram'&&(G.day-1)%7===4&&!f.censusDone&&G.day%28<27){
+    const ALLV=['sari','vilo','nana','mira','fen','pip','wren','luna','hazel','cora','elle','tom'];
+    const n2=ALLV.filter(v=>G.talkDay[v]===G.day).length;
+    if(!f.censusDay||f.censusDay!==G.day){f.censusDay=G.day;
+      startDlg(o,["It's Census Day, kid — help an old mayor count the village.","Greet everyone you can find — I'll know. Talk to me again when you've seen them all.","["+n2+"/12 neighbors greeted today]"]);return}
+    if(n2>=12){f.censusDone=G.day;G.gold+=80;sfx('sfx_success');
+      startDlg(o,["Every single one! Even Tom down by the water — impressive, kid.","The village ledger thanks you.","[Census complete! +80g]"]);return}
+    startDlg(o,["Still some faces to find — "+(12-n2)+" more neighbor"+(12-n2>1?'s':'')+" to greet today."]);return}
   if(m.id==='grang'){
     if(!f.granGhost){
       f.granGhost=true;sfx('sfx_wish');
@@ -2415,6 +2423,7 @@ function dayTick(){
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
   if(G.day%28===14)setTimeout(()=>toast('🎪 Seasonal Festival this evening at the plaza (17:00-22:00) — free treats!'),1500);
+  if((G.day-1)%7===4)setTimeout(()=>toast('📋 Census Day — Bram wants everyone greeted today'),1300);
   const bds=Object.keys(BDAY).filter(k=>isBirthday(k));
     if(G.flags.wishPending===G.day){G.flags.wishPending=0;
       const wr=Math.random();
