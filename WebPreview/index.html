@@ -851,6 +851,14 @@ function talkTo(o){
    elle:"I sewed ribbons for the prizes — may the best stew win!"};
   const putLine=t=>{if(lines[0]===null&&lines.length>1)lines.splice(2,0,t);else lines.unshift(t)};
   if(G.day%7===0&&FAIR[m.id])putLine(FAIR[m.id]);
+  if(m.id==='elle'&&G.day%7===0&&G.map==='village'&&!f['fshow'+G.day]){
+    f['fshow'+G.day]=1;
+    const tier=G.outfit>0?(G.flags.rainbowScarf?3:G.outfit>=3?2:1):0;
+    if(tier===0){putLine(["Elle","The Fashion Walk starts at noon — come back wearing something of mine, darling!"])}
+    else{
+      const rew=[0,60,120,200][tier],m2=Math.min(10,(G.hearts.elle||0)+2);G.hearts.elle=m2;
+      G.gold+=rew;G.inv.item.ribbon=(G.inv.item.ribbon||0)+1;sfx('sfx_success');
+      putLine(["Elle","*She circles you slowly* …yes. YES. That drape, that hem! The plaza applauds — first place, darling! +"+rew+"g, +2 ♥"])}}
   if(G.map==='nanahouse'&&G.day%7===2&&G.clock/60>=15&&G.clock/60<18&&TEA[m.id])putLine(TEA[m.id]);
   if((G.weather==='rain'||G.weather==='storm')&&RAIN[m.id])putLine(RAIN[m.id]);
   const SNOW={bram:"Snow on the plaza stones — the valley sleeps clean.",
