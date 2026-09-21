@@ -1924,7 +1924,10 @@ function interact(){
     startDlg(o,["A mossy statue of the Grove Keeper. Vines hold a small empty bowl.","The inscription: 'Share the forest's own harvest, and it will share its strength.'",
                 "(Offer: 1 mushroom + 1 berry + 1 herb)"]);return}
   if(m.kind==='elder'){
-    if(G.flags.elderBloom){toast('🌸 The Elder Tree rustles gently — the valley remembers.');sfx('sfx_success');return}
+    if(G.flags.elderBloom){
+      if(G.flags['wishS'+season()]){toast('🌸 Your ribbon still flutters on the branches — one wish each season.');sfx('sfx_success');return}
+      G.flags['wishS'+season()]=1;G.flags.wishPending=G.day+1;sfx('sfx_wish');
+      startDlg(o,["You tie a ribbon of red thread to a low branch and whisper your wish.","The gold petals tremble — somewhere between a rustle and an answer.","[The Elder Tree will grant your wish by morning. One wish per season.]"]);save();return}
     if((G.inv.crop[22]||0)>0&&(G.inv.item.starflower||0)>0){
       G.inv.crop[22]--;G.inv.item.starflower--;G.flags.elderBloom=true;G.stats.quests++;
       o.key='eldertree_b';sfx('sfx_success');
@@ -2381,6 +2384,12 @@ function dayTick(){
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
   const bds=Object.keys(BDAY).filter(k=>isBirthday(k));
+    if(G.flags.wishPending===G.day){G.flags.wishPending=0;
+      const wr=Math.random();
+      if(wr<.3){const g2=60+Math.floor(Math.random()*60);G.gold+=g2;setTimeout(()=>toast('🌸 Dawn blessing: '+g2+'g tucked under your pillow'),900)}
+      else if(wr<.55){G.flags.luckyDay=G.day;setTimeout(()=>toast('🌸 Dawn blessing: today feels charmed — a lucky day!'),900)}
+      else if(wr<.8){G.inv.item.honey=(G.inv.item.honey||0)+2;G.inv.item.starflower=(G.inv.item.starflower||0)+1;collect('honey');collect('starflower');setTimeout(()=>toast('🌸 Dawn blessing: honey & a starflower by your door'),900)}
+      else{G.inv.item.starore=(G.inv.item.starore||0)+1;collect('starore');setTimeout(()=>toast('🌸 Dawn blessing: a Star Ore glowing on the doorstep'),900)}}
     G.sta=G.maxsta||100;   // a night's rest
     if(G.petDay['pig']===yesterday)G.flags.truffleReady=true;   // happy pig digs a truffle
     if(G.petDay['cat']===yesterday&&Math.random()<(G.flags.mochiHome?.55:.3))G.flags.catGift=true;
@@ -2959,7 +2968,7 @@ function promptScan(){
       else if(m.kind==='boat')txt=BTN+' · 🚣 '+(m.to==='islet'?'Row to Pearl Isle':'Row back to the riverbank');
       else if(m.kind==='scope')txt=(G.clock>=19*60||G.clock<5*60)?(G.day%9===6?BTN+' · 🌠 Wish on a meteor':BTN+' · 🔭 Stargaze'):BTN+' · 🔭 Telescope (night)';
       else if(m.kind==='shrine')txt=G.flags.shrineBless?BTN+' · 🙏 Pray at the shrine':BTN+' · 🙏 Offer to the Grove Keeper';
-      else if(m.kind==='elder')txt=G.flags.elderBloom?BTN+' · 🌸 Admire the Elder Tree':BTN+' · 🌸 Offer a bloom to the Elder Tree';
+      else if(m.kind==='elder')txt=G.flags.elderBloom?(G.flags['wishS'+season()]?'🌸 Your ribbon flutters above':BTN+' · 🎀 Hang a wish ribbon'):BTN+' · 🌸 Offer a bloom to the Elder Tree';
       else if(m.kind==='press')txt=(G.inv.item.apple||0)>=2?BTN+' · 🍎 Press cider (2 apples)':BTN+' · 🍎 Old Cider Press (needs 2 apples)';}
   }
   // prompt & toast never share the screen: prompt yields while a toast is up
