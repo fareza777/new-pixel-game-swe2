@@ -2617,6 +2617,12 @@ function interact(){
   if(m.kind==='bonfire'){
     if(!G.flags['bf'+G.day]){G.flags['bf'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
       toast('🔥 The bonfire crackles — hands warm, hearts warmer (+10⚡)')}
+    else if(!G.flags['bftale'+G.day]&&G.clock/60>=20){G.flags['bftale'+G.day]=1;
+      const TALE=['Tom leans into the firelight: “They say Old Gus still whistles down in B3 — if you hear it, don\u2019t answer back.”',
+                  'Hazel whispers: “The well never sleeps. Ask the coins — they\u2019ve heard every wish in this valley.”',
+                  'Bram glowers at the embers: “The founder rode through a night storm once. Some say the storm still owes him one.”',
+                  'Nana smiles: “Ghosts are just folks who loved this valley too much to leave. Now — more pie?”'][G.day%4];
+      startDlg(o,[TALE])}
     else toast('🔥 The fire settles into glowing embers');
     if((G.inv.item.chestnut||0)>0){G.inv.item.chestnut--;G.inv.item.roastnut=(G.inv.item.roastnut||0)+1;
       sfx('sfx_cook');toast('🌰 You roast a chestnut in the embers')}return}
