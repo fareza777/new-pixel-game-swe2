@@ -780,6 +780,36 @@ function talkTo(o){
   if(G.day%7===0&&FAIR[m.id])putLine(FAIR[m.id]);
   if(G.map==='nanahouse'&&G.day%7===2&&G.clock/60>=15&&G.clock/60<18&&TEA[m.id])putLine(TEA[m.id]);
   if((G.weather==='rain'||G.weather==='storm')&&RAIN[m.id])putLine(RAIN[m.id]);
+  const SNOW={bram:"Snow on the plaza stones — the valley sleeps clean.",
+   sari:"Cold hands, warm stall — stand close, kid.",
+   vilo:"Snow day means soup day in my book.",
+   nana:"Snow always reminds me of your grandfather's first winter here.",
+   mira:"Frost on the medicine jars — keep your gloves on!",
+   pip:"SNOW! SNOW! I already made three angels!",
+   luna:"Snow hushes the sky — the stars come down lower.",
+   wren:"The hill in snow is a different country entirely.",
+   hazel:"Hot cider season — the inn never smells better.",
+   cora:"Snow on the scaffold makes for slow, careful work.",
+   fen:"River skin freezes, but the big fish stay hungry.",
+   tom:"Snow falls quiet on the water — my favorite silence.",
+   elle:"Every stitch in winter is a promise of spring.",
+   mart:"Snow tires on the wagon, kid — a merchant adapts!"};
+  if(season()===3&&SNOW[m.id])putLine(SNOW[m.id]);
+  const NIGHT={bram:"Late, kid? The lanterns keep their watch anyway.",
+   sari:"You're out late — the stall's closed but the doors of friends aren't.",
+   vilo:"Night air's good for thinking. And other things.",
+   nana:"The valley hums softer at night, dear. Listen.",
+   mira:"Late night rounds — a farmer's hours never end, do they?",
+   pip:"I snuck out past bedtime. You're my alibi!",
+   luna:"The night is yours as much as the day — more, maybe.",
+   wren:"Moths dance for the lamplight — the hill keeps its own time.",
+   hazel:"The inn stays warm till the last mug is dry.",
+   cora:"Evening light on fresh-cut timber — best time of day.",
+   fen:"Pond frogs on chorus — a fisherman's lullaby.",
+   tom:"Fishing by starlight — the river glows back.",
+   elle:"Lamplight sewing — the hours disappear.",
+   mart:"Night markets up the coast — you'd love 'em, kid."};
+  if((G.clock/60>=20||G.clock/60<5)&&NIGHT[m.id])putLine(NIGHT[m.id]);
   const WARM={bram:"Kid — I see your grandfather in you more every day.",
    sari:"For you? Always the freshest seeds, kid.",
    vilo:"Sit a while. The valley's kinder with you in it.",
