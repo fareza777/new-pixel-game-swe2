@@ -963,6 +963,14 @@ function talkTo(o){
     G.inv.item.locket=(G.inv.item.locket||0)+1;G.gold+=50;G.stats.quests++;sfx('sfx_success');
     for(const nid of['sari','nana','mira'])G.hearts[nid]=Math.min(10,(G.hearts[nid]||0)+1);
     lines.unshift("Today we honor your grandfather — he planted this valley's first sunpetal, right where you stand.","You've carried the farm beautifully, kid. He'd be proud.","Here — his old Sunpetal Locket, and a little from the town fund. They belong on this farm. (+1 ♥ with everyone here)")}
+  if(m.id==='nana'&&(G.day-1)%7===2&&!f['rem'+G.day]){
+    if(!f['remAsk'+G.day]){f['remAsk'+G.day]=1;
+      lines.unshift("Bloomday, dear — my remedy shelf runs thin. Two Wild Herbs from the forest would set me right. (+2 ♥ and a tonic, if you can)")}
+    else if((G.inv.item.herb||0)>=2){G.inv.item.herb-=2;f['rem'+G.day]=1;
+      G.inv.item.tonic=(G.inv.item.tonic||0)+1;collect('tonic');
+      G.hearts.nana=Math.min(10,(G.hearts.nana||0)+2);sfx('sfx_cook');
+      lines.unshift("Perfect, dear. *She crushes them with the old stone pestle* — and here's a bottle for your own shelf. (+1 Herbal Tonic, +2 ♥)")}
+    else lines.unshift("Two Wild Herbs, dear — the forest floor is generous if your eyes are kind.")}
   if(m.id==='nana'){f.metNana=true;
     if(f.metBram&&f.metSari&&f.metFen&&f.metMira&&!f.metAll){f.metAll=true;G.gold+=15;lines.push("(+15g — Nana's gift)")}}
   if(m.id==='nana'&&f.cookedOnce&&!f.cookbook){f.cookbook=true;G.stats.quests++;
