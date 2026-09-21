@@ -526,6 +526,10 @@ function loadMap(id,sx,sy){
     if(G.forageDay['grows|orchid1']!==G.day)
       G.objs.push({key:'orchid',x:7.5,y:4.6,meta:{kind:'forage',item:'orchid',name:'Glasshouse Orchid'},fid:'orchid1',hx:7.5,hy:4.6,ph:0});
     for(let i=0;i<2;i++)G.objs.push({key:'firefly',x:4+i*5,y:6+i,anim:{frames:['firefly'],fps:2},meta:{kind:'critter',item:'firefly',name:'a lantern firefly',wander:1},fid:'bug_gh'+i,hx:4+i*5,hy:6+i,ph:i*.7})}
+  if(id==='farm'&&G.day===21&&G.clock/60>=7&&G.clock/60<19){
+    const WP={bram:[22.5,11.5],nana:[26.5,11.5],mira:[23.5,13.4],pip:[25.5,13.2],hazel:[24.5,10.8]};
+    for(const k in WP)if(!G.objs.some(o=>o.fid==='wp_'+k))
+      G.objs.push({key:k+'_down0',x:WP[k][0],y:WP[k][1],anchor:'bc',anim:{frames:[k+'_down0',k+'_down1',k+'_down2',k+'_down1'],fps:5},meta:{kind:'npc',id:k,name:VNAME[k]||k,portrait:k+'_portrait'},fid:'wp_'+k,hx:WP[k][0],hy:WP[k][1],ph:0})}
   if(id==='farm'&&G.flags.mochiHome){const c=G.objs.find(o=>o.fid==='cat1');if(c){c.x=24.6;c.y=11.4;c.hx=c.x;c.hy=c.y}
     if(G.flags.mochiHome&&season()===0&&!G.objs.some(o=>o.fid==='kit0'))
       for(let i=0;i<2;i++)G.objs.push({key:'kitten',x:25.8+i*0.8,y:12.6,meta:{kind:'kitten',name:'a kitten'},fid:'kit'+i,hx:25.8+i*0.8,hy:12.6,ph:i})}
@@ -1074,6 +1078,12 @@ function talkTo(o){
     else if(!f.tomDone&&(G.inv.item.rfish||0)>=2){
       f.tomDone=true;f.tomsBait=true;G.inv.item.rfish-=2;G.gold+=60;G.stats.quests++;sfx('sfx_success');
       setTimeout(()=>toast("🎣 Tom's Knot learned — fish bite far more often! (+60g)"),900)}}
+  if(G.day===21&&G.map==='farm'&&!f['wp_'+m.id]&&['bram','nana','mira','pip','hazel'].includes(m.id)){
+    f['wp_'+m.id]=1;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);
+    const WG={bram:"Bram: 'Three weeks, kid — and the farm already breathes again. From all of us: welcome home.'",nana:"Nana presses a warm jar into your hands — her honey-mint tea. (+1 item)",mira:"Mira: 'The valley is healthier with you in it.' (+1 Herbal Tonic)",pip:"Pip: 'You're basically family now. RULES of family: snacks.' (+2 Berry)",hazel:"Hazel hands you a pie still warm from the inn oven. (+1 Pumpkin Pie)"};
+    lines.unshift(WG[m.id]);
+    const gi={nana:'htea',mira:'tonic',pip:'berry',hazel:'pie'}[m.id];
+    if(gi){G.inv.item[gi]=(G.inv.item[gi]||0)+(m.id==='pip'?2:1)}}
   if(m.id==='luna'&&G.day%56===0&&G.map==='hill'&&G.clock/60>=11&&G.clock/60<15&&!f['eclT'+G.day]){
     f['eclT'+G.day]=1;G.hearts.luna=Math.min(10,(G.hearts.luna||0)+1);
     lines.unshift("Hush — the sun's going out. *She grips your sleeve* …Sixty heartbeats of night at noon. Look. LOOK. (+1 ♥)")}
@@ -2548,6 +2558,8 @@ function dayTick(){
   if((G.day-1)%7===4)setTimeout(()=>toast('📋 Census Day — Bram wants everyone greeted today'),1300);
   if(G.day%28===21)setTimeout(()=>toast('🛒 Sari has a caravan bulk order today — see what she needs'),1350);
   if(G.day%56===0)setTimeout(()=>toast('🌒 A solar eclipse at midday — Luna is watching from the hill!'),1400);
+  if(G.day===21&&!G.flags.welcomeParty){G.flags.welcomeParty=1;
+    setTimeout(()=>toast('🎉 Everyone is waiting at the farmhouse porch — three weeks in Sunpetal!'),1500)}
   const bds=Object.keys(BDAY).filter(k=>isBirthday(k));
     if(G.flags.wishPending===G.day){G.flags.wishPending=0;
       const wr=Math.random();
