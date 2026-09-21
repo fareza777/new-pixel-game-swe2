@@ -3047,6 +3047,9 @@ function dayTick(){
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
   if(G.day%28===14)setTimeout(()=>toast('🎪 Seasonal Festival this evening at the plaza (17:00-22:00) — free treats!'),1500);
   if(G.day%7===5)setTimeout(()=>toast('🌙 Fen runs a night-fishing lesson at the river after 21:00 — the Kingfish bites'),1180);
+  if(!G.flags.valleyheart&&['luna','bram','sari','vilo','nana','mira','fen','pip','mart','wren','hazel','cora','elle','elm'].every(pid=>(G.hearts[pid]||0)>=10)){
+    G.flags.valleyheart=1;G.maxsta=(G.maxsta||0)+10;G.gold+=300;G.stats.gold+=300;
+    setTimeout(()=>toast('💛✨ EVERY heart in Sunpetal Valley loves you — the Elder Tree rings like a bell. VALLEY HEART: +300g, +10⚡ max'),1700)}
   if(G.day%7===0)setTimeout(()=>toast(season()===2?'🍄 Wren leads a mushroom walk — chanterelles hiding in the forest all day':'🐦 Wren leads birdwatching in the forest this morning — bring your eyes'),860);
   if(G.day>1&&(G.day-1)%7===0){
     const prev=(Math.floor((G.day-2)/7))%4,earned=Math.max(0,(G.stats.gold||0)-(G.seasonBase||0)),bonus=Math.min(300,Math.floor(earned/4))+20;
