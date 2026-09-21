@@ -1098,6 +1098,14 @@ function talkTo(o){
     G.inv.item.parcel--;delete f.parcelTo;
     G.gold+=40;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);G.stats.quests++;sfx('sfx_success');
     lines.length=0;lines.push("A parcel from Pip? Oh, he remembered!","Tell him thank you — and here's your delivery fee, courier. (+40g, +2 ♥)")}
+  if(m.id==='pip'&&!f.bugdex){
+    const BUGS=['butterfly','cricket','firefly','beetle'];
+    const missing=BUGS.filter(bg=>(G.inv.item[bg]||0)<1);
+    if(missing.length===0){
+      BUGS.forEach(bg=>G.inv.item[bg]--);f.bugdex=1;G.gold+=80;G.hearts.pip=Math.min(10,(G.hearts.pip||0)+3);G.stats.quests++;sfx('sfx_success');
+      lines.unshift("A butterfly, a cricket, a firefly AND a beetle! My collection is COMPLETE! Here — my lucky badge, it's yours! (+80g, +3 ♥)")}
+    else if(f.viloDone||G.flags.metPip){
+      lines.unshift("I'm building a bug collection — one of each: butterfly, cricket, firefly, beetle. With your net you can catch 'em all!")}}
   if(m.id==='pip'){f.metPip=true;
     if(f.pipDone&&G.hideSeek!==G.day&&!o.hiding){
       G.hideSeek=G.day;o.hiding=true;
