@@ -966,6 +966,10 @@ function talkTo(o){
   else if(G.map==='nanahouse'&&isBirthday('nana')&&G.clock/60>=15&&G.clock/60<19&&['mira','elle','sari','pip','hazel'].includes(m.id))
     lines.unshift("Nana's birthday tea! Shh — the surprise almost spoiled itself.")
   // friendship: +1 ♥ the first time you chat each day
+  if(G.outfit>0&&!G.flags['ad_'+m.id+'_'+G.outfit]){
+    G.flags['ad_'+m.id+'_'+G.outfit]=1;
+    const CMPL={bram:"Sharp new colors, kid — the valley notices.",sari:"Ooh, is that Elle's work? Turn around — yes, very fine stitch.",vilo:"New duds! The river reflects you handsomely today.",nana:"What lovely weaving, dear — reminds me of harvest fairs gone by.",mira:"A tidy outfit signals a tidy mind. Wear it well.",pip:"WHOA new outfit! You look like a festival flagpole!",fen:"Bright colors on the water — the fish will see you coming, ha!",wren:"That shade… I'm noting it in the margin of my sketchbook.",luna:"You shine like a small aurora, farmer.",hazel:"Look at you! The inn's lighting flatters that color.",cora:"Sturdy cut. Elle's work? Built to last.",elle:"MY stitchwork! Oh, it drapes beautifully on you — come by again.",mart:"Now that is a fine coat — worth every coin, I daresay.",tom:"Hmmph — good color for weather-watching. The sky will approve."};
+    const cl=CMPL[m.id];if(cl){putLine([null,cl]);G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1)}}
   if(G.talkDay[m.id]!==G.day){G.talkDay[m.id]=G.day;
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
