@@ -1272,6 +1272,11 @@ function talkTo(o){
       "The day he found you were coming, he danced in the rain. First time I ever saw him cry. Happy tears, dear."][wk];
     if(!f['story'+G.day]){f['story'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_talk');
       lines.unshift("Story night, dear — pull up a chair. "+stories+" (felt warmer already, +8⚡)");}}
+  if(m.id==='mira'&&!f.herbdrive&&(G.inv.item.herb||0)>=5){
+    f.herbdrive=1;G.inv.item.herb-=5;G.maxsta=(G.maxsta||0)+6;G.hearts.mira=Math.min(10,(G.hearts.mira||0)+2);sfx('sfx_success');
+    lines.unshift("Five bundles of wild herbs? Perfect — the clinic shelf is stocked for the season. Fainting penalty halved forever, and here\u2019s my thanks: First Aid pin. (+6⚡ max, +2 ♥)")}
+  else if(m.id==='mira'&&!f.herbdrive)
+    lines.unshift("The clinic\u2019s herb shelf runs thin — five Wild Herbs would restock it for a year. I\u2019d owe you a badge.");
   if(m.id==='mira'&&G.flags.fainted>0&&!f.medkit){
     f.medkit=1;sfx('sfx_success');
     lines.unshift("You fainted on me once — not again. Here, my field medkit: bandages, smelling salts, a little chocolate. Next collapse is on the house. (+0g)")}
