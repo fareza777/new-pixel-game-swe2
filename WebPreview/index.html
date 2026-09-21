@@ -434,6 +434,11 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'deco',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
   if(id==='farm'&&G.flags.bl_birdh&&G.forageDay['farm|feather']!==G.day&&G.clock/60<9&&Math.random()<.5)
     G.objs.push({key:'feather',x:34.5,y:16.5,anchor:'c',meta:{kind:'forage',item:'feather',name:'a songbird feather'},fid:'fth0',hx:34.5,hy:16.5,ph:0});
+  if(id==='farm'&&((G.day-1)%28)+1===21&&G.clock/60>=17&&G.clock/60<20){
+    const pals=[['fox','fox_down0',17.5,20.5],['rabbit','rabbit_down0',18.5,20.8],['penguin','penguin_down0',19.5,20.4],['raccoon','raccoon_down0',20.5,20.8],['sprout','sprout',16.5,20.8]];
+    pals.forEach(([pid,ky,px2,py2])=>{if(G.flags[pid]&&pid!=='sprout'||pid==='sprout'&&G.petDay['sprout']){
+      if(!G.objs.some(o=>o.fid==='par_'+pid))
+        G.objs.push({key:ky,x:px2,y:py2,anchor:'bc',meta:{kind:'parade',name:'the pet parade'},fid:'par_'+pid,hx:px2,hy:py2,ph:0})}})}
   if(id==='farm'&&G.flags.bl_laundry)G.objs.push({key:'clothesline',x:36.5,y:12.5,anchor:'bc',meta:{kind:'laundry',name:'the laundry line'},fid:'bl_laundry',hx:36.5,hy:12.5,ph:0});
   if(id==='farm'&&G.flags.bl_fence)for(let fx=10;fx<=22;fx++){if(fx===15)continue;
     G.objs.push({key:'fence',x:fx+.5,y:17.4,meta:{kind:'deco'},fid:'fence'+fx,hx:fx+.5,hy:17.4,ph:0});G.solid.add(fx+',17')}
@@ -2003,7 +2008,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2442,6 +2447,10 @@ function interact(){
       G.inv.item[gift[0]]=(G.inv.item[gift[0]]||0)+1;sfx('sfx_pick');
       toast('🧺 The wind snatched something onto your line — '+gift[1]+'!');return}
     toast(G.weather==='wind'?'🧺 Shirts dance on the line — you\u2019ve checked today':'🧺 Laundry sways gently');return}
+  if(m.kind==='parade'){
+    if(G.flags['pard'+G.day]){toast('🐾 The parade basks in the lantern light');return}
+    G.flags['pard'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
+    toast('🐾 All your friends in a row — the valley feels a little more like home (+8⚡)');return}
   if(m.kind==='picnic'){
     const hr=G.clock/60;
     if(hr<10||hr>=15){toast('🧺 The blanket waits for lunchtime sun');return}
@@ -2892,6 +2901,7 @@ function dayTick(){
   if(((G.day-1)%28)+1===11)setTimeout(()=>toast('🪵 It\u2019s Elm\u2019s birthday — the valley sneaks to his cabin this evening (17:00-21:00)'),1250);
   if(G.flags.bl_birdh)setTimeout(()=>sfx('sfx_talk'),400);
   if(G.day%28===14)setTimeout(()=>toast('🏛 MAYOR\u2019S ADDRESS tonight at the plaza, 18:00-21:00'),840);
+  if(((G.day-1)%28)+1===21)setTimeout(()=>toast('🐾 Your animal friends are gathering on the porch — pet parade at dusk!'),860);
   if(G.day%28===25&&G.flags.bl_barn)setTimeout(()=>toast('💃 BARN DANCE tonight at your barn, 19:00-23:00 — Hazel’s bringing the fiddle'),850);
   if(G.day%28===0)setTimeout(()=>toast('🍽 THE FOUNDER\u2019S FEAST tonight at the Lantern Inn, 18:00-22:00 — the whole valley gathers'),900);
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
