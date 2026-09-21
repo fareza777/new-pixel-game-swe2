@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v3.99</div></div></div>
+    <div class="ver">v4.00</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -3908,6 +3908,11 @@ function render(ts){
       if(p.life>0){ctx.globalAlpha=Math.min(1,p.life/18);ctx.fillStyle=p.color;
         ctx.fillRect(camX+p.x*T*SCALE,camY+p.y*T*SCALE,p.sz*SCALE,p.sz*SCALE);}}
     ctx.globalAlpha=1;G.fx=G.fx.filter(p=>p.life>0);}
+  // festival fireworks over the plaza on Festival Eve (day%28===0), 22:00-midnight
+  if(G.map==='village'&&G.day%28===0&&G.clock/60>=22&&G.clock/60<24){
+    if(Math.random()<.06){const COLS=['#ffd76e','#ff8a8a','#8ad4ff','#aaffa0','#e0a0ff'];
+      const bx=29+Math.random()*5,by=8+Math.random()*3,c=COLS[Math.floor(Math.random()*5)];
+      for(let i=0;i<16;i++){const a=i/16*6.283;G.fx.push({x:bx,y:by,vx:Math.cos(a)*.09,vy:Math.sin(a)*.09-.03,life:30,color:c,sz:2})}}}
   // meteor shower on the hill every 9th night
   if(G.map==='hill'&&!G.L.indoor&&G.day%28===24&&(G.clock/60>=20||G.clock/60<4)){
     const cx=(ts*0.08)%(cv.width*1.6)-cv.width*.3;
