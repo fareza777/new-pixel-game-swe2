@@ -1169,7 +1169,11 @@ const MART_GOODS=[...FARMDECOR.map(d=>({kind:'fdec',...d})),
                  {kind:'item',id:'truffle',name:'Forest Truffle',price:70,sub:'dug up at dawn'},
                  {kind:'item',id:'clover',name:'Lucky Clover',price:150,sub:'found once, maybe twice'},
                  {kind:'tool',id:'copper',name:'Copper Toolset',price:120,sub:'needs 3 iron ore — tools tire you less'},
-                 {kind:'hen',id:'hen2',name:'Brown Hen',price:150,sub:'joins your coop — pet her daily for eggs'}];
+                 {kind:'hen',id:'hen2',name:'Brown Hen',price:150,sub:'joins your coop — pet her daily for eggs'},
+                 {kind:'pcard',id:'pc_spring',name:'Postcard · Spring',price:25,sub:'cherry snow over the orchard'},
+                 {kind:'pcard',id:'pc_summer',name:'Postcard · Summer',price:25,sub:'fireflies over the pond'},
+                 {kind:'pcard',id:'pc_autumn',name:'Postcard · Autumn',price:25,sub:'the bridge in a rain of leaves'},
+                 {kind:'pcard',id:'pc_winter',name:'Postcard · Winter',price:25,sub:'aurora over Sunpetal Hill'}];
 const INN_MENU=[{id:'soup',name:'Hearty Soup',price:25,sub:'+35 energy'},
              {id:'stew',name:"Fisher's Stew",price:38,sub:'+28 energy'},
              {id:'cider',name:'Mulled Cider',price:30,sub:'+15 energy — orchard apples'},
@@ -1231,6 +1235,14 @@ function buyBuild(gd){
   G.gold-=gd.price;f[gd.flag]=true;sfx('sfx_success');
   $('shopmsg').textContent="Cora nods: '"+gd.name+" — it'll be standing on your farm by morning.'";shopRender();hudRender();save()}
 function buyMart(gd){
+  if(gd.kind==='pcard'){
+    if(G.flags[gd.id]){$('shopmsg').textContent='That one already lives in your album.';return}
+    if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
+    G.gold-=gd.price;G.flags[gd.id]=1;sfx('sfx_coin');
+    const all=['pc_spring','pc_summer','pc_autumn','pc_winter'].every(k=>G.flags[k]);
+    $('shopmsg').textContent="'"+gd.name+"' slips into your album."+(all?" All four seasons! Mart grins and adds a gilded frame — +100g collector's bonus!":' Collect all four seasons!');
+    if(all){G.gold+=100;G.flags.postcardAlbum=1;sfx('sfx_success')}
+    shopRender();hudRender();save();return}
   if(gd.kind==='hen'){
     if(G.flags.hen2){$('shopmsg').textContent='She already roosts in your coop.';return}
     if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
