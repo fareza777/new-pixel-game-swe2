@@ -850,6 +850,12 @@ function talkTo(o){
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_coin');
     lines.push('A pond fish for me?! Real village hospitality. Here — for your trouble. (+30g, +2 ♥)')}
   if(m.id==='vilo'){f.metVilo=true}
+  if(m.id==='tom'&&f.tomDone){
+    const crave=['fish','rfish','icefish','crab','shell'][(G.day*7)%5];
+    if(!f['tomday'+G.day]){
+      if((G.inv.item[crave]||0)>0){f['tomday'+G.day]=1;G.inv.item[crave]--;G.gold+=35;G.hearts.tom=Math.min(10,(G.hearts.tom||0)+1);sfx('sfx_success');
+        lines.unshift("A "+ITEMS[crave].name+"! Exactly what I was craving — the river provides, through you. (+35g, +1 ♥)")}
+      else lines.unshift("Craving a "+ITEMS[crave].name+" today — bring me one and I'll pay a fair price.")}}
   if(m.id==='tom'){
     if(!f.tomQ){f.tomQ=true}
     else if(!f.tomDone&&(G.inv.item.rfish||0)>=2){
