@@ -902,6 +902,9 @@ function talkTo(o){
   if(G.flags.bl_statue&&!f['st_'+m.id]&&['bram','sari','vilo','nana','mira','hazel','elle','pip','wren','luna','sari'].includes(m.id)){
     f['st_'+m.id]=1;
     lines.unshift("That statue in the plaza... your grandfather would be proud of the farmer you've become.")}
+  if(G.flags.soupList&&G.flags.soupList.includes(m.id)&&!G.flags.soupServed.includes(m.id)&&G.day%7===5&&G.clock/60>=18){
+    G.flags.soupServed.push(m.id);sfx('sfx_success');
+    lines.unshift("Oh — Hazel's soup? For me? *cradles the bowl* Tell her it smells like heaven. (Bowl "+G.flags.soupServed.length+"/3)")}
   if(m.id==='hazel'&&G.map==='river'&&G.day%7===5&&!f['picnic'+G.day]){f['picnic'+G.day]=1;
     G.sta=Math.min(100+(G.maxsta||0),G.sta+15);sfx('sfx_cook');
     lines.unshift("Here — a leftover sandwich from the basket. Picnics taste better shared! (+15⚡)")}
@@ -921,6 +924,19 @@ function talkTo(o){
     lines.unshift("Windday is the BEST! Help me get her higher — grab the line!")}
   if(m.id==='pip'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel let me have TWO sandwiches. Don't tell Mom!")}
+  if(m.id==='hazel'&&G.map==='inn'&&G.day%7===5&&G.clock/60>=18&&G.clock/60<22){
+    if(!f['soupday'+G.day]){f['soupday'+G.day]=1;
+      const cand=['bram','sari','vilo','nana','mira','elle','cora','pip'].filter(x=>x!==m.id);
+      G.flags.soupList=cand.slice((G.day*3)%cand.length,(G.day*3)%cand.length+3);
+      if(G.flags.soupList.length<3)G.flags.soupList=G.flags.soupList.concat(cand.slice(0,3-G.flags.soupList.length));
+      G.flags.soupServed=[];
+      lines.unshift("Restday soup night! Help me serve? Three bowls — for "+
+        G.flags.soupList.map(x=>({bram:'Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',elle:'Elle',cora:'Cora',pip:'Pip'}[x])).join(', ')+
+        ". They're out there in the village — bring each one a bowl.")}
+    else if(G.flags.soupServed&&G.flags.soupServed.length>=3&&!f['soupdone'+G.day]){
+      f['soupdone'+G.day]=1;G.gold+=45;G.hearts.hazel=Math.min(10,(G.hearts.hazel||0)+2);sfx('sfx_success');
+      lines.unshift("Every bowl delivered — the whole room smells like thyme. Here, your share of the till. (+45g, +2 ♥)")}
+    else if(G.flags.soupServed){lines.unshift("Still "+(3-G.flags.soupServed.length)+" bowl"+(3-G.flags.soupServed.length>1?'s':'')+" to serve, love.")}}
   if(m.id==='hazel'){
     if(f.metHazel&&!f.hq1&&(G.inv.crop['13']||0)>=2){
       G.inv.crop['13']-=2;f.hq1=true;G.stats.quests++;G.gold+=30;sfx('sfx_success');
