@@ -617,6 +617,8 @@ function loadMap(id,sx,sy){
       G.objs.push({key:pid+'_down0',x:px2,y:py2,anchor:'bc',meta:{kind:'npc',id:pid,name:{bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',hazel:'Hazel',mira:'Mira'}[pid],portrait:pid+'_portrait'},fid:'pty_'+pid,hx:px2,hy:py2,ph:i});});}
   if(id==='village'&&!G.objs.some(o=>o.fid==='sundial0'))
     G.objs.push({key:'statue',x:18.5,y:13.5,meta:{kind:'sundial',name:'the old sundial'},fid:'sundial0',hx:18.5,hy:13.5,ph:0});
+  if(id==='village'&&G.flags.herbGarden&&G.day%3===0&&G.forageDay['village|hg']!==G.day&&!G.objs.some(o=>o.fid==='hg0'))
+    for(let i=0;i<2;i++)G.objs.push({key:'herb_01',x:17.5+i*1.3,y:5.4,meta:{kind:'forage',item:'herb',name:"Wild Herb from Nana's garden"},fid:'hg'+i,hx:17.5+i*1.3,hy:5.4,ph:0});
   if(id==='village'&&G.flags.bl_clock&&!G.objs.some(o=>o.fid==='ck0')){
     G.objs.push({key:'clocktower',x:33.5,y:8.5,meta:{kind:'deco',name:'the old clocktower'},fid:'ck0',hx:33.5,hy:8.5,ph:0});G.solid.add('33,8')}
   if(id==='village'&&G.flags.bl_statue&&!G.objs.some(o=>o.fid==='st0'))
@@ -1010,9 +1012,9 @@ function talkTo(o){
     if(!f['remAsk'+G.day]){f['remAsk'+G.day]=1;
       lines.unshift("Bloomday, dear — my remedy shelf runs thin. Two Wild Herbs from the forest would set me right. (+2 ♥ and a tonic, if you can)")}
     else if((G.inv.item.herb||0)>=2){G.inv.item.herb-=2;f['rem'+G.day]=1;
-      G.inv.item.tonic=(G.inv.item.tonic||0)+1;collect('tonic');
+      G.inv.item.tonic=(G.inv.item.tonic||0)+1;collect('tonic');f.herbGarden=1;
       G.hearts.nana=Math.min(10,(G.hearts.nana||0)+2);sfx('sfx_cook');
-      lines.unshift("Perfect, dear. *She crushes them with the old stone pestle* — and here's a bottle for your own shelf. (+1 Herbal Tonic, +2 ♥)")}
+      lines.unshift("Perfect, dear. *She crushes them with the old stone pestle* — and here's a bottle for your own shelf. (+1 Herbal Tonic, +2 ♥)","And dear — I've planted a little herb garden beside my cottage. Help yourself every few days.")}
     else lines.unshift("Two Wild Herbs, dear — the forest floor is generous if your eyes are kind.")}
   if(m.id==='nana'){f.metNana=true;
     if(f.metBram&&f.metSari&&f.metFen&&f.metMira&&!f.metAll){f.metAll=true;G.gold+=15;lines.push("(+15g — Nana's gift)")}}
@@ -1963,6 +1965,7 @@ function interact(){
       toast('📋 Request complete: '+r.n+'× '+ITEMS[r.i].name+' → +'+r.p+'g');hudRender();save();return}
     toast('📋 '+r.w+': bring '+r.n+'× '+(ITEMS[r.i]?ITEMS[r.i].name:r.i)+' (you have '+have+') → '+r.p+'g');return}
   if(m.kind==='forage'&&o.fid==='ecl0'){G.flags['ecl'+G.day]=1}
+  if(m.kind==='forage'&&String(o.fid).indexOf('hg')===0){G.forageDay['village|hg']=G.day}
   if(m.kind==='forage'&&m.double){
     const n=2;G.inv.item[m.item]=(G.inv.item[m.item]||0)+n;G.forageDay[G.map+'|'+o.fid]=G.day;
     const bi=G.objs.indexOf(o);if(bi>=0)G.objs.splice(bi,1);collect(m.item);sfx('sfx_success');
