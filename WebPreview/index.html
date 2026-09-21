@@ -515,6 +515,8 @@ function loadMap(id,sx,sy){
       G.objs.push({key:'bram_down0',x:22.5,y:15.6,anchor:'bc',meta:{kind:'npc',id:'bram',name:VNAME.bram,portrait:'bram_portrait'},fid:'el_b',hx:22.5,hy:15.6,ph:0});
     if(!G.objs.some(o=>o.fid==='el_p'))
       G.objs.push({key:'pip_down0',x:24.5,y:15.6,anchor:'bc',meta:{kind:'npc',id:'pip',name:VNAME.pip,portrait:'pip_portrait'},fid:'el_p',hx:24.5,hy:15.6,ph:0});}
+  if(id==='village'&&G.day%10===9&&G.clock/60>=20&&!G.objs.some(o=>o.fid==='nm_m'))
+    G.objs.push({key:'mart_down0',x:26.5,y:15.8,anchor:'bc',meta:{kind:'npc',id:'nmart',name:'Mart, by lamplight',portrait:'mart_portrait'},fid:'nm_m',hx:26.5,hy:15.8,ph:0});
   if(id==='village'&&G.flags.mayorPip&&G.day<=G.flags.mayorPip&&G.clock/60<20&&!G.objs.some(o=>o.fid==='mp_p'))
     G.objs.push({key:'pip_down0',x:23.5,y:15.6,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Mayor Pip',portrait:'pip_portrait'},fid:'mp_p',hx:23.5,hy:15.6,ph:0});
   if(id==='village'&&G.day%28===21&&G.flags.vote&&!G.flags.voteDone)
@@ -1497,6 +1499,8 @@ function talkTo(o){
     if(H8[m.id]){lines.push(H8[m.id]+'  (+10g keepsake)');G.gold+=10}}
   if(m.id==='mart'&&G.weather==='fog'&&G.day%7!==0)
     lines.unshift('“Fog keeps the road quiet — perfect day to roll the cart through. Take a look, prices are mist-soft.”');
+  if(m.id==='nmart'){G.flags.nshop=1;openMartPending=true;
+    lines.unshift('“Psst — night stock. Rare things surface after dark, friend. Quiet now.”');}
   if(m.id==='mart'){f.metMart=true;G.flags.martShop=1;openMartPending=true}
   if(m.id==='hazel'){f.metHazel=true;G.flags.innShop=1;openInnPending=true}
   if(m.id==='cora'&&!f.viloFrame&&(G.inv.item.sketch||0)>0){
@@ -1593,13 +1597,13 @@ function drawPortrait(){
 }
 
 /* ------------------------------ shop ------------------------------------ */
-function openShop(){const m=G.flags.martShop?'mart':(G.flags.innShop?'inn':(G.flags.carpShop?'build':(G.flags.tailShop?'tailor':(G.flags.musShop?'museum':null))));delete G.flags.martShop;delete G.flags.innShop;delete G.flags.carpShop;delete G.flags.tailShop;delete G.flags.musShop;G.shop={tab:m||'buy'};G.state='shop';uiBusy();shopRender()}
+function openShop(){const m=G.flags.martShop?'mart':(G.flags.innShop?'inn':(G.flags.carpShop?'build':(G.flags.tailShop?'tailor':(G.flags.musShop?'museum':(G.flags.nshop?'night':null)))));delete G.flags.martShop;delete G.flags.innShop;delete G.flags.carpShop;delete G.flags.tailShop;delete G.flags.musShop;delete G.flags.nshop;G.shop={tab:m||'buy'};G.state='shop';uiBusy();shopRender()}
 function closeShop(){G.shop=null;G.state='play';uiBusy();$('shop').style.display='none'}
 function shopTab(t){G.shop.tab=t;shopRender()}
 function shopRender(){
   const g=G.shop;$('shop').style.display='flex';
-  $('shopname').textContent=g.tab==='inn'?'🏮 The Lantern Inn':(g.tab==='mart'?"🎪 Mart's Wagon":(g.tab==='build'?"🔨 Cora's Carpentry":(g.tab==='tailor'?"🧵 Elle's Tailoring":(g.tab==='museum'?"🏺 The Village Archive":"🌻 Sari's Market"))));
-  $('shoptabs').style.display=(g.tab==='mart'||g.tab==='inn'||g.tab==='build'||g.tab==='tailor'||g.tab==='museum')?'none':'flex';
+  $('shopname').textContent=g.tab==='inn'?'🏮 The Lantern Inn':(g.tab==='mart'?"🎪 Mart's Wagon":(g.tab==='build'?"🔨 Cora's Carpentry":(g.tab==='tailor'?"🧵 Elle's Tailoring":(g.tab==='museum'?"🏺 The Village Archive":(g.tab==='night'?"🌙 Mart's Night Wagon":"🌻 Sari's Market")))));
+  $('shoptabs').style.display=(g.tab==='mart'||g.tab==='inn'||g.tab==='build'||g.tab==='tailor'||g.tab==='museum'||g.tab==='night')?'none':'flex';
   $('tabBuy').className='tab'+(g.tab==='buy'?' on':'');$('tabSell').className='tab'+(g.tab==='sell'?' on':'');
   const td=$('tabDec');if(td)td.className='tab'+(g.tab==='decor'?' on':'');
   $('shopgold').textContent='Gold: '+G.gold+'g';
@@ -1645,6 +1649,12 @@ function shopRender(){
       const r=document.createElement('div');r.className='srow';
       r.innerHTML=`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${gd.price}g</span>`;
       r.onclick=()=>buyInn(gd);rows.appendChild(r);}
+  }else if(g.tab==='night'){
+    rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🌙 Moonlit wares — rare stock, tonight only</div>';
+    for(const gd of NIGHT_GOODS){
+      const r=document.createElement('div');r.className='srow';
+      r.innerHTML=`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${gd.price}g</span>`;
+      r.onclick=()=>buyMart(gd);rows.appendChild(r);}
   }else if(g.tab==='mart'){
     rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🎪 Mart\'s traveling wares — market day only</div>';
     for(const gd of MART_GOODS){
@@ -1720,6 +1730,13 @@ const FARMDECOR=[{id:'fdec_bench',name:'Garden Bench',price:70,spr:'bench_01',x:
                  {id:'fdec_gnome',name:'Garden Gnome',price:60,spr:'gnome',x:26.5,y:5.2,sub:'a little guardian for the porch'},
                  {id:'fdec_mlog',name:'Mushroom Log',price:95,spr:'mlog',x:24.5,y:18.4,sub:'after rain, fresh mushrooms sprout beside it'},
                  {id:'fdec_picnic',name:'Picnic Blanket',price:60,spr:'picnic',x:31.5,y:19.5,sub:'spread under the sky — lunch tastes better outside'}];
+const NIGHT_GOODS=[
+  {id:'diamond',name:'Raw Diamond',price:180,sub:'straight from the Deep'},
+  {id:'pearl',name:'Pearl',price:120,sub:'isle-polished'},
+  {id:'mshroom',name:'Moon Mushroom',price:60,sub:'only grows under a full moon'},
+  {id:'starore',name:'Star Ore',price:80,sub:'cool to the touch, hums faintly'},
+  {id:'gfrog',name:'Golden Frog',price:90,sub:'a lucky little fellow'},
+  {id:'crystal',name:'Star Crystal',price:150,sub:'Mart swears it fell last winter'}];
 const MART_GOODS=[...FARMDECOR.map(d=>({kind:'fdec',...d})),
                  {kind:'item',id:'honey',name:'Wild Honey',price:45,sub:'from mountain bees'},
                  {kind:'item',id:'truffle',name:'Forest Truffle',price:70,sub:'dug up at dawn'},
@@ -3110,6 +3127,7 @@ function dayTick(){
     if(w==='pip')G.flags.mayorPip=G.day+2;
     setTimeout(()=>toast(w==='pip'?'\U0001F3A9 Mayor Pip wins by one vote! Inauguration at the plaza today.':'\U0001F454 Mayor Bram keeps his seat by one vote.'),2400);
     G.flags.vote=0;}
+  if(G.day%10===9)setTimeout(()=>toast('🌙 Mart\u2019s night wagon rolls in after 20h — rare stock, tonight only.'),1500);
   if(G.flags.molly&&G.day%9===5){G.flags.lostLamb=1;setTimeout(()=>toast('🐑 Molly slipped the barn — she\u2019s wandered into the forest!'),1300)}
   if(G.day%7===0)setTimeout(()=>toast(season()===2?'🍄 Wren leads a mushroom walk — chanterelles hiding in the forest all day':'🐦 Wren leads birdwatching in the forest this morning — bring your eyes'),860);
   if(G.day>1&&(G.day-1)%7===0){
