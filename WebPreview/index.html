@@ -2647,6 +2647,12 @@ function interact(){
     if(G.flags['rock'+G.day]){toast('🪑 The chair creaks softly in the evening air');return}
     G.flags['rock'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+(eve?12:6));sfx('sfx_talk');
     toast(eve?'🪑 You rock and watch the sun go down — he sat right here, once (+12⚡)':'🪑 A slow rock in the morning shade (+6⚡)');return}
+  if(m.kind==='chop'&&G.day%7===3&&G.clock/60>=13&&G.clock/60<17&&!G.flags['logc'+G.day]){
+    G.sta-=5;G.flags['logc_'+G.day]=(G.flags['logc_'+G.day]||0)+1;sfx('sfx_tool');
+    if(G.flags['logc_'+G.day]>=3){G.flags['logc'+G.day]=1;G.gold+=30;G.hearts.elm=Math.min(10,(G.hearts.elm||0)+2);sfx('sfx_success');
+      toast('🪓 THREE clean splits! Elm slaps your shoulder — “Fastest axe this side of the river!” (+30g, +2 ♥)')}
+    else toast('🪓 Contest chop '+G.flags['logc_'+G.day]+'/3 — keep swinging!');
+    return}
   if(m.kind==='chop'&&G.clock/60>=17&&G.clock/60<20&&G.objs.some(o=>o.fid==='elm0')){
     if(G.flags['whit'+G.day]){toast('🪶 “Steady hands, kid. That’s enough whittling for one evening.”');return}
     G.flags['whit'+G.day]=1;G.inv.item.whittle=(G.inv.item.whittle||0)+1;
@@ -3005,6 +3011,7 @@ function dayTick(){
   if(G.day%7===1){const TSPOTS2=['the farm pond','the forest clearing','the river bend','the hilltop'];
     setTimeout(()=>toast('🗺 Pip was seen digging near '+TSPOTS2[(G.day*3)%4]+' — he buried something shiny again!'),1100)}
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
+  if(G.day%7===3)setTimeout(()=>toast('🪵 Elm\u2019s log-splitting contest this afternoon at the woodyard (13:00-17:00)'),1150);
   if(((G.day-1)%28)+1===11)setTimeout(()=>toast('🪵 It\u2019s Elm\u2019s birthday — the valley sneaks to his cabin this evening (17:00-21:00)'),1250);
   if(G.flags.bl_birdh)setTimeout(()=>sfx('sfx_talk'),400);
   if(G.day%28===14)setTimeout(()=>toast('🏛 MAYOR\u2019S ADDRESS tonight at the plaza, 18:00-21:00'),840);
@@ -3658,7 +3665,7 @@ function promptScan(){
       else if(m.kind==='desk')txt=G.flags['wrote'+G.day]?'✒ Letter sealed — out with the morning post':BTN+' · ✒ Write a letter';
       else if(m.kind==='chime')txt=BTN+' · 🎐 '+(G.weather==='wind'?'Listen to the chimes':'Touch the wind chime');
       else if(m.kind==='chair')txt=BTN+' · 🪑 Rock a while';
-      else if(m.kind==='chop')txt=G.flags['chop'+G.day]?'🪓 Stump’s bare for today':BTN+' · 🪓 Chop firewood (-5⚡)';
+      else if(m.kind==='chop')txt=(G.day%7===3&&G.clock/60>=13&&G.clock/60<17&&!G.flags['logc'+G.day])?BTN+' · 🪓 Log-splitting contest! ('+(G.flags['logc_'+G.day]||0)+'/3)':(G.flags['chop'+G.day]?'🪓 Stump’s bare for today':BTN+' · 🪓 Chop firewood (-5⚡)');
       else if(m.kind==='pancake')txt=G.flags['pan'+G.day]?'🥞 Clean plate — Bloomday morning done right':BTN+' · 🥞 Have some pancakes';
       else if(m.kind==='carve')txt=(()=>{const CV=[['duck',45],['owl',60],['bear',55]][G.day%3];return G.flags['carve'+G.day]?'🪵 Sold out — new carving tomorrow':BTN+' · 🪵 Buy carved '+CV[0]+' ('+CV[1]+'g)'})();
       else if(m.kind==='bonfire')txt=BTN+' · 🔥 Warm your hands';
