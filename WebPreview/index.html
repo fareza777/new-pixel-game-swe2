@@ -3394,6 +3394,13 @@ function dayTick(){
     if(n>0){G.flags['ty_'+id]=0;
       const nm={bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',pip:'Pip',fen:'Fen',wren:'Wren',luna:'Luna',hazel:'Hazel',cora:'Cora',elle:'Elle',mart:'Mart',tom:'Old Tom'}[id];
       sendMail(nm,TYLINES[id]+(n>1?' (×'+n+')':''));}}
+  if(G.flags.bl_owlbox&&Math.random()<.25){
+    const OWLIDS=['bram','sari','nana','mira','fen','wren','luna','hazel','elle'];
+    const oid=OWLIDS[G.day%OWLIDS.length];
+    const OWLN={bram:'A short note, delivered by owl: "Council records updated. Your farm grows finer each season."',sari:'Owl post! "Sold out of turnips today — everyone’s asking for your farm’s name."',nana:'The owl carries a tea-stained card: "Saved you a cup, dear. Come soon."',mira:'A tidy owl-delivered slip: "Vitals excellent, per my last reading. Keep it up."',fen:'Owl mail smells faintly of river: "Fish jumping near the bend. Thought you’d want to know."',wren:'The owl brought a pressed leaf and one line: "For your field guide. — W"',luna:'A midnight-blue card by owl: "The stars were out early tonight — did you see?"',hazel:'Owl post smells of cinnamon: "Brunch tomorrow. No excuses."',elle:'A card tied with ribbon, by owl: "Saw your outfit today. Iconic."'};
+    sendMail('🦉 The Barn Owl',OWLN[oid]);
+    G.hearts[oid]=Math.min(10,(G.hearts[oid]||0)+1);
+    setTimeout(()=>toast('🦉 The barn owl flutters to your mailbox — a letter!'),1300)}
   if(G.day%7===1){const TSPOTS2=['the farm pond','the forest clearing','the river bend','the hilltop'];
     setTimeout(()=>toast('🗺 Pip was seen digging near '+TSPOTS2[(G.day*3)%4]+' — he buried something shiny again!'),1100)}
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
