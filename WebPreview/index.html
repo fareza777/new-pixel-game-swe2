@@ -194,6 +194,9 @@ let SPR={};                    // merged sprite key -> atlas rect name
 /* ------------------------------ game state ------------------------------ */
 function sendMail(f,t){G.letters.push({f,t,day:G.day})}
 function collect(id){G.col[id]=(G.col[id]||0)+1}
+function skLvl(x){return x>=150?5:x>=80?4:x>=40?3:x>=15?2:x>=5?1:0}
+function gainXP(k,n){const b=skLvl(G.xp[k]);G.xp[k]=(G.xp[k]||0)+n;const a=skLvl(G.xp[k]);
+  if(a>b){sfx('sfx_success');toast((k==='farm'?'🌾 Farming':k==='fish'?'🎣 Fishing':'🍄 Foraging')+' Lv '+a+'! '+(k==='farm'?'Crops sell for more':k==='fish'?'Fish bite easier':'More double-gathers'))}}
 function colName(id){return id[0]==='c'?CROPS[+id.slice(1)]+' (crop)':(ITEMS[id]?ITEMS[id].name:id)}
 const MAILDAY={2:['Mayor Bram',"Welcome to the valley, kid. My door is always open — the office with the red roof."],
  4:['Sari',"Fresh stock every morning at my stall. If gold is short — the forest feeds those who look."],
@@ -239,7 +242,7 @@ const G={
   stats:{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0},
   letters:[],col:{},
   dlg:null, shop:null, bag:false,
-  tutStep:0, vo:null, fade:0, promptTxt:'', forageDay:{}, bugDay:{}, swing:null, fx:[],
+  tutStep:0, vo:null, fade:0, promptTxt:'', forageDay:{}, bugDay:{}, swing:null, fx:[], xp:{farm:0,fish:0,forage:0},
   tutSeen:-1, tutAt:0, questAt:0, questOpen:false,
 };
 const TUT=[
@@ -297,7 +300,7 @@ function sfx(name){if(!SET.sfx||!AUDIO[name])return;const a=new Audio(AUDIO[name
 function save(){
   if(G.state==='intro'||G.state==='title')return;
   const s={v:1,map:G.map,x:G.hero.x,y:G.hero.y,dir:G.hero.dir,gold:G.gold,day:G.day,clock:G.clock,
-    inv:G.inv,selSeed:G.selSeed,tool:G.tool,flags:G.flags,letters:G.letters,col:G.col,crops:G.crops,tutStep:G.tutStep,forageDay:G.forageDay,bugDay:G.bugDay,stats:G.stats,
+    inv:G.inv,selSeed:G.selSeed,tool:G.tool,flags:G.flags,letters:G.letters,col:G.col,crops:G.crops,tutStep:G.tutStep,forageDay:G.forageDay,bugDay:G.bugDay,stats:G.stats,xp:G.xp,
     sta:G.sta,weather:G.weather,hearts:G.hearts,talkDay:G.talkDay,petDay:G.petDay,coopEggs:G.coopEggs,milkCans:G.milkCans||0,dogFind:G.dogFind||false,reqDay:G.reqDay,maxsta:G.maxsta||0,blessedFor:G.blessedFor,outfit:G.outfit||0,duckEggs:G.duckEggs||0,woolBalls:G.woolBalls||0};
   try{localStorage.setItem('spv_save',JSON.stringify(s))}catch(e){}
 }
@@ -305,7 +308,7 @@ function hasSave(){try{return !!localStorage.getItem('spv_save')}catch(e){return
 function loadSave(){
   try{const s=JSON.parse(localStorage.getItem('spv_save'));if(!s)return false;
     loadMap(s.map,s.x,s.y);G.hero.dir=s.dir||'DOWN';G.gold=s.gold;G.day=s.day;G.clock=s.clock;
-    G.inv=s.inv;G.selSeed=s.selSeed;G.tool=s.tool||'hoe';G.flags=s.flags;G.letters=s.letters||[];G.col=s.col||{};G.crops=s.crops;G.stats=s.stats||{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0};G.tutStep=s.tutStep;
+    G.inv=s.inv;G.selSeed=s.selSeed;G.tool=s.tool||'hoe';G.flags=s.flags;G.letters=s.letters||[];G.col=s.col||{};G.crops=s.crops;G.stats=s.stats||{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0};G.xp=s.xp||{farm:0,fish:0,forage:0};G.tutStep=s.tutStep;
     G.forageDay=s.forageDay||{};G.bugDay=s.bugDay||{};
     G.sta=(s.sta!==undefined?s.sta:100);G.maxsta=s.maxsta||0;G.weather=s.weather||'sun';G.hearts=s.hearts||{};G.talkDay=s.talkDay||{};
     G.petDay=s.petDay||{};G.coopEggs=s.coopEggs||0;G.milkCans=s.milkCans||0;G.dogFind=s.dogFind||false;G.reqDay=s.reqDay||0;G.blessedFor=s.blessedFor||0;G.outfit=s.outfit||0;G.duckEggs=s.duckEggs||0;G.woolBalls=s.woolBalls||0;
@@ -966,9 +969,10 @@ function buySeed(id){
 }
 function sellCrop(id){
   if(!G.inv.crop[id])return;
-  G.inv.crop[id]--;G.gold+=CROP_PRICE[id];sfx('sfx_coin');
+  const pr=Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm)));
+  G.inv.crop[id]--;G.gold+=pr;sfx('sfx_coin');
   const f=G.flags;f.sold2=(f.sold2||0)+1;
-  $('shopmsg').textContent="Sold a "+(CROPS[id]||'crop')+" for "+CROP_PRICE[id]+"g.";
+  $('shopmsg').textContent="Sold a "+(CROPS[id]||'crop')+" for "+pr+"g.";
   shopRender();hudRender();save();
 }
 function sellItem(id){
@@ -1085,6 +1089,9 @@ function toggleBag(v){
     if(G.flags.rex)h+=`<div class="invrow"><span>🐕 Rex</span><span class="ct" style="margin-left:auto">${G.petDay['dog']===G.day?'petted ♥':'sniffing about'}</span></div>`;
     if(G.flags.metWren)h+=`<div class="invrow"><span>🌿 Wren</span><span class="ct" style="margin-left:auto">${(G.hearts.wren||0)}♥ · ${G.flags.wrenDone?'starflowers pressed':'waiting on blooms'}</span></div>`;
     if(G.flags.metLuna)h+=`<div class="invrow"><span>🌙 Luna</span><span class="ct" style="margin-left:auto">${(G.hearts.luna||0)}♥ · ${G.flags.lunaDone?'star-metal found':'charting the sky'}</span></div>`;
+    h+='<div class="invsec">SKILLS</div>';
+    for(const[k2,ic,perk]of[['farm','🌾','+'+(skLvl(G.xp.farm)*10)+'% crop prices'],['fish','🎣','+'+(skLvl(G.xp.fish)*5)+'% bite chance'],['forage','🍄','+'+(skLvl(G.xp.forage)*8)+'% double-gather']]){
+      const lv=skLvl(G.xp[k2]);h+=`<div class="invrow"><span>${ic} ${k2==='farm'?'Farming':k2==='fish'?'Fishing':'Foraging'} — Lv ${lv}</span><span class="ct" style="margin-left:auto">${lv?perk:'—'}</span></div>`}
     h+='<div class="invrow" style="color:#e8c96a"><span>📖 Collection — '+Object.keys(G.col).length+' discovered</span></div>';
     for(const k of Object.keys(G.col))h+=`<div class="invrow" style="opacity:.85"><span style="padding-left:14px">${colName(k)}</span><span class="ct" style="margin-left:auto">×${G.col[k]}</span></div>`;
     h+='<div class="invsec" style="color:#998;font-size:10px">the valley remembers every small kindness</div>';
@@ -1160,8 +1167,8 @@ function interact(){
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
     swing('rod',best.cx+.5,best.cy+.5);sfx('sfx_water');
-    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0))){const fid=G.map==='river'?(season()===3?'icefish':'rfish'):'fish';collect(fid);
-      G.inv.item[fid]=(G.inv.item[fid]||0)+1;
+    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+skLvl(G.xp.fish)*.05)){const fid=G.map==='river'?(season()===3?'icefish':'rfish'):'fish';collect(fid);
+      G.inv.item[fid]=(G.inv.item[fid]||0)+1;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',6);
       toast(fid==='icefish'?'🐟 Caught a Frostfish through the ice! Worth 30g':fid==='rfish'?'🐟 Caught a River Fish! Bigger — worth 25g':'🐟 Caught a Pond Fish! Sell it at Sari\'s stall');}
     else toast('🐟 It got away… try again');
     hudRender();return}
@@ -1191,7 +1198,7 @@ function interact(){
     if(c.stage>=last-1){
       if(G.tool!=='basket'){toast(TOOL_EMOJI.basket+' Equip the Basket to harvest — tap TOOL');return}
       if(!spendSta(2))return;
-      G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;G.stats.crops++;collect('c'+c.crop);
+      G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;G.stats.crops++;collect('c'+c.crop);gainXP('farm',5);
       if(Math.random()<.08){G.inv.item.goldstar=(G.inv.item.goldstar||0)+1;collect('goldstar');
         sfx('sfx_success');toast('✨ A Golden Crop! It shines in your basket (+50g if sold)')}
       G.flags.harvested=(G.flags.harvested||0)+1;
@@ -1255,8 +1262,8 @@ function interact(){
     if(!spendSta(1))return;
     G.forageDay[G.map+'|'+o.fid]=G.day;
     G.inv.item=G.inv.item||{};const iid=m.item||'mushroom';
-    G.inv.item[iid]=(G.inv.item[iid]||0)+1;G.stats.forage++;collect(iid);
-    if(G.flags.luckyDay===G.day&&Math.random()<.3){G.inv.item[iid]++;collect(iid);toast('✨ Lucky day — double gather!')}
+    G.inv.item[iid]=(G.inv.item[iid]||0)+1;G.stats.forage++;collect(iid);gainXP('forage',4);
+    if(Math.random()<(G.flags.luckyDay===G.day?.3:0)+skLvl(G.xp.forage)*.08){G.inv.item[iid]++;collect(iid);toast('✨ Double gather!')}
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
     sfx('sfx_harvest');toast('Picked a '+(ITEMS[iid]?ITEMS[iid].name:m.name)+'!');hudRender();save();return}
   if(m.kind==='npc'){
@@ -1373,7 +1380,7 @@ function interact(){
     if(!spendSta(2))return;
     G.bugDay[G.map+'|'+o.fid]=G.day;G.inv.item[m.item]=(G.inv.item[m.item]||0)+1;
     collect(m.item);sfx('sfx_harvest');swing('basket',o.x,o.y);
-    G.stats.forage++;toast('🦋 Caught '+m.name+'! Worth '+(ITEMS[m.item]?ITEMS[m.item].sell:10)+'g at the stall');hudRender();return}
+    G.stats.forage++;gainXP('forage',4);toast('🦋 Caught '+m.name+'! Worth '+(ITEMS[m.item]?ITEMS[m.item].sell:10)+'g at the stall');hudRender();return}
   if(m.kind==='cat'){
     if(G.petDay['cat']===G.day){o.heart=60;return}
     G.petDay['cat']=G.day;o.heart=60;o.follow=true;sfx('sfx_talk');
@@ -1445,7 +1452,8 @@ function interact(){
   if(m.kind==='ship'){
     // shipping bin: sell every sellable crop + find in one tap
     let total=0,n=0;
-    for(const id in G.inv.crop){const q=G.inv.crop[id];if(q>0){total+=q*(CROP_PRICE[id]||0);n+=q;G.inv.crop[id]=0}}
+    const fm=1+.1*skLvl(G.xp.farm);
+    for(const id in G.inv.crop){const q=G.inv.crop[id];if(q>0){total+=q*Math.round((CROP_PRICE[id]||0)*fm);n+=q;G.inv.crop[id]=0}}
     for(const id in G.inv.item){const q=G.inv.item[id];if(q>0&&ITEMS[id]&&ITEMS[id].sell){total+=q*ITEMS[id].sell;n+=q;G.inv.item[id]=0}}
     if(!n){toast('📦 Shipping bin — bring crops or finds here to sell instantly');return}
     G.gold+=total;G.stats.gold+=total;sfx('sfx_coin');swing('basket',o.x,o.y);
