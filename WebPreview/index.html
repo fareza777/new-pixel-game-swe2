@@ -598,6 +598,8 @@ function loadMap(id,sx,sy){
         G.objs.push({key:'crab',x:cx,y:cy,meta:{kind:'forage',item:'crab',name:'a tidepool crab — quick!'},fid:'crab'+i,hx:cx,hy:cy,ph:i*2})}}
   if(id==='orchard'&&season()===0)
     for(const o of G.objs)if(o.key==='appletree'&&o.meta&&o.meta.item==='apple'){o.key='cherrytree';o.meta.item='cherry';o.meta.name='Sweet Cherry'}
+  if(id==='hill'&&G.day%28===24&&(G.clock/60>=20||G.clock/60<4)&&G.forageDay['hill|comet']!==G.day&&!G.objs.some(o=>o.fid==='cmt0'))
+    G.objs.push({key:'starore',x:13.5,y:10.5,meta:{kind:'forage',item:'starore',name:'comet dust, still warm'},fid:'cmt0',hx:13.5,hy:10.5,ph:0});
   if(id==='hill'&&fullmoon()&&G.forageDay['hill|dew']!==G.day&&!G.objs.some(o=>o.fid==='dew0'))
     G.objs.push({key:'moondew',x:12.5,y:5.5,meta:{kind:'forage',item:'moondew',name:'Moon Dew'},fid:'dew0',hx:12.5,hy:5.5,ph:0});
   if(id==='hill'&&G.flags.elderBloom){const t=G.objs.find(o=>o.meta&&o.meta.kind==='elder');if(t)t.key='eldertree_b'}
@@ -1088,6 +1090,9 @@ function talkTo(o){
     lines.unshift(WG[m.id]);
     const gi={nana:'htea',mira:'tonic',pip:'berry',hazel:'pie'}[m.id];
     if(gi){G.inv.item[gi]=(G.inv.item[gi]||0)+(m.id==='pip'?2:1)}}
+  if(m.id==='luna'&&G.day%28===24&&(G.clock/60>=20||G.clock/60<4)&&!f['cmtT'+G.day]){
+    f['cmtT'+G.day]=1;G.hearts.luna=Math.min(10,(G.hearts.luna||0)+1);
+    lines.unshift("The Wanderer’s Comet — it circles back every twenty-eight days like a faithful hound. My grandmother timed weddings by it. (+1 ♥)")}
   if(m.id==='luna'&&G.day%56===0&&G.map==='hill'&&G.clock/60>=11&&G.clock/60<15&&!f['eclT'+G.day]){
     f['eclT'+G.day]=1;G.hearts.luna=Math.min(10,(G.hearts.luna||0)+1);
     lines.unshift("Hush — the sun's going out. *She grips your sleeve* …Sixty heartbeats of night at noon. Look. LOOK. (+1 ♥)")}
@@ -1987,6 +1992,7 @@ function interact(){
     toast('📋 '+r.w+': bring '+r.n+'× '+(ITEMS[r.i]?ITEMS[r.i].name:r.i)+' (you have '+have+') → '+r.p+'g');return}
   if(m.kind==='forage'&&o.fid==='ecl0'){G.flags['ecl'+G.day]=1}
   if(m.kind==='forage'&&String(o.fid).indexOf('hg')===0){G.forageDay['village|hg']=G.day}
+  if(m.kind==='forage'&&o.fid==='cmt0'){G.forageDay['hill|comet']=G.day}
   if(m.kind==='forage'&&o.fid==='bq0'){G.forageDay['farm|bq']=G.day;
     toast('💐 First blooms of '+SEASON[season()]+' — someone left them for you')}
   if(m.kind==='forage'&&m.double){
@@ -2574,6 +2580,7 @@ function dayTick(){
   if((G.day-1)%7===4)setTimeout(()=>toast('📋 Census Day — Bram wants everyone greeted today'),1300);
   if(G.day%28===21)setTimeout(()=>toast('🛒 Sari has a caravan bulk order today — see what she needs'),1350);
   if(G.day%56===0)setTimeout(()=>toast('🌒 A solar eclipse at midday — Luna is watching from the hill!'),1400);
+  if(G.day%28===24)setTimeout(()=>toast('☄️ The Wanderer’s Comet passes tonight — best viewed from the hilltop'),1450);
   if(G.day===21&&!G.flags.welcomeParty){G.flags.welcomeParty=1;
     setTimeout(()=>toast('🎉 Everyone is waiting at the farmhouse porch — three weeks in Sunpetal!'),1500)}
   const bds=Object.keys(BDAY).filter(k=>isBirthday(k));
@@ -2970,6 +2977,11 @@ function render(ts){
         ctx.fillRect(camX+p.x*T*SCALE,camY+p.y*T*SCALE,p.sz*SCALE,p.sz*SCALE);}}
     ctx.globalAlpha=1;G.fx=G.fx.filter(p=>p.life>0);}
   // meteor shower on the hill every 9th night
+  if(G.map==='hill'&&!G.L.indoor&&G.day%28===24&&(G.clock/60>=20||G.clock/60<4)){
+    const cx=(ts*0.08)%(cv.width*1.6)-cv.width*.3;
+    ctx.fillStyle='#ffe9c4';ctx.beginPath();ctx.arc(cx,60,3,0,7);ctx.fill();
+    ctx.strokeStyle='rgba(255,230,180,.6)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx,60);ctx.lineTo(cx-60,80);ctx.stroke()}
   if(G.map==='hill'&&!G.L.indoor&&(G.clock>=19*60||G.clock<4*60)&&G.day%9===6){
     const mt=ts/70;
     for(let i=0;i<7;i++){
