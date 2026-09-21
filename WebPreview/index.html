@@ -561,6 +561,8 @@ function loadMap(id,sx,sy){
   if(id==='hill'&&G.flags.elderBloom){const t=G.objs.find(o=>o.meta&&o.meta.kind==='elder');if(t)t.key='eldertree_b'}
   if(id==='hill'&&G.flags.elderBloom&&!G.objs.some(o=>o.meta&&o.meta.kind==='sprout'))
     G.objs.push({key:'sprout',x:13.5,y:10.5,meta:{kind:'sprout',name:'a little sproutling',id:'sprout'},fid:'sprout0',hx:13.5,hy:10.5,ph:0});
+  if(id==='farm'&&fullmoon()&&G.clock/60>=20&&G.clock/60<23&&!G.flags.granGhost&&!G.objs.some(o=>o.fid==='grang'))
+    G.objs.push({key:'ghost',x:14.5,y:8.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'grang',name:'???',portrait:'ghost_portrait'},fid:'grang',hx:14.5,hy:8.5,ph:0});
   if(id==='farm'&&G.day%28===7&&G.clock/60>=19&&G.flags.gusMet&&!G.objs.some(o=>o.meta&&o.meta.id==='gus'))
     G.objs.push({key:'ghost',x:36.5,y:12.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'gus',name:'Old Gus',portrait:'ghost_portrait'},fid:'gusfest',hx:36.5,hy:12.5,ph:0});
   if(id==='farm'&&G.day%28===7&&G.clock/60>=9&&G.clock/60<17){
@@ -1188,6 +1190,13 @@ function talkTo(o){
     G.flags['fline'+G.day+m.id]=1;
     const FL={bram:"A festival mid-season — your grandfather loved these most of all.",sari:"Sold out of ribbons by noon. Festivals are good for the soul AND the till.",nana:"I made extra tea. Go on, take a cup — the night is young.",vilo:"Even the river hums on festival nights, kid.",pip:"Booth treats are FREE tonight. I checked. Twice.",mira:"Eat, drink, be merry — doctor's orders for once.",fen:"Even fish jump for festival nights, or so I tell the tourists.",wren:"Everyone under the lamplight makes such a lovely sketch.",luna:"Festivals are the valley's own constellations — lights below mirroring above.",hazel:"Save room! There's a treat with your name on it at the booths.",cora:"I strung every lantern on this street. Every single one.",elle:"I dressed for the season — tell me the scarf doesn't match the lanterns.",mart:"Fine festival! I do love a town that knows how to gather.",tom:"Smells like my mother's festival stew. Don't tell her I said that."};
     const lf=FL[m.id];if(lf)putLine([null,lf]);}
+  if(m.id==='grang'){
+    if(!f.granGhost){
+      f.granGhost=true;sfx('sfx_wish');
+      G.inv.item.goldstar=(G.inv.item.goldstar||0)+1;collect('goldstar');
+      startDlg(o,["Even in starlight, I know this soil. You've tended it well, sprout.","I kept one packet of gold-seed in my coat all these years — it's yours now.","Keep the lanterns lit, kid. I'll be watching from the hill.",
+                  "[Grandfather's Ghost gave you a Gold Star — worth a fortune, or a place in the archive]"]);return}
+    startDlg(o,["The figure fades like breath on cold glass — see you next full moon."]);return}
   if(m.id==='bram'&&!f.archivist&&G.flags.gwatch&&G.flags.meteorCharm&&G.flags.herbarium&&G.flags.postcardAlbum&&f.hideChamp){
     f.archivist=true;G.gold+=300;G.maxsta=(G.maxsta||0)+10;G.stats.quests++;sfx('sfx_success');
     lines.length=0;
