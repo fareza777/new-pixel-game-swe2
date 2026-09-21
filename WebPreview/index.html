@@ -145,7 +145,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v1.9</div></div></div>
+    <div class="ver">v1.9.1</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -157,6 +157,8 @@
 
 <script>
 'use strict';
+/* surface any script error on screen instead of silently dying */
+window.addEventListener('error',e=>{try{const t=document.getElementById('toast');if(t){t.textContent='ERR: '+(e.message||e.type);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),9000)}}catch(_){}});
 const T=16, isTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0||matchMedia('(pointer:coarse)').matches;
 const cv=document.getElementById('game'), ctx=cv.getContext('2d');
 let SCALE=3,VIEW_W=26,VIEW_H=15;
@@ -192,7 +194,7 @@ const G={
   map:'farm', L:null, solid:null, water:null, objs:null,
   hero:{x:0,y:0,dir:'DOWN',t:0,move:false},
   gold:20, day:1, clock:7*60, sleepFade:0,
-  inv:{seed:{1:3,3:2,8:2}, crop:{}},
+  inv:{seed:{1:3,3:2,8:2}, crop:{}, item:{}},
   selSeed:1,
   crops:{},                  // mapId -> {x,y->{crop,stage,watered}}
   flags:{},
@@ -219,7 +221,8 @@ function playVO(n){ if(G.vo){G.vo.pause();G.vo=null}
   if(AUDIO[n]){G.vo=new Audio(AUDIO[n]);const p=G.vo.play();if(p&&p.catch)p.catch(()=>{if(G.vo)G.vo._dead=true})} }
 // ---- music & sfx ------------------------------------------------------------
 let BGM=null,BGMNAME='';
-const SET=JSON.parse(localStorage.getItem('spv_set')||'{"music":1,"sfx":1}');
+let SET={music:1,sfx:1};
+try{SET=Object.assign(SET,JSON.parse(localStorage.getItem('spv_set')||'{}'))}catch(e){}
 function saveSet(){localStorage.setItem('spv_set',JSON.stringify(SET))}
 let PENDING_BGM='';
 function bgm(name){
