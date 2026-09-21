@@ -152,7 +152,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v2.02</div></div></div>
+    <div class="ver">v2.03</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1581,6 +1581,7 @@ function interact(){
     if((giftCrop||giftBq||giftIt)&&G.talkDay[hk]!==G.day){
       const gid=giftIt?giftIt:(giftCrop?'c'+giftCrop:'bq');
       const loved=giftBq?false:(LOVES[m.id]||[]).includes(gid);
+      if(loved)G.flags['ty_'+m.id]=(G.flags['ty_'+m.id]||0)+1;
       const isB=isBirthday(m.id),base=giftBq?4:(loved?4:2);
       G.talkDay[hk]=G.day;if(giftBq)G.inv.item.bq--;else if(giftIt)G.inv.item[giftIt]--;else G.inv.crop[giftCrop]--;
       G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+base);G.stats.gifts++;checkKindred(m.id);
@@ -1968,6 +1969,11 @@ function dayTick(){
   if(G.flags.crowed){G.flags.crowed=false;setTimeout(()=>toast('🐦 A crow raided your field overnight — a ripe crop is gone!'),1500)}
   evalDeeds();
   const ml=MAILDAY[G.day];if(ml)sendMail(ml[0],ml[1]);
+  const TYLINES={bram:"That gift, kid — first thing in a long while that made this old man tear up. Thank you.",sari:"The strawberries! I put one on the counter just to look at. Sold the rest in an hour, naturally.",vilo:"Fine taste, kid. Fine taste. Next one's on me down at the river.",nana:"I steeped a little of your gift into tonight's tea and thought of you, dear.",mira:"It's on the clinic shelf where I can see it. You have no idea what that means.",pip:"I showed EVERYONE. Even the cat. ESPECIALLY the cat.",fen:"Ha! You remembered the old fisherman's favorite. The river thanks you.",wren:"I pressed it between pages 12 and 13 — the finest spot in my book.",luna:"I keep it beside the telescope. When the sky is dark, it still glows a little.",hazel:"I served a slice of it at the inn tonight — the whole room went quiet.",cora:"It's sitting on my workbench. Reminds me why I build.",elle:"I've already sketched three dresses around it. Three!",mart:"Now that's a find! Next time you visit, I'll show you the good shelf.",tom:"...haven't gotten one of those in years. Come by the river sometime."};
+  for(const id in TYLINES){const n=G.flags['ty_'+id]||0;
+    if(n>0){G.flags['ty_'+id]=0;
+      const nm={bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',pip:'Pip',fen:'Fen',wren:'Wren',luna:'Luna',hazel:'Hazel',cora:'Cora',elle:'Elle',mart:'Mart',tom:'Old Tom'}[id];
+      sendMail(nm,TYLINES[id]+(n>1?' (×'+n+')':''));}}
   if(G.day%7===1){const TSPOTS2=['the farm pond','the forest clearing','the river bend','the hilltop'];
     setTimeout(()=>toast('🗺 Pip was seen digging near '+TSPOTS2[(G.day*3)%4]+' — he buried something shiny again!'),1100)}
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
