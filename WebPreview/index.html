@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v3.97</div></div></div>
+    <div class="ver">v3.98</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -467,6 +467,8 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.ptree&&!G.objs.some(o=>o.fid==='ptr0')){
     const ps=G.ptreeSpot||[30.5,20.5];
     G.objs.push({key:G.day>G.flags.ptreeDay?'tree05':'sprout',x:ps[0],y:ps[1],anchor:'bc',meta:{kind:'ptree',name:'your pear tree'},fid:'ptr0',hx:ps[0],hy:ps[1],ph:0})}
+  if(id==='farm'&&G.flags.bl_dewc&&!G.objs.some(o=>o.fid==='dew0'))
+    G.objs.push({key:'fwell',x:38.5,y:11.5,anchor:'bc',meta:{kind:'deco',name:'the dew collector, beaded with morning'},fid:'dew0',hx:38.5,hy:11.5,ph:0});
   if(id==='farm'&&G.flags.totem&&!G.objs.some(o=>o.fid==='tot0'))
     G.objs.push({key:'statue02',x:6.5,y:13.5,anchor:'bc',meta:{kind:'totem',name:'your farm totem — Owl, Fish, Sunpetal'},fid:'tot0',hx:6.5,hy:13.5,ph:0});
   if(id==='farm'&&G.flags.bl_laundry)G.objs.push({key:'clothesline',x:36.5,y:12.5,anchor:'bc',meta:{kind:'laundry',name:'the laundry line'},fid:'bl_laundry',hx:36.5,hy:12.5,ph:0});
@@ -1939,7 +1941,8 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_hive',name:'Beehive Box',price:120,sub:'honey from your own bees, every morning'},
              {flag:'bl_scare',name:'Scarecrow',price:80,sub:'no more crows raiding your field'},
              {flag:'bl_vane',name:'Weather Vane',price:140,sub:'reads tomorrow’s weather from the wind'},
-             {flag:'bl_compost',name:'Compost Bin',price:110,sub:'kitchen scraps in — rich fertilizer out by morning'}];
+             {flag:'bl_compost',name:'Compost Bin',price:110,sub:'kitchen scraps in — rich fertilizer out by morning'},
+             {flag:'bl_dewc',name:'Dew Collector',price:90,sub:'a silvered dish — a cup of spring water every dawn'}];
 function buyBuild(gd){
   const f=G.flags;
   if(gd.flag==='bl_statue'&&!f.gwatch){toast('Cora: "Find all of the founder\u2019s journal pages first."');return}
@@ -3517,6 +3520,8 @@ function dayTick(){
     let eggs=G.flags.bl_silo?1:0;for(const k in G.petDay)if(k.indexOf('|')>0&&String(k).indexOf('duck')<0&&G.petDay[k]===yesterday)eggs++;
     G.duckEggs=((G.petDay['farm|duck1']===yesterday)?1:0)+((G.petDay['farm|duck2']===yesterday)?1:0);
     G.woolBalls=G.petDay['sheep']===yesterday?1:0;   // a petted sheep sheds wool at dawn
+    if(G.flags.bl_dewc){G.inv.item.swat=(G.inv.item.swat||0)+1;
+      setTimeout(()=>toast('💧 The dew collector fills a cup of cold spring water'),2100)}
     G.coopEggs=G.flags.bl_barn?eggs*2:eggs;
     G.goldEgg=G.coopEggs>0&&Math.random()<.06;   // a happy hen lays a golden egg
     {const dry=Object.keys(G.crops.farm||{}).filter(k=>{const c=G.crops.farm[k];return c.crop>0&&!c.watered}).length;
