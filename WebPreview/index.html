@@ -2416,6 +2416,14 @@ function dayTick(){
     G.duckEggs=((G.petDay['farm|duck1']===yesterday)?1:0)+((G.petDay['farm|duck2']===yesterday)?1:0);
     G.woolBalls=G.petDay['sheep']===yesterday?1:0;   // a petted sheep sheds wool at dawn
     G.coopEggs=G.flags.bl_barn?eggs*2:eggs;
+    {const dry=Object.keys(G.crops.farm||{}).filter(k=>{const c=G.crops.farm[k];return c.crop>0&&!c.watered}).length;
+     const bits=[];
+     if(dry>0)bits.push('💧 '+dry+' crop'+(dry>1?'s':'')+' thirsty');
+     if(G.coopEggs>0)bits.push('🥚 '+G.coopEggs+' egg'+(G.coopEggs>1?'s':'')+' at the coop');
+     if(G.milkCans>0)bits.push('🥛 milk waiting');
+     if(G.flags.truffleReady)bits.push('🐷 truffle in the pen');
+     if(G.dogFind)bits.push('🐕 Rex dug something up');
+     if(bits.length)setTimeout(()=>toast('🌅 Morning chores: '+bits.join(' · ')),1700)}
     for(const mid in G.crops)for(const k in G.crops[mid]){const c=G.crops[mid][k];
       if((G.weather==='rain'||G.weather==='storm')&&c.crop>0&&mid!=='grows')c.watered=true;   // rain waters overnight
       if(mid==='farm'&&G.flags.fdec_sprink){const pc=k.split(','),px2=+pc[0],py=+pc[1];
