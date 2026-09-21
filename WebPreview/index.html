@@ -240,6 +240,18 @@ const RECIPES=[
       {id:'hcake',need:{honey:1,c10:1}},
       {id:'fsalad',need:{herb:1,berry:1,apple:1}}];
 const RECIPE_SAY={soup:'🍲 Cooked a Hearty Soup! (+35⚡ / 22g)',jam:'🍓 Simmered Berry Jam! (+20⚡ / 20g)',custard:"🍮 Whisked a Frostberry Custard — Hazel's recipe! (+30⚡ / 48g)",chowder:'🍜 Simmered Silverleaf Chowder — winter in a bowl! (+38⚡ / 55g)',htea:"🍵 Brewed Honey-Mint Tea — Nana's comfort (+25⚡ / 32g)",tart:'🥧 Baked a Strawberry Tart — spring on a plate! (+36⚡ / 52g)',steg:'🍆 Baked Stuffed Eggplant — Cora’s favorite! (+40⚡ / 50g)',cheese:'You churn a wheel of Farm Cheese — smells amazing!',stew:"🐟 Brewed Fisher's Stew! (+28⚡ / 30g)",grill:'🔥 Grilled River Fish! (+26⚡ / 40g)',salad:'🥗 Tossed a Garden Salad! (+24⚡ / 30g)',pie:'🥧 Baked a Pumpkin Pie — golden crust! (+45⚡ / 65g)',bq:'💐 Tied a Moonbloom Bouquet — smells like the whole valley!',apie:'🥧 Baked an Apple Pie — orchard-fresh! (+42⚡ / 55g)',hcake:'🍰 Drizzled a Honey Cake! (+40⚡ / 55g)',fsalad:'🥙 Packed a Forest Lunch! (+35⚡ / 45g)'};
+const DEEDS=[
+  ['first_harvest','🌱 First Harvest','harvest a crop',()=>(G.stats.crops||0)>=1],
+  ['angler','🎣 Angler','catch 10 fish',()=>(G.stats.fish||0)>=10],
+  ['bug_hunter','🦋 Bug Hunter','net 5 critters',()=>['butterfly','cricket','firefly','beetle'].reduce((a,k)=>a+(G.col[k]||0),0)>=5],
+  ['friend','💛 Valley Friend','reach 30 total friendship ♥',()=>Object.values(G.hearts).reduce((a,b)=>a+b,0)>=30],
+  ['delver','⛏ Deep Delver','reach the Old Mine’s deepest floor',()=>!!G.flags.mineB2],
+  ['bloomer','🌻 Bloom Bringer','wake the Elder Sunpetal',()=>!!G.flags.elderBloom],
+  ['archivist','🏺 Archivist','donate 15 entries to the Archive',()=>Object.keys(G.flags).filter(k=>k.indexOf('don_')===0).length>=15],
+  ['chef','🍳 Kitchen Heart','cook 8 different recipes',()=>RECIPES.filter(r=>(G.col[r.id]||0)>0).length>=8],
+  ['legend','👑 Legend Angler','land a Pond Kingfish or Golden Koi',()=>(G.col.kingfish||0)+(G.col.goldfish||0)>0],
+  ['philanthropist','🏛 Town Patron','fully fund the plaza beautification',()=>(G.flags.fundTier||0)>=3]];
+function evalDeeds(){for(const d of DEEDS){if(!G.flags['deed_'+d[0]]&&d[3]()){G.flags['deed_'+d[0]]=1;toast('🏅 Deed earned: '+d[0].replace(/_/g,' ')+' — '+d[1])}}}
 const BDAY={pip:4,bram:6,sari:10,vilo:14,nana:19,mira:23,fen:26,wren:17,luna:25,hazel:8,mart:12,cora:18,elle:22};
 const VNAME={luna:'Luna',shrine:'Forest Shrine',elder:'Elder Tree',bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',fen:'Fen',pip:'Pip',mart:'Mart',wren:'Wren',hazel:'Hazel',cora:'Cora',elle:'Elle'};
 const isBirthday=id=>BDAY[id]===((G.day-1)%28)+1;
@@ -1158,6 +1170,10 @@ function toggleBag(v){
       const lv=skLvl(G.xp[k2]);h+=`<div class="invrow"><span>${ic} ${k2==='farm'?'Farming':k2==='fish'?'Fishing':'Foraging'} — Lv ${lv}</span><span class="ct" style="margin-left:auto">${lv?perk:'—'}</span></div>`}
     h+='<div class="invrow" style="color:#e8c96a"><span>📖 Collection — '+Object.keys(G.col).length+' discovered</span></div>';
     for(const k of Object.keys(G.col))h+=`<div class="invrow" style="opacity:.85"><span style="padding-left:14px">${colName(k)}</span><span class="ct" style="margin-left:auto">×${G.col[k]}</span></div>`;
+    h+='<div class="invsec">VALLEY DEEDS</div>';
+    evalDeeds();
+    for(const d of DEEDS){const got=G.flags['deed_'+d[0]];
+      h+=`<div class="invrow" style="opacity:${got?1:.5}"><span>${got?d[1]:'🔒 '+d[1]}</span><span class="ct" style="margin-left:auto;font-size:10px">${got?'earned':d[2]}</span></div>`}
     h+='<div class="invsec">COOKBOOK</div>';
     for(const r of RECIPES){const known=(G.col[r.id]||0)>0;
       const nm=known?(ITEMS[r.id]?ITEMS[r.id].name:r.id):'???';
@@ -1632,6 +1648,7 @@ function dayTick(){
     G.weather=G.nextWeather;
     const wr2=Math.random();G.nextWeather=wr2<0.08?'storm':wr2<0.29?'rain':wr2<0.47?'wind':wr2<0.58?'fog':'sun';
   if(G.flags.crowed){G.flags.crowed=false;setTimeout(()=>toast('🐦 A crow raided your field overnight — a ripe crop is gone!'),1500)}
+  evalDeeds();
   const ml=MAILDAY[G.day];if(ml)sendMail(ml[0],ml[1]);
   const bds=Object.keys(BDAY).filter(k=>isBirthday(k));
     G.sta=G.maxsta||100;   // a night's rest
