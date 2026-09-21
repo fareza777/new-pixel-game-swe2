@@ -410,6 +410,9 @@ function questList(){
   if(f.metSari&&!f.sariDone)L.push('🍄 Sari: bring 2 wild mushrooms → premium seeds');
   if(f.metVilo&&!f.viloDone)L.push('🎣 Vilo: bring a pond fish → 30g');
   if(f.metFen&&!f.fedFen)L.push('🧺 Fen: gift him a crop (Basket + A)');
+  if(f.metHazel&&!f.hq1)L.push("🥧 Hazel: bring 2 Pumpkins → Pumpkin Pie on the menu");
+  else if(f.hq1&&!f.hq2)L.push("🍯 Hazel: bring 2 Wild Honey → Honey Cake on the menu");
+  else if(f.hq2&&!f.hq3)L.push("🐟 Hazel: bring 2 River Fish → Friday Grill on the menu");
   if(f.metPip&&!f.pipDone)L.push('⚾ Pip: find his red ball in the forest');
   if(f.metNana&&!f.metAll)L.push('👋 Nana: meet all the villagers');
   if(!f.reqDone&&G.reqDay!==G.day)L.push('📋 Board: check today\'s request in the plaza');
@@ -487,7 +490,10 @@ const DIALOGS={
  mart:f=>f.metMart?["Back again! The valley keeps me honest — best customers on the road.","Come, look at the wares before the light fades."]:
    [null,"vo_mart1","Ho there! Mart's the name — I haul wares up the old road every market day.","Farm fixings, rare finds — all honest goods. Care for a look?"],
  hazel:f=>f.sunpetalBloom?["Half the valley celebrated right here last night! What a festival."]:
-   f.metHazel?["Warm up, dear — the fire's always lit.","Today's stew is river-fresh. Fen brags it's his catch."]:
+   f.hq3?["You've stocked my pantry for the season — this kitchen owes you, dear."]:
+   f.hq2?["Last favor — two river fish for the Friday grill. Fen can point you to the ford."]:
+   f.hq1?["Two jars of wild honey next — the bees near the shrine grove keep busy."]:
+   f.metHazel?["Warm up, dear — the fire's always lit.","Say — could a farmer spare me two pumpkins? I'll put pie on the menu.","(Bring 2 Pumpkin — I'll owe you a slice and a smile)"]:
    [null,"vo_hazel1","Well look at that — a new face in the Lantern Inn!","I'm Hazel. Soup's hot, cider's cold, and the fire never goes out."],
  fen:f=>f.fedFen?["Still tasting that harvest, ha! Bless you, kid."]:
    f.harvested>0?["That basket smells fresh… spare one crop for an old man? (sell or gift — press A on me with a crop in your bag)"]:
@@ -593,6 +599,19 @@ function talkTo(o){
     G.inv.item.rfish--;f.fenRiver=true;G.stats.quests++;G.flags.lure=true;
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_success');
     lines.push('A SILVERLEAF river fish! You found the old ford, then.','Take my lucky lure — river and pond alike will bite easier. (+2 ♥, catch rate up!)')}
+  if(m.id==='hazel'){
+    if(f.metHazel&&!f.hq1&&(G.inv.crop['13']||0)>=2){
+      G.inv.crop['13']-=2;f.hq1=true;G.stats.quests++;G.gold+=30;sfx('sfx_success');
+      G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);
+      lines.push('Pumpkins! Into the oven they go — Pumpkin Pie is on the menu now. (+30g, +2 ♥)')}
+    else if(f.hq1&&!f.hq2&&(G.inv.item.honey||0)>=2){
+      G.inv.item.honey-=2;f.hq2=true;G.stats.quests++;G.gold+=40;sfx('sfx_success');
+      G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);
+      lines.push('Wild honey, still warm from the hive! Honey Cake joins the menu. (+40g, +2 ♥)')}
+    else if(f.hq2&&!f.hq3&&(G.inv.item.rfish||0)>=2){
+      G.inv.item.rfish-=2;f.hq3=true;G.stats.quests++;G.gold+=50;sfx('sfx_success');
+      G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);
+      lines.push('Silverleaf fish — the Friday Grill is ON. Grilled River Fish joins the menu. (+50g, +2 ♥)')}}
   if(m.id==='fen'){f.metFen=true;
     // Fen's Favor — give any crop
     const have=Object.keys(G.inv.crop).find(k=>G.inv.crop[k]>0);
@@ -684,6 +703,7 @@ function shopRender(){
   if(g.tab==='inn'){
     rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🍲 Hazel\'s kitchen — hot meals restore stamina. Tap to order.</div>';
     for(const gd of INN_MENU){
+      if(gd.flag&&!G.flags[gd.flag])continue;
       const r=document.createElement('div');r.className='srow';
       r.innerHTML=`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${gd.price}g</span>`;
       r.onclick=()=>buyInn(gd);rows.appendChild(r);}
@@ -756,9 +776,10 @@ const MART_GOODS=[...FARMDECOR.map(d=>({kind:'fdec',...d})),
 const INN_MENU=[{id:'soup',name:'Hearty Soup',price:25,sub:'+35 energy'},
              {id:'stew',name:"Fisher's Stew",price:38,sub:'+28 energy'},
              {id:'cider',name:'Mulled Cider',price:30,sub:'+15 energy — orchard apples'},
-             {id:'grill',name:'Grilled River Fish',price:50,sub:'+26 energy'},
+             {id:'grill',name:'Grilled River Fish',price:50,sub:'+26 energy',flag:'hq3'},
              {id:'apie',name:'Apple Pie',price:60,sub:'+42 energy — house special'},
-             {id:'hcake',name:'Honey Cake',price:65,sub:'+40 energy'},
+             {id:'hcake',name:'Honey Cake',price:65,sub:'+40 energy',flag:'hq2'},
+             {id:'pie',name:'Pumpkin Pie',price:70,sub:'+45 energy — autumn gold',flag:'hq1'},
              {id:'fsalad',name:'Forest Lunch',price:55,sub:'+35 energy'}];
 function buyInn(gd){
   if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
