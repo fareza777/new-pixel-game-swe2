@@ -979,6 +979,7 @@ function wrapText(g,text,x,y,maxW,lh){
 function introNext(){
   introI++;introT=0;introWait=0;
   if(introI>=STORY.length){beginPlay();return}
+  G.introAt=performance.now();
   playVO(STORY[introI][0]);
 }
 function beginPlay(){
@@ -998,7 +999,7 @@ async function boot(){
   mapCv.farm=renderMapCanvas('farm');mapCv.village=renderMapCanvas('village');
   $('loadmsg').textContent='';
   const newGame=()=>{if(G.state!=='title')return;
-    G.state='intro';introI=-1;introNext();bgm('music_title');
+    G.state='intro';introI=-1;G.introAt=performance.now();introNext();bgm('music_title');
     $('title').style.display='none';};
   const cont=()=>{if(G.state!=='title')return;
     if(loadSave()){G.state='play';$('title').style.display='none';bgm('music_day');toast('Welcome back to Sunpetal Valley')}
@@ -1014,7 +1015,12 @@ async function boot(){
   addEventListener('keydown',e=>{if(G.state==='intro'&&e.key.toLowerCase()==='e')introNext()});
   // tap to advance intro / dialog
   // unified canvas handler: pointer + touch + click all funnel here
-  const cvTap=tapDedup(()=>{if(G.state==='intro')introNext();else if(G.state==='dlg')dlgAdvance()});
+  // intro taps need a cooldown so the tap that pressed "New Game" can't skip slide 1
+  const cvTap=tapDedup(()=>{if(G.state==='intro'){
+    // retry VO on user tap if autoplay was blocked
+    if(G.vo&&(G.vo._dead||G.vo.paused)&&AUDIO[STORY[introI][0]]){G.vo._dead=false;const p=G.vo.play();if(p&&p.catch)p.catch(()=>{if(G.vo)G.vo._dead=true})}
+    if(performance.now()-(G.introAt||0)>500)introNext()}
+    else if(G.state==='dlg')dlgAdvance()});
   const cvDown=e=>{
     if(G.state==='intro'||G.state==='dlg'){cvTap();return}
     if(G.state!=='play')return;
