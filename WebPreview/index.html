@@ -539,6 +539,10 @@ function loadMap(id,sx,sy){
     if(!G.objs.some(o=>o.meta&&o.meta.id==='vilo'))G.objs.push({key:'vilo_down0',x:18.5,y:18.6,anchor:'bc',meta:{kind:'npc',id:'vilo',name:'Vilo',portrait:'vilo_portrait'},fid:'pic_v',hx:15.5,hy:18.6,ph:1});
     if(!G.objs.some(o=>o.meta&&o.meta.id==='pip'))G.objs.push({key:'pip_down0',x:17.5,y:20.6,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'pic_p',hx:14.5,hy:20.6,ph:2});
     if(G.flags._picnicDay!==G.day){G.flags._picnicDay=G.day;}}
+  if(id==='nanahouse'&&((G.day-1)%28)+1===19&&G.clock/60>=15&&G.clock/60<19){
+    const tea=[['mira',4.5,4.5],['elle',9.5,4.5],['sari',5.5,6.5],['pip',8.5,6.5],['hazel',7.0,7.5]];
+    tea.forEach(([pid,px2,py2],i)=>{if(!G.objs.some(o=>o.meta&&o.meta.id===pid))
+      G.objs.push({key:pid+'_down0',x:px2,y:py2,anchor:'bc',meta:{kind:'npc',id:pid,name:{mira:'Mira',elle:'Elle',sari:'Sari',pip:'Pip',hazel:'Hazel'}[pid],portrait:pid+'_portrait'},fid:'nbt_'+pid,hx:px2,hy:py2,ph:i});});}
   if(id==='village'&&G.day%28===6&&G.clock/60>=16&&G.clock/60<20){
     const party=[['bram',20.5,14.5],['sari',19.5,15.5],['vilo',21.5,15.5],['hazel',20.5,16.5],['mira',18.5,15.5]];
     party.forEach(([pid,px2,py2],i)=>{if(!G.objs.some(o=>o.meta&&o.meta.id===pid))
@@ -853,6 +857,10 @@ function talkTo(o){
   };
   if(EXTRA[m.id])lines.push(EXTRA[m.id][G.day%EXTRA[m.id].length]);
   if(isBirthday(m.id))putLine("Today's my birthday, actually — the valley's been so kind to me.")
+  if(m.id==='nana'&&G.map==='nanahouse'&&isBirthday('nana')&&G.clock/60>=15&&G.clock/60<19)
+    lines.unshift("Oh my — the whole village in my little parlor! Hazel baked, Mira brought flowers… sit, dear, the kettle's singing.")
+  else if(G.map==='nanahouse'&&isBirthday('nana')&&G.clock/60>=15&&G.clock/60<19&&['mira','elle','sari','pip','hazel'].includes(m.id))
+    lines.unshift("Nana's birthday tea! Shh — the surprise almost spoiled itself.")
   // friendship: +1 ♥ the first time you chat each day
   if(G.talkDay[m.id]!==G.day){G.talkDay[m.id]=G.day;
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
