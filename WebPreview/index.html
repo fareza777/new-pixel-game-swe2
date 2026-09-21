@@ -570,6 +570,9 @@ function loadMap(id,sx,sy){
     if(LPS[id])LPS[id].forEach((pt,i)=>{
       if(G.flags['leaf'+G.day+i]!==1&&!G.objs.some(o=>o.fid==='leaf'+i))
         G.objs.push({key:'leafpile',x:pt[0],y:pt[1],meta:{kind:'leafpile',name:'a crisp leaf pile',lp:i},fid:'leaf'+i,hx:pt[0],hy:pt[1],ph:i});});}
+  if(id==='village'&&season()===3&&G.day%7===3&&G.clock/60>=13&&G.clock/60<17){
+    for(let i=0;i<3;i++){if(G.forageDay[G.map+'|sf'+i]!==G.day&&!G.objs.some(o=>o.fid==='sf'+i))
+      G.objs.push({key:'snowball',x:18+i*3,y:21+(i%2)*2,meta:{kind:'forage',item:'snowball',name:'a snowball pile'},fid:'sf'+i,hx:18+i*3,hy:21+(i%2)*2,ph:i});}}
   const GPAGES={farm:[51.5,9.5],village:[8.5,33.5],forest:[16.5,4.5],river:[20.5,23.5],hill:[14.5,9.4],cave:[15.5,12.5],orchard:[21.5,14.5]};
   if(GPAGES[id]){const gi=Object.keys(GPAGES).indexOf(id);
     if(!G.flags['gp'+gi]&&!G.objs.some(o=>o.fid==='gp'+gi))
@@ -895,6 +898,16 @@ function talkTo(o){
     lines.unshift("Here — a leftover sandwich from the basket. Picnics taste better shared! (+15⚡)")}
   if(m.id==='vilo'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel's lemonade + river breeze — this is the life, kid.")}
+  if(m.id==='pip'&&season()===3&&G.day%7===3&&G.map==='village'){
+    const hits=G.flags['snowhit'+G.day]||0;
+    if((G.inv.item.snowball||0)>0&&hits<3){
+      G.inv.item.snowball--;G.flags['snowhit'+G.day]=hits+1;
+      G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);checkKindred('pip');
+      sfx('sfx_success');
+      if(hits===2){lines.unshift("OKAY okay you win!! *wipes snow off his grin* — best snowfight ever. (+1♥)");G.gold+=10;
+        lines.push("Pip digs out a crumpled 10g from his pocket — prize money. (+10g)")}
+      else lines.unshift(["POW! Right in the scarf! Pip's laughing too hard to dodge. (+1♥)","*sniff* you got snow in my ear!! (+1♥)"][hits]);}
+    else lines.unshift(hits>=3?"Truce! You're too good at this.":"Grab a snowball from the piles — SNOWFIGHT!");}
   if(m.id==='pip'&&G.map==='hill'&&G.day%7===6&&G.weather==='windy'){
     lines.unshift("Windday is the BEST! Help me get her higher — grab the line!")}
   if(m.id==='pip'&&G.map==='river'&&G.day%7===5){
