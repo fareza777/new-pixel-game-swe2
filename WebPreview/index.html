@@ -982,7 +982,11 @@ function talkTo(o){
       const sp=SPOTS[G.day%SPOTS.length];o.x=sp[0];o.y=sp[1];
       lines.length=0;lines.push("Hide and seek! I'm hiding somewhere in the village — come find me!")}
     else if(o.hiding){o.hiding=false;G.gold+=5;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);sfx('sfx_success');
-      lines.length=0;lines.push("You found me! Best seeker ever! (+5g, +1 ♥)","Same time tomorrow? I'm SO hiding better.");o.x=28.5;o.y=15.8}}
+      G.stats.hideN=(G.stats.hideN||0)+1;
+      if(G.stats.hideN>=7&&!f.hideChamp){f.hideChamp=true;G.gold+=50;G.inv.item.ribbon=(G.inv.item.ribbon||0)+1;
+        lines.length=0;lines.push("SEVEN TIMES?! That's a village record!","*drumroll on the fountain* I declare you... HIDE & SEEK CHAMPION OF SUNPETAL! (+50g, Gold Ribbon)")
+        ,lines.push("The whole plaza heard him announce it. Twice.")}
+      else lines.length=0;lines.push("You found me! Best seeker ever! (+5g, +1 ♥)","Same time tomorrow? I'm SO hiding better.");o.x=28.5;o.y=15.8}}
     if(!f.pipDone&&G.inv.item&&G.inv.item.ball>0){
       G.inv.item.ball--;f.pipDone=true;G.stats.quests++;
       G.inv.item.candy=(G.inv.item.candy||0)+1;G.gold+=15;
