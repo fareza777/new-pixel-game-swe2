@@ -152,7 +152,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v2.01</div></div></div>
+    <div class="ver">v2.02</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -537,6 +537,10 @@ function loadMap(id,sx,sy){
     if(!G.objs.some(o=>o.meta&&o.meta.id==='vilo'))G.objs.push({key:'vilo_down0',x:18.5,y:18.6,anchor:'bc',meta:{kind:'npc',id:'vilo',name:'Vilo',portrait:'vilo_portrait'},fid:'pic_v',hx:15.5,hy:18.6,ph:1});
     if(!G.objs.some(o=>o.meta&&o.meta.id==='pip'))G.objs.push({key:'pip_down0',x:17.5,y:20.6,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'pic_p',hx:14.5,hy:20.6,ph:2});
     if(G.flags._picnicDay!==G.day){G.flags._picnicDay=G.day;}}
+  if(id==='village'&&G.day%28===6&&G.clock/60>=16&&G.clock/60<20){
+    const party=[['bram',20.5,14.5],['sari',19.5,15.5],['vilo',21.5,15.5],['hazel',20.5,16.5],['mira',18.5,15.5]];
+    party.forEach(([pid,px2,py2],i)=>{if(!G.objs.some(o=>o.meta&&o.meta.id===pid))
+      G.objs.push({key:pid+'_down0',x:px2,y:py2,anchor:'bc',meta:{kind:'npc',id:pid,name:{bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',hazel:'Hazel',mira:'Mira'}[pid],portrait:pid+'_portrait'},fid:'pty_'+pid,hx:px2,hy:py2,ph:i});});}
   if(id==='village'&&G.flags.bl_statue&&!G.objs.some(o=>o.fid==='st0'))
     G.objs.push({key:'statue',x:20.5,y:8.5,meta:{kind:'deco',name:'a statue of the founder'},fid:'st0',hx:20.5,hy:8.5,ph:0});
   if(id==='hill'&&G.day%7===6&&G.weather==='windy'&&G.clock/60>=13&&G.clock/60<17){
@@ -853,6 +857,11 @@ function talkTo(o){
     G.inv.item.rfish--;f.fenRiver=true;G.stats.quests++;G.flags.lure=true;
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_success');
     lines.push('A SILVERLEAF river fish! You found the old ford, then.','Take my lucky lure — river and pond alike will bite easier. (+2 ♥, catch rate up!)')}
+  if(G.day%28===6&&G.clock/60>=16&&G.map==='village'){
+    if(m.id==='bram')lines.unshift("You came! An old man's birthday, and the whole plaza showed up. This valley — this is what he built it for.")
+    else if(m.id==='hazel'&&!f['cake'+G.day]){f['cake'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_cook');
+      lines.unshift("Birthday cake slice, warm from the inn oven — Hazel's treat! (+10⚡)")}
+    else lines.unshift("Bram's birthday! Even the lanterns seem brighter tonight.")}
   if(G.flags.bl_statue&&!f['st_'+m.id]&&['bram','sari','vilo','nana','mira','hazel','elle','pip','wren','luna','sari'].includes(m.id)){
     f['st_'+m.id]=1;
     lines.unshift("That statue in the plaza... your grandfather would be proud of the farmer you've become.")}
