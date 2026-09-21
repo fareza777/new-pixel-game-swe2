@@ -1734,7 +1734,7 @@ function toggleBag(v){
     const st=G.stats||{},hearts=Object.values(G.hearts||{}).reduce((a,b)=>a+b,0);
     const WD2=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
     h+='<div class="invsec">FARMER\'S JOURNAL</div>';
-    h+=`<div class="invrow"><span>📅 Day ${G.day} · ${WD2[(G.day-1)%7]} · ${SEASON_ICON[season()]} ${SEASON[season()]}</span><span class="ct" style="margin-left:auto">${G.weather==='storm'?'⛈ storm':G.weather==='rain'?'🌧 rain':G.weather==='wind'?'🍃 windy':G.weather==='fog'?'🌫 fog':'☀ sun'}</span></div>`;
+    h+=`<div class="invrow"><span>📅 Day ${G.day} · ${WD2[(G.day-1)%7]} · ${SEASON_ICON[season()]} ${SEASON[season()]}</span><span class="ct" style="margin-left:auto">${G.weather==='storm'?'⛈ storm':G.weather==='snow'?'🌨 snow':G.weather==='rain'?'🌧 rain':G.weather==='wind'?'🍃 windy':G.weather==='fog'?'🌫 fog':'☀ sun'}</span></div>`;
     const mp=G.day%14,MICON=mp===0?'🌕':mp<4?'🌔':mp<7?'🌗':mp<11?'🌘':'🌑';
     h+=`<div class="invrow"><span>${MICON} Moon</span><span class="ct" style="margin-left:auto">${mp===0?'full — mushrooms glow tonight':'day '+mp+' of 14'}</span></div>`;
     const toMeteor=(6-(G.day%9)+9)%9;
@@ -2542,10 +2542,10 @@ function dayTick(){
   if(G.clock>=24*60){G.clock-=24*60;G.day++;
     // weather roll — ~1 in 3 days is rain; rain waters every crop for free
     const yesterday=G.day-1;
-    if(!G.nextWeather){const wr=Math.random();G.nextWeather=wr<0.08?'storm':wr<0.29?'rain':wr<0.47?'wind':wr<0.58?'fog':'sun'}
+    if(!G.nextWeather){const wr=Math.random();G.nextWeather=season()===3?(wr<0.35?'snow':wr<0.5?'wind':'sun'):(wr<0.08?'storm':wr<0.29?'rain':wr<0.47?'wind':wr<0.58?'fog':'sun')}
     G.prevWeather=G.weather||'sun';G.weather=G.nextWeather;
     if((G.prevWeather==='rain'||G.prevWeather==='storm')&&G.weather==='sun'){G.rainbowDay=G.day;setTimeout(()=>toast('🌈 A rainbow arcs over the valley — the sky is smiling on your farm'),1600)}
-    const wr2=Math.random();G.nextWeather=wr2<0.08?'storm':wr2<0.29?'rain':wr2<0.47?'wind':wr2<0.58?'fog':'sun';
+    const wr2=Math.random();G.nextWeather=season()===3?(wr2<0.35?'snow':wr2<0.5?'wind':'sun'):(wr2<0.08?'storm':wr2<0.29?'rain':wr2<0.47?'wind':wr2<0.58?'fog':'sun');
   if(G.flags.crowed){G.flags.crowed=false;setTimeout(()=>toast('🐦 A crow raided your field overnight — a ripe crop is gone!'),1500)}
   evalDeeds();
   const ml=MAILDAY[G.day];if(ml)sendMail(ml[0],ml[1]);
@@ -2612,7 +2612,7 @@ function dayTick(){
       }
     hudRender();
     const WD=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
-    toast('Day '+G.day+' · '+WD[(G.day-1)%7]+' · '+SEASON_ICON[season()]+' '+SEASON[season()]+(G.weather==='storm'?' — ⛈ a thunderstorm rattles the valley':G.weather==='rain'?' — 🌧 rain waters your crops':G.weather==='wind'?' — 🍃 leaves on the wind':G.weather==='fog'?' — 🌫 a misty morning over the valley':'')+(((G.day-1)%7===0&&G.day>1)?' — the season turns!':''));
+    toast('Day '+G.day+' · '+WD[(G.day-1)%7]+' · '+SEASON_ICON[season()]+' '+SEASON[season()]+(G.weather==='storm'?' — ⛈ a thunderstorm rattles the valley':G.weather==='rain'?' — 🌧 rain waters your crops':G.weather==='wind'?' — 🍃 leaves on the wind':G.weather==='snow'?' — 🌨 soft snow settles over the valley':G.weather==='fog'?' — 🌫 a misty morning over the valley':'')+(((G.day-1)%7===0&&G.day>1)?' — the season turns!':''));
   if(bds.length)setTimeout(()=>toast('🎂 Today is '+bds.map(k=>VNAME[k]).join(' & ')+"'s birthday — a gift would mean the world!"),1400);}
 }
 function toast(msg){const el=$('toast');el.textContent=msg;el.style.display='block';
@@ -2987,6 +2987,10 @@ function render(ts){
     const RC=['rgba(255,90,90,.30)','rgba(255,180,60,.30)','rgba(255,240,90,.30)','rgba(120,220,110,.30)','rgba(90,160,255,.30)','rgba(170,120,255,.30)'];
     for(let i=0;i<RC.length;i++){ctx.strokeStyle=RC[i];ctx.lineWidth=7;ctx.beginPath();ctx.arc(rx,ry,rr-i*7,Math.PI,2*Math.PI);ctx.stroke()}}
   // rain: diagonal streaks + cool tint (outdoor maps only)
+  if(G.weather==='snow'&&!G.L.indoor){
+    ctx.fillStyle='rgba(255,255,255,.85)';
+    for(let i=0;i<60;i++){const sx=(i*67+ts*0.04)%(cv.width+20)-10,sy=(i*41+ts*0.06)%(cv.height+20)-10;
+      const r=1+(i%3);ctx.beginPath();ctx.arc(sx,sy,r*.6,0,7);ctx.fill()}}
   if(G.weather==='fog'&&!G.L.indoor){
     ctx.fillStyle='rgba(230,235,240,.16)';ctx.fillRect(0,0,cv.width,cv.height);
     const ft=ts/60;
