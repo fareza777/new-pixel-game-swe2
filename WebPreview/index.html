@@ -220,7 +220,7 @@ const MAILDAY={2:['Mayor Bram',"Welcome to the valley, kid. My door is always op
  19:['Cora',"Carpentry's open at the west end. Barns, fences, silos — if your farm needs it, I build it."],
  27:['Luna',"Counted eleven meteors from the point. Bring a gem if the mine gives you one — star-metal sings."]};
 const GIFTABLE={ofeather:1,moondew:1,scarf:1,flour:1,bread:1,starore:1,ibar:1,gbar:1,rcrystal:1,posy:1,orchid:1,crystal:1,truffle:1,honey:1,
-  crab:1,csoup:1,cherry:1,cpie:1,iceshard:1,jam:1,tart:1,steg:1,chowder:1,custard:1,htea:1,stew:1,soup:1,cheese:1,mayo:1,segg:1,shell:1,pearl:1,clover:1,firefly:1,butterfly:1,starflower:1,goldore:1,grill:1,apie:1,cider:1,goldapple:1,salad:1,goldfish:1,kingfish:1,eel:1,cider:1,goldapple:1,salad:1};
+  crab:1,csoup:1,cherry:1,cpie:1,iceshard:1,jam:1,tart:1,steg:1,chowder:1,custard:1,htea:1,stew:1,soup:1,cheese:1,mayo:1,segg:1,shell:1,pearl:1,clover:1,firefly:1,butterfly:1,starflower:1,goldore:1,grill:1,apie:1,cider:1,goldapple:1,salad:1,goldfish:1,kingfish:1,eel:1,cocoa:1,cider:1,goldapple:1,salad:1};
 const LOVES={bram:['stew','chowder'],sari:['c23','tart'],vilo:['rfish','chowder'],nana:['herb','htea'],mira:['posy','tart'],pip:['candy','c23','cherry'],fen:['rfish','stew','crab'],wren:['starflower','orchid','mshroom'],luna:['crystal','segg','starore','iceshard'],hazel:['chowder','cheese'],cora:['steg','jam'],elle:['wool','posy'],mart:['truffle','goldore']};
 const LOVESAY={bram:'"My favorite! You remembered what an old man loves. (+4 ♥)"',sari:'"Strawberries! You sweet, sweet child! (+4 ♥)"',vilo:'"Now THAT is a proper gift, kid. (+4 ♥)"',nana:'"For my teas! You dear thing. (+4 ♥)"',mira:'"It is beautiful — I will treasure it! (+4 ♥)"',pip:'"WHOA. For me?! Best. Day. Ever. (+4 ♥)"',fen:'"Ha! You know the way to a fishermans heart. (+4 ♥)"',wren:'"For my collection — I shall press it tonight! (+4 ♥)"',luna:'"It glimmers like the night sky. I love it. (+4 ♥)"',hazel:'"Ooh, my favorite! Youre an angel. (+4 ♥)"',cora:'"Sturdy AND pretty — just how I like it. (+4 ♥)"',elle:'"Such fine material — you have a tailors eye! (+4 ♥)"',mart:'"A rare find! You drive a hard bargain, friend. (+4 ♥)"'};
 const RECIPES=[
@@ -985,6 +985,8 @@ function talkTo(o){
     lines.unshift("Windday is the BEST! Help me get her higher — grab the line!")}
   if(m.id==='pip'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel let me have TWO sandwiches. Don't tell Mom!")}
+  if(m.id==='hazel'&&(G.weather==='rain'||G.weather==='storm'))
+    lines.unshift("Rain on the window, fire in the hearth — I've got cocoa on the stove today, dear.")
   if(m.id==='hazel'&&G.map==='inn'&&G.day%7===5&&G.clock/60>=18&&G.clock/60<22&&G.flags.songbook&&!f['sung'+G.day]){
     f['sung'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
     lines.unshift("You found the songbook! Listen — *she sings the valley anthem, and the inn goes quiet* ♪ (+10⚡)")}
@@ -1171,6 +1173,7 @@ function shopRender(){
     rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🍲 Hazel\'s kitchen — hot meals restore stamina. Tap to order.</div>';
     for(const gd of INN_MENU){
       if(gd.flag&&!G.flags[gd.flag])continue;
+      if(gd.wf&&G.weather!=='rain'&&G.weather!=='storm')continue;
       const r=document.createElement('div');r.className='srow';
       r.innerHTML=`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${gd.price}g</span>`;
       r.onclick=()=>buyInn(gd);rows.appendChild(r);}
@@ -1259,7 +1262,8 @@ const INN_MENU=[{id:'soup',name:'Hearty Soup',price:25,sub:'+35 energy'},
              {id:'apie',name:'Apple Pie',price:60,sub:'+42 energy — house special'},
              {id:'hcake',name:'Honey Cake',price:65,sub:'+40 energy',flag:'hq2'},
              {id:'pie',name:'Pumpkin Pie',price:70,sub:'+45 energy — autumn gold',flag:'hq1'},
-             {id:'fsalad',name:'Forest Lunch',price:55,sub:'+35 energy'}];
+             {id:'fsalad',name:'Forest Lunch',price:55,sub:'+35 energy'},
+             {id:'cocoa',name:'Rainy-Day Cocoa',price:28,sub:'+30 energy — only when it pours',wf:1}];
 function buyInn(gd){
   if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
   G.gold-=gd.price;G.inv.item[gd.id]=(G.inv.item[gd.id]||0)+1;sfx('sfx_coin');
@@ -1433,7 +1437,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              apple:{name:'Crisp Apple',icon:'apple',sell:12},parcel:{name:'Sealed Parcel',icon:'parcel',sell:0},cherry:{name:'Sweet Cherry',icon:'cherry',sell:14},cpie:{name:'Cherry Pie',icon:'apie',sell:60},
              clover:{name:'Lucky Clover',icon:'clover',sell:80},
              rfish:{name:'River Fish',icon:'fish2',sell:25},
-             shell:{name:'River Shell',icon:'shell',sell:8},icefish:{name:'Frostfish',icon:'fish3',sell:30},duckegg:{name:'Duck Egg',icon:'duckegg',sell:18},wool:{name:'Soft Wool',icon:'wool',sell:35},posy:{name:'Plaza Posy',icon:'flower_r',sell:10},custard:{name:'Frostberry Custard',icon:'custard',sell:48},chowder:{name:'Silverleaf Chowder',icon:'chowder',sell:55},htea:{name:'Honey-Mint Tea',icon:'htea',sell:32}, tart:{name:'Strawberry Tart',icon:'tart',sell:52}, steg:{name:'Stuffed Eggplant',icon:'steg',sell:50}, segg:{name:'Spring Egg',icon:'segg',sell:26}, mayo:{name:'Mayonnaise',icon:'presjar',sell:24}, ibar:{name:'Iron Bar',icon:'ibar',sell:30}, gbar:{name:'Gold Bar',icon:'gbar',sell:65}, rcrystal:{name:'Refined Crystal',icon:'rcrystal',sell:110}, pearl:{name:'Pearl',icon:'pearl',sell:60}, goldfish:{name:'Golden Koi',icon:'goldfish',sell:120}, ofeather:{name:'Owl Feather',icon:'ofeather',sell:35}, moondew:{name:'Moon Dew',icon:'moondew',sell:45}, snowball:{name:'Snowball',icon:'snowball',sell:0}, scarf:{name:'Woolen Scarf',icon:'scarf',sell:60}, flour:{name:'Flour',icon:'flour',sell:24}, starore:{name:'Star Ore',icon:'starore',sell:70}, bread:{name:'Crusty Bread',icon:'bread',sell:45}, kingfish:{name:'Pond Kingfish',icon:'kingfish',sell:150},locket:{name:'Sunpetal Locket',icon:'locket',sell:80},crab:{name:'Tidepool Crab',icon:'crab',sell:35},csoup:{name:'Spiced Crab Soup',icon:'chowder',sell:58},iceshard:{name:'Ice Crystal',icon:'iceshard',sell:40}, orchid:{name:'Glasshouse Orchid',icon:'orchid',sell:40}, feather:{name:'Feather',icon:'feather',sell:5}, ribbon:{name:'Gold Ribbon',icon:'charm',sell:80}, pegg:{name:'Painted Egg',icon:'egg_r',sell:18,edible:6}, mshroom:{name:'Moon Mushroom',icon:'mshroom',sell:40,edible:12}, acorn:{name:'Acorn',icon:'seed',sell:6,edible:3}, diamond:{name:'Raw Diamond',icon:'gem',sell:300}, eel:{name:'Night Eel',icon:'fish3',sell:55,edible:20},
+             shell:{name:'River Shell',icon:'shell',sell:8},icefish:{name:'Frostfish',icon:'fish3',sell:30},duckegg:{name:'Duck Egg',icon:'duckegg',sell:18},wool:{name:'Soft Wool',icon:'wool',sell:35},posy:{name:'Plaza Posy',icon:'flower_r',sell:10},custard:{name:'Frostberry Custard',icon:'custard',sell:48},chowder:{name:'Silverleaf Chowder',icon:'chowder',sell:55},htea:{name:'Honey-Mint Tea',icon:'htea',sell:32}, tart:{name:'Strawberry Tart',icon:'tart',sell:52}, steg:{name:'Stuffed Eggplant',icon:'steg',sell:50}, segg:{name:'Spring Egg',icon:'segg',sell:26}, mayo:{name:'Mayonnaise',icon:'presjar',sell:24}, ibar:{name:'Iron Bar',icon:'ibar',sell:30}, gbar:{name:'Gold Bar',icon:'gbar',sell:65}, rcrystal:{name:'Refined Crystal',icon:'rcrystal',sell:110}, pearl:{name:'Pearl',icon:'pearl',sell:60}, goldfish:{name:'Golden Koi',icon:'goldfish',sell:120}, ofeather:{name:'Owl Feather',icon:'ofeather',sell:35}, moondew:{name:'Moon Dew',icon:'moondew',sell:45}, snowball:{name:'Snowball',icon:'snowball',sell:0}, scarf:{name:'Woolen Scarf',icon:'scarf',sell:60}, flour:{name:'Flour',icon:'flour',sell:24}, starore:{name:'Star Ore',icon:'starore',sell:70}, bread:{name:'Crusty Bread',icon:'bread',sell:45}, kingfish:{name:'Pond Kingfish',icon:'kingfish',sell:150},locket:{name:'Sunpetal Locket',icon:'locket',sell:80},crab:{name:'Tidepool Crab',icon:'crab',sell:35},csoup:{name:'Spiced Crab Soup',icon:'chowder',sell:58},iceshard:{name:'Ice Crystal',icon:'iceshard',sell:40}, orchid:{name:'Glasshouse Orchid',icon:'orchid',sell:40}, feather:{name:'Feather',icon:'feather',sell:5}, ribbon:{name:'Gold Ribbon',icon:'charm',sell:80}, pegg:{name:'Painted Egg',icon:'egg_r',sell:18,edible:6}, mshroom:{name:'Moon Mushroom',icon:'mshroom',sell:40,edible:12}, acorn:{name:'Acorn',icon:'seed',sell:6,edible:3}, diamond:{name:'Raw Diamond',icon:'gem',sell:300}, eel:{name:'Night Eel',icon:'fish3',sell:55,edible:20}, cocoa:{name:'Rainy-Day Cocoa',icon:'htea',sell:35,edible:30},
          butterfly:{name:'Sunnypetal Butterfly',icon:'butterfly',sell:12}, cricket:{name:'Meadow Cricket',icon:'cricket',sell:10}, firefly:{name:'Lantern Firefly',icon:'firefly',sell:15}, beetle:{name:'Cave Beetle',icon:'beetle',sell:18},
          tonic:{name:'Herbal Tonic',icon:'soup',sell:15}, charm:{name:'Lucky Charm',icon:'clover',sell:40}, goldstar:{name:'Golden Crop',icon:'goldstar',sell:50},
          milk:{name:'Fresh Milk',icon:'milk',sell:20}, cheese:{name:'Farm Cheese',icon:'cheese',sell:45},
@@ -1557,7 +1561,7 @@ function toggleBag(v){
    }else{
     h+='<div class="invsec">FORAGED FINDS — tap to eat, or sell at the stall</div>';
     let any=false;
-    const EAT={mushroom:10,herb:14,egg:10,fish:8,truffle:30,berry:8,soup:35,honey:15,candy:30,apple:12,jam:20,stew:28,rfish:16,shell:2,feather:2,icefish:18,eel:20,duckegg:12,custard:30,chowder:38,htea:25,tart:36,steg:40,segg:20,tonic:30,grill:26,salad:24,milk:12,cheese:40,pie:45,hcake:40,fsalad:35,cider:15,apie:42,bread:30};
+    const EAT={mushroom:10,herb:14,egg:10,fish:8,truffle:30,berry:8,soup:35,honey:15,candy:30,apple:12,jam:20,stew:28,rfish:16,shell:2,feather:2,icefish:18,eel:20,cocoa:30,duckegg:12,custard:30,chowder:38,htea:25,tart:36,steg:40,segg:20,tonic:30,grill:26,salad:24,milk:12,cheese:40,pie:45,hcake:40,fsalad:35,cider:15,apie:42,bread:30};
     for(const id in G.inv.item)if(G.inv.item[id]>0&&ITEMS[id]){any=true;
       if(id==='scarf'){h+=`<div class="invrow sel-wear" data-wear="1"><canvas class="iico" width="32" height="32" data-k="scarf"></canvas><span>Woolen Scarf</span><span class="ct" style="margin-left:auto">x${G.inv.item[id]} · ${G.flags.scarfOn?'✓ worn — tap to take off':'tap to wear — keeps you cozy'}</span></div>`;continue}
       h+=`<div class="invrow sel-eat" data-eati="${id}"><canvas class="iico" width="32" height="32" data-k="${ITEMS[id].icon}"></canvas><span>${ITEMS[id].name}</span><span class="ct" style="margin-left:auto">x${G.inv.item[id]}${ITEMS[id].sell?' · '+ITEMS[id].sell+'g':''}${EAT[id]?' · eat +'+EAT[id]+'⚡':''}</span></div>`}
