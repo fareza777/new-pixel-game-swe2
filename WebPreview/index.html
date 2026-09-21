@@ -727,7 +727,9 @@ function loadMap(id,sx,sy){
   if(id==='village'&&G.flags['pud'+G.day]&&G.clock/60<12){
     const PP=[[26,12],[34,14],[29,19],[31,9]];
     PP.forEach((pt,i)=>{if(!G.objs.some(o=>o.fid==='pud'+i))
-      G.objs.push({key:'puddle',x:pt[0],y:pt[1],anchor:'c',meta:{kind:'deco',name:'a rain puddle'},fid:'pud'+i,hx:pt[0],hy:pt[1],ph:0})})}
+      G.objs.push({key:'puddle',x:pt[0],y:pt[1],anchor:'c',meta:{kind:'puddle',name:'a rain puddle'},fid:'pud'+i,hx:pt[0],hy:pt[1],ph:0})});
+    if(G.clock/60>=9&&G.clock/60<12&&!G.objs.some(o=>o.fid==='pudp'))
+      G.objs.push({key:'pip_down0',x:30.5,y:13.5,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'pudp',hx:30.5,hy:13.5,ph:0})}
   if(id==='village'&&season()===1&&G.day%7===6&&G.clock/60>=10&&G.clock/60<17&&!G.objs.some(o=>o.fid==='lem0'))
     G.objs.push({key:'lemonstand',x:27.5,y:11.5,anchor:'bc',meta:{kind:'lemon',name:"Pip's lemonade stand"},fid:'lem0',hx:27.5,hy:11.5,ph:0});
   if(id==='farm'&&G.flags.bl_owlbox&&(G.clock/60>=20||G.clock/60<4)&&!G.objs.some(o=>o.fid==='owl0'))
@@ -2016,7 +2018,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2459,6 +2461,13 @@ function interact(){
       G.inv.item[gift[0]]=(G.inv.item[gift[0]]||0)+1;sfx('sfx_pick');
       toast('🧺 The wind snatched something onto your line — '+gift[1]+'!');return}
     toast(G.weather==='wind'?'🧺 Shirts dance on the line — you\u2019ve checked today':'🧺 Laundry sways gently');return}
+  if(m.kind==='puddle'){
+    if(G.flags['pjump'+G.day]){toast('💦 Your boots are already squelching');return}
+    G.flags['pjump'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);
+    const pipNear=G.objs.some(o=>o.fid==='pudp');
+    if(pipNear){G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);sfx('sfx_success');
+      toast('💦 SPLASH! Pip whoops — you\u2019re both soaked and grinning (+6⚡, +1 ♥)')}
+    else toast('💦 A proper two-booted SPLASH — the puddle ripples to the fountain (+6⚡)');return}
   if(m.kind==='sunfl'){
     if(G.forageDay['sunfl|'+o.fid]===G.day){toast('🌻 This one keeps its seeds today');return}
     G.forageDay['sunfl|'+o.fid]=G.day;G.inv.item.sunfl=(G.inv.item.sunfl||0)+1;
@@ -3550,6 +3559,7 @@ function promptScan(){
       else if(m.kind==='sprout')txt=b.o.tamed?BTN+' · 🌱 Pat the sproutling':BTN+' · 🌱 Greet the sproutling'
       else if(m.kind==='fbooth')txt=G.flags['fbooth'+G.day]?'🎪 The booth has packed up its treats':BTN+' · 🎪 Take '+m.tname+' (free treat)'
       else if(m.kind==='laundry')txt=G.weather==='wind'?(G.flags['lau'+G.day]?'🧺 The line is quiet now':BTN+' · 🧺 Check the laundry line'):'🧺 The laundry line';
+      else if(m.kind==='puddle')txt=G.flags['pjump'+G.day]?'💦 The puddle settles':BTN+' · 💦 Jump in the puddle';
       else if(m.kind==='sunfl')txt=G.forageDay['sunfl|'+o.fid]===G.day?'🌻 The sunflower nods, bare':BTN+' · 🌻 Harvest sunflower';
       else if(m.kind==='rowboat')txt=!G.flags.bl_boat?'🛶 A broken rowboat — Cora could mend it':(G.flags['row'+G.day]?'🛶 The rowboat rests':BTN+' · 🛶 Row the pond');
       else if(m.kind==='swing')txt=(G.clock/60>=14&&G.clock/60<19)?(G.flags['sw'+G.day]?'🪢 The swing rests':BTN+' · 🪢 Ride the rope swing'):'🪢 The old rope swing — afternoons';
