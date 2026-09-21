@@ -1557,12 +1557,13 @@ function interact(){
     if(c.stage>=last-1){
       if(G.tool!=='basket'){toast(TOOL_EMOJI.basket+' Equip the Basket to harvest — tap TOOL');return}
       if(!spendSta(2))return;
-      G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;G.stats.crops++;collect('c'+c.crop);gainXP('farm',5);
+      const gq=c.giant?3:1;if(c.giant){G.stats.giants=(G.stats.giants||0)+1;c.giant=false}
+      G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+gq;G.stats.crops+=gq;collect('c'+c.crop);gainXP('farm',5);
       if(Math.random()<.08){G.inv.item.goldstar=(G.inv.item.goldstar||0)+1;collect('goldstar');
         sfx('sfx_success');toast('✨ A Golden Crop! It shines in your basket (+50g if sold)')}
       G.flags.harvested=(G.flags.harvested||0)+1;
       swing('basket',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
-      toast('🧺 Harvested a '+CROPS[c.crop]+'!'+(REGROW[c.crop]?' The vines keep fruiting — water them again':''));
+      toast((gq>1?'🌟 A GIANT '+CROPS[c.crop]+'! Worth 3× at market':'🧺 Harvested a '+CROPS[c.crop]+'!')+(REGROW[c.crop]?' The vines keep fruiting — water them again':''));
       if(REGROW[c.crop]){c.stage=Math.max(1,last-2);c.watered=false}else{c.crop=0;c.stage=0}
       sfx('sfx_harvest');hudRender();save();return}
     if(!c.watered){
@@ -2077,7 +2078,8 @@ function dayTick(){
       if(c.crop>0&&c.watered){const last=(MAPS[mid].crop_frames[c.crop]||[]).length-1;
         const step=Math.max(1,Math.ceil(last/3));      // ~3 watered nights to maturity
         c.stage=Math.min(c.stage+step+(G.blessedFor===G.day?1:0),last);
-        if(c.crop===22&&c.stage>=last)G.flags.sunpetalBloom=true}
+        if(c.crop===22&&c.stage>=last)G.flags.sunpetalBloom=true;
+        else if(c.stage>=last&&!c.giant&&Math.random()<.07)c.giant=true}
       c.watered=(G.weather==='rain'||G.weather==='storm')&&c.crop>0;   // keep ground wet on rainy days
     if(!(G.flags.scare||G.flags.bl_scare)&&Math.random()<.28){   // a crow raids one ripe crop overnight
       const ripes=[];for(const k in (G.crops.farm||{})){const c2=G.crops.farm[k];
