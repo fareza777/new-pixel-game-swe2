@@ -1068,6 +1068,11 @@ function talkTo(o){
   if(m.id==='hazel'){f.metHazel=true;G.flags.innShop=1;openInnPending=true}
   if(m.id==='cora'){f.metCora=true;G.flags.carpShop=1;openCarpPending=true}
   if(m.id==='elle'){f.metElle=true;G.flags.tailShop=1;openTailPending=true}
+  if(m.id==='elle'&&f.woolScarf&&G.flags.bl_loft&&!f.quilt&&(G.inv.item.wool||0)>=3){
+    G.inv.item.wool-=3;f.quilt=true;G.hearts.elle=Math.min(10,(G.hearts.elle||0)+2);sfx('sfx_success');
+    lines.unshift(null,'vo_elle2',"Three balls of wool and a loft to warm… stand back. *She works the loom all afternoon.* There — a Grand Quilt for your loft bed. You'll dream deep every night now. (+2♥)")}
+  if(m.id==='elle'&&f.woolScarf&&G.flags.bl_loft&&!f.quilt&&(G.inv.item.wool||0)<3){
+    lines.unshift("That loft bed needs a proper quilt — bring me 3 wool and I'll stitch you something grand.")}
   if(m.id==='elle'&&!f.woolScarf&&(G.inv.item.wool||0)>=2){
     G.inv.item.wool-=2;f.woolScarf=true;G.maxsta=(G.maxsta||100)+10;
     lines.unshift(null,'vo_elle2',"Wait — is that Molly's wool? Give it here… there. A scarf, warm as a hearth. (+10 energy forever)")}
@@ -1680,7 +1685,7 @@ function interact(){
     swing('basket',o.x,o.y);
     toast(`📦 Found ${m.gold||0}g inside!`);hudRender();return}
   if(m.kind==='bed'){
-    if(G.map==='loft'&&Math.random()<.3){
+    if(G.map==='loft'&&(G.flags.quilt||Math.random()<.3)){
       const DREAMS=[
        "You dream of your grandfather sowing seeds at dawn — he turns and tips his hat to you. You wake lighter. (+5⚡)",
        "You dream the festival lanterns float up like stars, and someone laughs beside the fountain. You wake smiling. (+5⚡)",
