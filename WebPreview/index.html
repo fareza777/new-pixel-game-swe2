@@ -219,6 +219,9 @@ const MAILDAY={2:['Mayor Bram',"Welcome to the valley, kid. My door is always op
  10:['Hazel',"The Lantern Inn just lit its lamps — northeast corner, past the fountain. First stew's on the house if you mention this letter."],
  19:['Cora',"Carpentry's open at the west end. Barns, fences, silos — if your farm needs it, I build it."],
  27:['Luna',"Counted eleven meteors from the point. Bring a gem if the mine gives you one — star-metal sings."]};
+const GIFTABLE={posy:1,orchid:1,crystal:1,truffle:1,honey:1,jam:1,tart:1,steg:1,chowder:1,custard:1,htea:1,stew:1,soup:1,cheese:1,mayo:1,segg:1,shell:1,pearl:1,clover:1,firefly:1,butterfly:1,starflower:1,goldore:1,grill:1,apie:1,cider:1,goldapple:1,salad:1};
+const LOVES={bram:['stew','chowder'],sari:['c23','tart'],vilo:['rfish','chowder'],nana:['herb','htea'],mira:['posy','tart'],pip:['candy','c23'],fen:['rfish','stew'],wren:['starflower','orchid'],luna:['crystal','segg'],hazel:['chowder','cheese'],cora:['steg','jam'],elle:['wool','posy'],mart:['truffle','goldore']};
+const LOVESAY={bram:'"My favorite! You remembered what an old man loves. (+4 ♥)"',sari:'"Strawberries! You sweet, sweet child! (+4 ♥)"',vilo:'"Now THAT is a proper gift, kid. (+4 ♥)"',nana:'"For my teas! You dear thing. (+4 ♥)"',mira:'"It is beautiful — I will treasure it! (+4 ♥)"',pip:'"WHOA. For me?! Best. Day. Ever. (+4 ♥)"',fen:'"Ha! You know the way to a fishermans heart. (+4 ♥)"',wren:'"For my collection — I shall press it tonight! (+4 ♥)"',luna:'"It glimmers like the night sky. I love it. (+4 ♥)"',hazel:'"Ooh, my favorite! Youre an angel. (+4 ♥)"',cora:'"Sturdy AND pretty — just how I like it. (+4 ♥)"',elle:'"Such fine material — you have a tailors eye! (+4 ♥)"',mart:'"A rare find! You drive a hard bargain, friend. (+4 ♥)"'};
 const BDAY={pip:4,bram:6,sari:10,vilo:14,nana:19,mira:23,fen:26,wren:17,luna:25,hazel:8,mart:12,cora:18,elle:22};
 const VNAME={luna:'Luna',shrine:'Forest Shrine',elder:'Elder Tree',bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',fen:'Fen',pip:'Pip',mart:'Mart',wren:'Wren',hazel:'Hazel',cora:'Cora',elle:'Elle'};
 const isBirthday=id=>BDAY[id]===((G.day-1)%28)+1;
@@ -1301,14 +1304,20 @@ function interact(){
     // gift: holding the Basket with crops & pressing A gives one crop to the villager (+2 ♥)
     const giftBq=G.tool==='basket'&&(G.inv.item.bq||0)>0;
     const giftCrop=G.tool==='basket'&&!giftBq?Object.keys(G.inv.crop).find(k=>G.inv.crop[k]>0):null;
+    const giftIt=G.tool==='basket'&&!giftBq&&!giftCrop?Object.keys(G.inv.item).find(k=>G.inv.item[k]>0&&GIFTABLE[k]):null;
     const hk='gift_'+m.id;
-    if((giftCrop||giftBq)&&G.talkDay[hk]!==G.day){
-      const isB=isBirthday(m.id),base=giftBq?4:2;
-      G.talkDay[hk]=G.day;if(giftBq)G.inv.item.bq--;else G.inv.crop[giftCrop]--;
+    if((giftCrop||giftBq||giftIt)&&G.talkDay[hk]!==G.day){
+      const gid=giftIt?giftIt:(giftCrop?'c'+giftCrop:'bq');
+      const loved=giftBq?false:(LOVES[m.id]||[]).includes(gid);
+      const isB=isBirthday(m.id),base=giftBq?4:(loved?4:2);
+      G.talkDay[hk]=G.day;if(giftBq)G.inv.item.bq--;else if(giftIt)G.inv.item[giftIt]--;else G.inv.crop[giftCrop]--;
       G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+base);G.stats.gifts++;
       sfx('sfx_success');swing('basket',o.x,o.y);
       if(isB)G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+3);
-      startDlg(o,[giftBq?'A Moonbloom Bouquet'+(isB?' — for my birthday?! You made my whole year, kid. (+'+(base+3)+' ♥)':' — it smells like the whole valley at once! (+'+base+' ♥)'):'Oh! A '+CROPS[giftCrop]+(isB?' — on my birthday! You remembered! (+'+(base+3)+' ♥)':' — for me? Thank you, kid. (+'+base+' ♥)')]);return}
+      const nm=giftIt?ITEMS[giftIt].name:(giftCrop?CROPS[giftCrop]:'a Moonbloom Bouquet');
+      startDlg(o,[giftBq?'A Moonbloom Bouquet'+(isB?' — for my birthday?! You made my whole year, kid. (+'+(base+3)+' ♥)':' — it smells like the whole valley at once! (+'+base+' ♥)'):
+        loved?(LOVESAY[m.id]||'"This is my favorite thing in the whole valley! (+'+(base+(isB?3:0))+' ♥)"'):
+        'Oh! '+nm+(isB?' — on my birthday! You remembered! (+'+(base+3)+' ♥)':' — for me? Thank you, kid. (+'+base+' ♥)')]);return}
     if(m.id==='sari'&&G.flags.metBram){talkTo(o);openShopPending=true;return}
     if(m.id==='mart'){talkTo(o);openMartPending=true;return}
     if(m.id==='hazel'){talkTo(o);openInnPending=true;return}
