@@ -205,7 +205,11 @@ const MAILDAY={2:['Mayor Bram',"Welcome to the valley, kid. My door is always op
  18:['Mira',"The bees in the forest grove are friendly if you're gentle. Honey sells well at the stall."],
  21:['Mart',"I'll be on the plaza every Sunday. Farm decor, rare goods, fair coin."],
  24:['Nana',"The shrine on the hill takes offerings. Some say the mountain listens."],
- 26:['Fen',"My joints tell me winter's coming, kid. Fill your crates before the water sleeps."]};
+ 26:['Fen',"My joints tell me winter's coming, kid. Fill your crates before the water sleeps."],
+ 8:['Wren',"If you climb the west hill — that's me, the one with the press. Starflowers only bloom up there."],
+ 12:['Luna',"Clear sky tonight, farmer. The telescope at Starwatch Point is yours to borrow — meteors every ninth evening."],
+ 20:['Wren',"Pressed today: one starflower, perfect blue. The hill keeps its calendar — you should learn it."],
+ 27:['Luna',"Counted eleven meteors from the point. Bring a gem if the mine gives you one — star-metal sings."]};
 const BDAY={pip:4,bram:6,sari:10,vilo:14,nana:19,mira:23,fen:26,wren:17,luna:25};
 const VNAME={luna:'Luna',shrine:'Forest Shrine',elder:'Elder Tree',bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',fen:'Fen',pip:'Pip',mart:'Mart',wren:'Wren'};
 const isBirthday=id=>BDAY[id]===((G.day-1)%28)+1;
@@ -463,7 +467,10 @@ const DIALOGS={
    f.tomDone?["Good catches, warm fires — that's a riverman's whole philosophy."]:
    f.tomQ?["Still waiting on those two river fish, kid. The current's patient — so am I."]:
    ["They call me Old Tom. Retired — mostly. This river's the only employer I ever kept.","Tell you what — bring me two River Fish, and I'll teach you my knot. Better bites, every cast."],
- pip:f=>f.pipDone?["You're the best farmer AND the best ball-finder!","When I grow up I'm farming right beside you."]:
+ pip:f=>G.weather==='wind'?(f.kiteDay!==G.day?(()=>{f.kiteDay=G.day;G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);
+   return ["WIND DAY! My kite, my kite — watch it ride the gusts!","It went so high it touched a cloud! You saw that, right? (+1 ♥)"]})():
+   ["The kite's still up! The wind likes us today."]):
+   f.pipDone?["You're the best farmer AND the best ball-finder!","When I grow up I'm farming right beside you."]:
    f.metPip?["Did you check the forest? My ball rolled in past the trees…","It's red and round — can't miss it!"]:
    ["Hiya! You're the new farmer! Wanna see my— hey, where's my ball?!",
     "It rolled away toward the forest… could you find it? Please?"],
@@ -804,7 +811,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
          tonic:{name:'Herbal Tonic',icon:'soup',sell:15}, charm:{name:'Lucky Charm',icon:'clover',sell:40}, goldstar:{name:'Golden Crop',icon:'goldstar',sell:50},
          milk:{name:'Fresh Milk',icon:'milk',sell:20}, cheese:{name:'Farm Cheese',icon:'cheese',sell:45},
          grill:{name:'Grilled Fish',icon:'fish2',sell:40}, salad:{name:'Garden Salad',icon:'herb_01',sell:30},
-             jam:{name:'Berry Jam',icon:'jam',sell:20},
+             jam:{name:'Berry Jam',icon:'jam',sell:20}, pie:{name:'Pumpkin Pie',icon:'pie',sell:65}, hcake:{name:'Honey Cake',icon:'honey',sell:55}, fsalad:{name:'Forest Lunch',icon:'salad',sell:45},
              stew:{name:"Fisher's Stew",icon:'soup',sell:30},
              letter:{name:'Valley Letter',icon:'item_letter',sell:0}};
 const TOOL_SET=[{id:'hoe',icon:'tool_hoe',name:'Hoe',sub:'till soil'},
@@ -885,6 +892,9 @@ function toggleBag(v){
     h+=`<div class="invrow"><span>🐈 Mochi</span><span class="ct" style="margin-left:auto">${pet?'purring today':'wants a pat'}</span></div>`;
     h+=`<div class="invrow"><span>🐔 Hens</span><span class="ct" style="margin-left:auto">${G.coopEggs||0} eggs laid</span></div>`;
     if(G.flags.bessie)h+=`<div class="invrow"><span>🐄 Bessie</span><span class="ct" style="margin-left:auto">${G.petDay['cow']===G.day?'petted ♥':'waiting…'}</span></div>`;
+    if(G.flags.rex)h+=`<div class="invrow"><span>🐕 Rex</span><span class="ct" style="margin-left:auto">${G.petDay['dog']===G.day?'petted ♥':'sniffing about'}</span></div>`;
+    if(G.flags.metWren)h+=`<div class="invrow"><span>🌿 Wren</span><span class="ct" style="margin-left:auto">${(G.hearts.wren||0)}♥ · ${G.flags.wrenDone?'starflowers pressed':'waiting on blooms'}</span></div>`;
+    if(G.flags.metLuna)h+=`<div class="invrow"><span>🌙 Luna</span><span class="ct" style="margin-left:auto">${(G.hearts.luna||0)}♥ · ${G.flags.lunaDone?'star-metal found':'charting the sky'}</span></div>`;
     h+='<div class="invrow" style="color:#e8c96a"><span>📖 Collection — '+Object.keys(G.col).length+' discovered</span></div>';
     for(const k of Object.keys(G.col))h+=`<div class="invrow" style="opacity:.85"><span style="padding-left:14px">${colName(k)}</span><span class="ct" style="margin-left:auto">×${G.col[k]}</span></div>`;
     h+='<div class="invsec" style="color:#998;font-size:10px">the valley remembers every small kindness</div>';
@@ -904,7 +914,7 @@ function toggleBag(v){
     G.tool=r.dataset.tool;$('btnTool').firstChild.textContent=TOOL_EMOJI[G.tool];
     toggleBag(false);toast(TOOL_EMOJI[G.tool]+' '+TOOL_NAME[G.tool]+' equipped');hudRender()}));
   // eat a crop / find to restore stamina
-  const EAT2={mushroom:10,herb:14,egg:10,fish:8,truffle:30,berry:8,soup:35,honey:15,candy:30,apple:12,jam:20,stew:28,rfish:16,shell:2,feather:2,tonic:30,grill:26,salad:24,milk:12,cheese:40};
+  const EAT2={mushroom:10,herb:14,egg:10,fish:8,truffle:30,berry:8,soup:35,honey:15,candy:30,apple:12,jam:20,stew:28,rfish:16,shell:2,feather:2,tonic:30,grill:26,salad:24,milk:12,cheese:40,pie:45,hcake:40,fsalad:35};
   document.querySelectorAll('#baglist [data-eat]').forEach(r=>onTap(r,()=>{
     const id=r.dataset.eat;if((G.inv.crop[id]||0)>0){G.inv.crop[id]--;G.sta=Math.min(G.maxsta||100,G.sta+18);
       sfx('sfx_harvest');toast('🍴 Ate a '+CROPS[id]+' — +18⚡');toggleBag(true);hudRender()}}));
@@ -1156,7 +1166,10 @@ function interact(){
       {id:'cheese',need:{milk:1,herb:1},say:'You churn a wheel of Farm Cheese — smells amazing!'},
                  {id:'stew',need:{fish:1,herb:1},say:"🐟 Brewed Fisher's Stew! (+28⚡ / 30g)"},
       {id:'grill',need:{rfish:1,herb:1},say:'🔥 Grilled River Fish! (+26⚡ / 40g)'},
-      {id:'salad',need:{c8:1,c18:1},say:'🥗 Tossed a Garden Salad! (+24⚡ / 30g)'}];
+      {id:'salad',need:{c8:1,c18:1},say:'🥗 Tossed a Garden Salad! (+24⚡ / 30g)'},
+      {id:'pie',need:{c13:1,c10:1},say:'🥧 Baked a Pumpkin Pie — golden crust! (+45⚡ / 65g)'},
+      {id:'hcake',need:{honey:1,c10:1},say:'🍰 Drizzled a Honey Cake! (+40⚡ / 55g)'},
+      {id:'fsalad',need:{herb:1,berry:1,apple:1},say:'🥙 Packed a Forest Lunch! (+35⚡ / 45g)'}];
     for(const r of RECIPES){let ok=true;for(const k in r.need){const hv=k[0]==='c'?G.inv.crop[+k.slice(1)]:it[k];if((hv||0)<r.need[k])ok=false}
       if(ok){for(const k in r.need){if(k[0]==='c')G.inv.crop[+k.slice(1)]-=r.need[k];else it[k]-=r.need[k]}it[r.id]=(it[r.id]||0)+1;
         G.flags.cookedOnce=true;collect(r.id);sfx('sfx_success');toast(r.say);hudRender();save();return}}
