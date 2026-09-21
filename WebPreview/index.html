@@ -632,6 +632,8 @@ function loadMap(id,sx,sy){
         anim:{frames:['elm_down0','elm_down1','elm_down2','elm_down1'],fps:6}});
     if(!G.objs.some(o=>o.fid==='bf_elm'))
       G.objs.push({key:'bonfire',x:11.5,y:22.8,anchor:'bc',meta:{kind:'deco',name:'the birthday fire'},fid:'bf_elm',hx:11.5,hy:22.8,ph:0})}
+  if(id==='forest'&&G.day%7===6&&G.clock/60>=5.5&&G.clock/60<8.5&&!G.objs.some(o=>o.fid==='bw0'))
+    G.objs.push({key:'wren_down0',x:12.5,y:16.5,anchor:'bc',meta:{kind:'npc',id:'wren',name:'Wren',portrait:'wren_portrait'},fid:'bw0',hx:12.5,hy:16.5,ph:0});
   if(id==='forest'&&G.clock/60>=5&&G.clock/60<8&&!G.objs.some(o=>o.fid==='dch0'))
     G.objs.push({key:'songbird_down0',x:18.5,y:8.5,anchor:'bc',meta:{kind:'dchorus',name:'the grove at first light'},fid:'dch0',hx:18.5,hy:8.5,ph:0,anim:{frames:['songbird_down0','songbird_down1','songbird_down2','songbird_down1'],fps:3}});
   if(id==='forest'&&G.clock/60>=17&&G.clock/60<20&&!G.flags['elmbday'+G.day]&&!G.objs.some(o=>o.fid==='elm0'))
@@ -1362,6 +1364,11 @@ function talkTo(o){
       G.gold+=40;G.hearts.wren=Math.min(10,(G.hearts.wren||0)+3);sfx('sfx_success');G.stats.quests++;
       lines.unshift('“Songbird, owl, AND herald — three feathers from three winds! Into the Field Guide they go. The valley\u2019s birds trust you now, friend.” (+40g, +3♥)');}
     else if(f.wrenDone)lines.unshift('“My Field Guide lacks but '+(3-need.length)+' feather'+(3-need.length>1?'s':'')+' — songbird down, owl feather, and a herald\u2019s red quill. Birdwatching Sundays, the goose migrations, the barn owl…”');}
+  if(m.id==='wren'&&G.day%7===6&&G.clock/60<9&&!f['bwalk'+G.day]){
+    f['bwalk'+G.day]=1;G.hearts.wren=Math.min(10,(G.hearts.wren||0)+2);
+    lines.unshift('“Boots on, quiet feet — the dawn walk begins. Three stops: the singing birch, the moss hollow, the owl pine. Watch and I’ll name every voice.” (+2 ♥)');
+    lines.push('She walks slow, listening. At the last tree she presses a feather into your palm: “For the field guide. First student I’ve had in years.”');
+    G.inv.item.feather=(G.inv.item.feather||0)+1;return}
   if(m.id==='wren'&&G.day%7===0&&G.clock/60<12&&!f['bw'+G.day]){
     f['bw'+G.day]=1;G.inv.item.rfeather=(G.inv.item.rfeather||0)+1;G.hearts.wren=Math.min(10,(G.hearts.wren||0)+1);sfx('sfx_talk');
     lines.unshift("*whispering* Shh — a golden herald, rare as snow in summer… gone! But look, it left us a Herald Feather. (+1 ♥)")}
