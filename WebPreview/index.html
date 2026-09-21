@@ -466,6 +466,8 @@ function loadMap(id,sx,sy){
       if(ic){o.key=ic;o.meta.name='display: '+(isC?CROPS[+id.slice(1)]:(ITEMS[id]||{}).name||id)}})}
   if(id==='village'&&(G.flags.fundTier||0)>=3)[[31.2,14.4],[32.8,14.4]].forEach((p,i)=>G.objs.push({key:'mosaic',x:p[0],y:p[1],meta:{kind:'deco',name:'sun mosaic',floor:1},fid:'mosa'+i}));
   if(id==='village'&&G.day%7===0){G.objs.push({key:'table_01',x:30.5,y:13.6,meta:{kind:'contest',name:'the Harvest Contest table'},fid:'contest0'});G.solid.add('30,13');G.solid.add('31,13')}
+  if(id==='river'&&!G.objs.some(o=>o.fid==='goldpan'))
+    G.objs.push({key:'goldore',x:6.5,y:12.5,meta:{kind:'goldpan',name:'a glittering gravel bar'},fid:'goldpan',hx:6.5,hy:12.5,ph:0});
   if(id==='river'&&G.clock/60>=19&&G.clock/60<22){
     if(!G.objs.some(o=>o.fid==='cfire'))
       G.objs.push({key:'fire_f0',x:9.5,y:15.5,anchor:'bc',anim:{frames:['fire_f0','fire_f1','fire_f2'],fps:5},meta:{kind:'cfire',name:"Tom's campfire"},fid:'cfire',hx:9.5,hy:15.5,ph:0});
@@ -1698,7 +1700,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2096,6 +2098,12 @@ function interact(){
     G.flags['kite'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
     if(m.anim)m.anim.i=(m.anim.i||0)+1;
     toast("🪁 You run the line — the kite climbs! (+10⚡)");G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);checkKindred('pip');save();return}
+  if(m.kind==='goldpan'){
+    if(G.flags['pan'+G.day]){sfx('sfx_deny');toast('✨ Already panned today — the river refills it overnight');return}
+    G.flags['pan'+G.day]=1;sfx('sfx_water');
+    if(Math.random()<.45+(G.flags.luckyDay===G.day?.2:0)){G.inv.item.goldore=(G.inv.item.goldore||0)+1;collect('goldore');toast('✨ A gold flake gleams in your pan!')}
+    else toast('✨ Just pebbles today — the river is stingy');
+    hudRender();save();return}
   if(m.kind==='sundial'){
     const wd=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'][(G.day-1)%7],hs=Math.floor(G.clock/60);
     const nexts=[];
@@ -2915,6 +2923,7 @@ function promptScan(){
       else if(m.kind==='spage')txt=BTN+' · 🎵 Take the songbook page'
       else if(m.kind==='piano')txt=G.flags['piano'+G.day]?'🎹 The keys rest for today':BTN+' · 🎹 Play a tune'
       else if(m.kind==='horse')txt=BTN+' · 🐎 Ride the mare'
+      else if(m.kind==='goldpan')txt=G.flags['pan'+G.day]?'✨ The bar is picked clean for today':BTN+' · ✨ Pan the gravel for gold'
       else if(m.kind==='sundial')txt=BTN+' · 🌞 Read the sundial'
       else if(m.kind==='chorus')txt=G.flags['chorus'+G.day]?'🐸 The chorus hums on':BTN+' · 🐸 Listen to the frog chorus'
       else if(m.kind==='cfire')txt=G.flags['cfire'+G.day]?'🔥 The fire crackles low — warm enough':BTN+' · 🔥 Warm up at Tom’s fire'
