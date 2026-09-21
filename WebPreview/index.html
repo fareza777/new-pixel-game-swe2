@@ -468,6 +468,10 @@ function loadMap(id,sx,sy){
   if(id==='village'&&G.day%7===0){G.objs.push({key:'table_01',x:30.5,y:13.6,meta:{kind:'contest',name:'the Harvest Contest table'},fid:'contest0'});G.solid.add('30,13');G.solid.add('31,13')}
   if(id==='river'&&!G.objs.some(o=>o.fid==='goldpan'))
     G.objs.push({key:'goldore',x:6.5,y:12.5,meta:{kind:'goldpan',name:'a glittering gravel bar'},fid:'goldpan',hx:6.5,hy:12.5,ph:0});
+  if(id==='river'&&G.prevWeather==='storm')
+    for(let i=0;i<3;i++){const fid='deb'+i;
+      if(G.forageDay['river|'+fid]!==G.day&&!G.objs.some(o=>o.fid===fid))
+        G.objs.push({key:'driftwood',x:4.5+i*2.2,y:13.5+(i%2),meta:{kind:'forage',item:i===0?'shell':(i===1?'driftwood':'crab'),name:i===0?'a storm-tossed Shell':(i===1?'a chunk of Driftwood':'a stunned Crab')},fid:fid,hx:4.5+i*2.2,hy:13.5+(i%2),ph:0})}
   if(id==='river'&&G.flags.tomDone&&G.clock/60>=9&&G.clock/60<17){
     if(!G.objs.some(o=>o.meta&&o.meta.id==='tom'))
       G.objs.push({key:'tom_down0',x:4.5,y:9.5,anchor:'bc',meta:{kind:'npc',id:'tom',name:'Tom',portrait:'tom_portrait'},fid:'tomferry',hx:4.5,hy:9.5,ph:0});}
