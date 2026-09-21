@@ -413,6 +413,8 @@ function loadMap(id,sx,sy){
   if(id==='house')for(const d of DECOR)if(G.flags[d.id]){
     G.objs.push({key:d.spr,x:d.x,y:d.y,meta:{kind:'deco'},fid:'deco_'+d.id,hx:d.x,hy:d.y,ph:0});
     if(d.spr==='lamp01')G.objs[G.objs.length-1].meta.light=true;}
+  if(id==='house')for(const cd2 of(G.cords||[]))
+    G.objs.push({key:cd2.spr,x:cd2.x,y:cd2.y,meta:{kind:'deco'},fid:cd2.id,hx:cd2.x,hy:cd2.y,ph:0});
   if(id==='farm'&&G.flags.bl_barn){G.objs.push({key:'barn',x:57,y:8.6,meta:{kind:'deco',name:'The Old Barn'},fid:'bl_barn',hx:57,hy:8.6,ph:0});
     for(let bx=54;bx<=59;bx++)for(let by=5;by<=8;by++)G.solid.add(bx+','+by);
     G.objs.push({key:'doormat',x:57,y:9.2,meta:{kind:'deco'}});
@@ -1495,6 +1497,10 @@ function shopRender(){
       r.onclick=()=>buyOutfit(gd);rows.appendChild(r);}
   }else if(g.tab==='build'){
     rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🔨 Cora\'s order board — farm builds & tool sharpening. One of each.</div>';
+    const cd=CORD[G.day%CORD.length];
+    if(!G.flags[cd.id]){const cr=document.createElement('div');cr.className='srow';
+      cr.innerHTML=`<span>🪑 Commission: ${cd.name} <span style="color:#998;font-size:11px">· ${cd.sub} · Cora delivers it tomorrow</span></span><span class="pr">${cd.price}g</span>`;
+      cr.onclick=()=>buyCord(cd);rows.appendChild(cr);}
     for(const gd of BUILDS){
       if(gd.flag==='bl_statue'&&!G.flags.gwatch&&!G.flags.bl_statue)continue;
       const r=document.createElement('div');r.className='srow';
@@ -1550,6 +1556,13 @@ const DECOR=[{id:'deco_plant',name:'Potted Plant',price:60,spr:'plantpot',x:2.8,
              {id:'deco_lamp',name:'Reading Lamp',price:80,spr:'lamp01',x:12.2,y:4.6,sub:'warm evening light'},
              {id:'deco_rug',name:'Round Rug',price:50,spr:'rug_b',x:7.5,y:8.2,sub:'cozy floor rug'},
              {id:'deco_shelf',name:'Wall Shelf',price:90,spr:'shelf_01',x:12.6,y:2.9,sub:'for your keepsakes'}];
+const CORD=[{id:'cord_shelf',name:'Oak Bookshelf',price:130,spr:'shelf_01',x:5.5,y:2.4,sub:'carved for the wall beside your bed'},
+            {id:'cord_dress',name:'Cedar Dresser',price:160,spr:'crate_03',x:14.5,y:5.5,sub:'smells of the forest'},
+            {id:'cord_box',name:'Window Planter',price:90,spr:'pot15',x:5.5,y:8.6,sub:'for herbs in the sun'}];
+function buyCord(c){
+  if(G.coin<c.price){$('shopmsg').textContent='Not enough gold.';return}
+  G.coin-=c.price;G.flags[c.id]=1;(G.cords=G.cords||[]).push(c);
+  sfx('sfx_buy');$('shopmsg').textContent='"Solid oak — it\u2019ll be on your doorstep at sunrise," Cora nods.';save();if(G.shop)shopRender()}
 function buyDeco(d){
   if(G.flags[d.id]){$('shopmsg').textContent="Already at your house.";return}
   if(G.gold<d.price){$('shopmsg').textContent="Not enough gold.";return}
