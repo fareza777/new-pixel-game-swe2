@@ -1331,6 +1331,13 @@ function talkTo(o){
     f.chartDone=1;G.inv.item.starchart-=4;G.inv.item.starore=(G.inv.item.starore||0)+2;
     G.hearts.luna=Math.min(10,(G.hearts.luna||0)+3);G.stats.quests++;sfx('sfx_success');
     lines.unshift("*She lays the pages edge to edge and breathes* — Grandfather's survey of the whole sky. Four seasons, four pages, one farmer's lost legacy. Here — Star Ore, and my gratitude. (+3 ♥)")}
+  if(m.id==='wren'&&!f.fieldGuide){
+    const need=['feather','ofeather','rfeather'].filter(k=>(G.inv.item[k]||0)>0);
+    if(need.length===3){
+      f.fieldGuide=1;G.inv.item.feather--;G.inv.item.ofeather--;G.inv.item.rfeather--;
+      G.gold+=40;G.hearts.wren=Math.min(10,(G.hearts.wren||0)+3);sfx('sfx_success');G.stats.quests++;
+      lines.unshift('“Songbird, owl, AND herald — three feathers from three winds! Into the Field Guide they go. The valley\u2019s birds trust you now, friend.” (+40g, +3♥)');}
+    else if(f.wrenDone)lines.unshift('“My Field Guide lacks but '+(3-need.length)+' feather'+(3-need.length>1?'s':'')+' — songbird down, owl feather, and a herald\u2019s red quill. Birdwatching Sundays, the goose migrations, the barn owl…”');}
   if(m.id==='wren'&&G.day%7===0&&G.clock/60<12&&!f['bw'+G.day]){
     f['bw'+G.day]=1;G.inv.item.rfeather=(G.inv.item.rfeather||0)+1;G.hearts.wren=Math.min(10,(G.hearts.wren||0)+1);sfx('sfx_talk');
     lines.unshift("*whispering* Shh — a golden herald, rare as snow in summer… gone! But look, it left us a Herald Feather. (+1 ♥)")}
