@@ -2221,9 +2221,15 @@ function interact(){
     G.flags.soaked=G.day;G.sta=Math.min(G.maxsta||100,G.sta+40);sfx('sfx_harvest');
     toast("♨ Ahh… the spring melts the day's aches away. (+40 energy)");return}
   if(m.kind==='dog'){
-    if(G.petDay['dog']===G.day){o.heart=60;return}
+    if(G.petDay['dog']===G.day){
+      if(G.flags['fetch'+G.day]){o.heart=60;return}
+      G.flags['fetch'+G.day]=1;o.heart=60;sfx('sfx_success');
+      const find=[['feather','a glossy feather'],['acorn','a buried acorn'],['shell','a river-worn shell'],['berry','a stolen berry']][G.day%4];
+      G.inv.item[find[0]]=(G.inv.item[find[0]]||0)+1;
+      G.hearts.rex=(G.hearts.rex||0)+1;
+      toast('🐕 FETCH! Rex bolts off and trots back, tail a blur — he brought you '+find[1]+'!');return}
     G.petDay['dog']=G.day;o.heart=60;sfx('sfx_talk');
-    toast('🐕 Rex wags his tail and bounces — he might sniff out treasure overnight');return}
+    toast('🐕 Rex wags his tail and bounces — he might sniff out treasure overnight (pet again: fetch!)');return}
   if(m.kind==='sheep'){
     if(G.petDay['sheep']===G.day){o.heart=60;return}
     G.petDay['sheep']=G.day;o.heart=60;sfx('sfx_talk');
@@ -3478,6 +3484,7 @@ function promptScan(){
       else if(m.kind==='fox')txt=BTN+' · 🦊 '+(((G.inv.item.berry||0)>0&&!((G.objs.find(o2=>o2.meta&&o2.meta.kind==='fox')||{}).tamed))?'Offer a berry':'Pet the fox');
       else if(m.kind==='rabbit')txt=BTN+' · 🐇 '+(((G.inv.item.berry||0)>0&&!((G.objs.find(o2=>o2.meta&&o2.meta.kind==='rabbit')||{}).tamed))?'Offer a berry':'Pet the rabbit');
       else if(m.kind==='penguin')txt=BTN+' · 🐧 '+(b.o.tamed?'Pet the penguin':'Offer a fish');
+      else if(m.kind==='dog'&&G.petDay['dog']===G.day)txt=G.flags['fetch'+G.day]?'🐕 Rex is all fetched out':BTN+' · 🥎 Throw a stick for Rex';
       else if(m.kind==='pig'||m.kind==='animal'||m.kind==='cow'||m.kind==='dog'||m.kind==='sheep')txt=BTN+' · ❤ Pet '+(m.name||'animal');
       else if(m.kind==='gala')txt=BTN+" · 🖼 Admire Vilo's painting";
       else if(m.kind==='calf')txt=G.petDay['calf']===G.day?'🐮 Maple nuzzles you ♥':BTN+' · 🐮 Pet Maple';
