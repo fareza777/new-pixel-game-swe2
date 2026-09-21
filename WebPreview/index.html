@@ -1668,7 +1668,17 @@ function interact(){
   if(m.kind==='chest'&&!o.opened){o.opened=true;o.key='chest_o';G.gold+=m.gold||0;sfx('sfx_coin');
     swing('basket',o.x,o.y);
     toast(`📦 Found ${m.gold||0}g inside!`);hudRender();return}
-  if(m.kind==='bed'){sleep();return}
+  if(m.kind==='bed'){
+    if(G.map==='loft'&&Math.random()<.3){
+      const DREAMS=[
+       "You dream of your grandfather sowing seeds at dawn — he turns and tips his hat to you. You wake lighter. (+5⚡)",
+       "You dream the festival lanterns float up like stars, and someone laughs beside the fountain. You wake smiling. (+5⚡)",
+       "You dream of rain on the fields — soft, patient, endless. Somewhere a sunflower turns toward morning. (+5⚡)",
+       "You dream the raccoon, the fox and the rabbit all sit at your table, wearing little hats. (+5⚡)"];
+      const dr=DREAMS[G.day%DREAMS.length];
+      G.sta=Math.min(100+(G.maxsta||0),G.sta+5);
+      startDlg(o,["…you drift off under the quilt.",dr]);sleep();return}
+    sleep();return}
   if(m.kind==='well'){
     if(G.flags.luckyDay===G.day+1){toast('⛲ The well still shimmers with your wish');return}
     if(G.gold<10){toast('⛲ A dry toss — you need 10g');return}
