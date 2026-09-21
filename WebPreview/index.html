@@ -1431,10 +1431,16 @@ function toggleBag(v){
     const WD2=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
     h+='<div class="invsec">FARMER\'S JOURNAL</div>';
     h+=`<div class="invrow"><span>📅 Day ${G.day} · ${WD2[(G.day-1)%7]} · ${SEASON_ICON[season()]} ${SEASON[season()]}</span><span class="ct" style="margin-left:auto">${G.weather==='storm'?'⛈ storm':G.weather==='rain'?'🌧 rain':G.weather==='wind'?'🍃 windy':G.weather==='fog'?'🌫 fog':'☀ sun'}</span></div>`;
+    const mp=G.day%14,MICON=mp===0?'🌕':mp<4?'🌔':mp<7?'🌗':mp<11?'🌘':'🌑';
+    h+=`<div class="invrow"><span>${MICON} Moon</span><span class="ct" style="margin-left:auto">${mp===0?'full — mushrooms glow tonight':'day '+mp+' of 14'}</span></div>`;
+    const toMeteor=(6-(G.day%9)+9)%9;
+    h+=`<div class="invrow"><span>🌠 Next meteor shower</span><span class="ct" style="margin-left:auto">${toMeteor===0?'tonight! 19:00 at the hill':toMeteor+' day'+(toMeteor>1?'s':'')}</span></div>`;
     h+=`<div class="invrow"><span>🌾 Crops harvested</span><span class="ct" style="margin-left:auto">${st.crops||0}</span></div>`;
     h+=`<div class="invrow"><span>🎣 Fish caught</span><span class="ct" style="margin-left:auto">${st.fish||0}</span></div>`;
     h+=`<div class="invrow"><span>🍄 Things foraged</span><span class="ct" style="margin-left:auto">${st.forage||0}</span></div>`;
     h+=`<div class="invrow"><span>🎁 Gifts given</span><span class="ct" style="margin-left:auto">${st.gifts||0}</span></div>`;
+    if(st.giants)h+=`<div class="invrow"><span>🌟 Giant crops</span><span class="ct" style="margin-left:auto">${st.giants}</span></div>`;
+    if(st.hideN)h+=`<div class="invrow"><span>🙈 Hide &amp; seek wins</span><span class="ct" style="margin-left:auto">${st.hideN}</span></div>`;
     h+=`<div class="invrow"><span>🪙 Lifetime earnings</span><span class="ct" style="margin-left:auto">${st.gold||0}g</span></div>`;
     h+=`<div class="invrow"><span>❤ Friendship</span><span class="ct" style="margin-left:auto">${hearts}♥ total</span></div>`;
     const kin=Object.keys(G.flags).filter(k=>k.indexOf('kin_')===0).length;
