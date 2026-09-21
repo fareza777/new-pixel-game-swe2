@@ -16,8 +16,11 @@
   #quest b{color:#ffd76e;display:block;font-size:13px}
   #toast{bottom:200px;left:50%;transform:translateX(-50%);background:rgba(30,60,30,.85);border:2px solid #9fd0ff;
     color:#eafbe0;padding:7px 14px;border-radius:8px;font-size:14px;display:none;z-index:6;max-width:80vw;text-align:center}
-  #prompt{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#000a;color:#fff;
-    padding:6px 14px;border:2px solid #fff8;border-radius:6px;font-size:14px;display:none;z-index:5;white-space:nowrap}
+  #prompt{position:fixed;bottom:170px;left:50%;transform:translateX(-50%);background:#000d;color:#fff;
+    padding:7px 16px;border:2px solid #ffd76e;border-radius:8px;font-size:14px;display:none;z-index:5;max-width:86vw;text-align:center;box-shadow:0 4px 14px #0009}
+  #touch{display:none;position:fixed;inset:0;z-index:7;pointer-events:none}
+  body.busy #touch,body.busy #prompt{display:none!important}
+  #hud{max-width:52vw}
   /* dialog box with portrait (Harvest Moon style) */
   #dlg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);width:min(92vw,560px);
     background:#241809f2;color:#ffe9c4;border:3px solid #c89b5a;border-radius:10px;display:none;z-index:8;
@@ -68,7 +71,6 @@
   .xbtn{position:absolute;top:14px;right:16px;color:#fff;font-size:22px;cursor:pointer;padding:6px 12px;
     border:2px solid #fff6;border-radius:8px;background:#0008}
   /* touch controls */
-  #touch{display:none;position:fixed;inset:0;z-index:7;pointer-events:none}
   body.touchmode.ingame #touch{display:block}
   #joy{position:absolute;left:24px;bottom:28px;width:120px;height:120px;border-radius:50%;
     background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.25);pointer-events:auto;touch-action:none}
@@ -145,7 +147,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v1.9.1</div></div></div>
+    <div class="ver">v1.10</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -202,13 +204,13 @@ const G={
   tutStep:0, vo:null, fade:0, promptTxt:'', forageDay:{},
 };
 const TUT=[
-  "Move: left stick / WASD",
-  "Follow the road north — to Sunpetal Village",
-  "Find Mayor Bram in the plaza & talk (A / E)",
-  "Return to the farm — stand on a garden bed & press A to plant",
-  "Press A again on a dry sprout to water it",
-  "Sleep in your bed at home — crops grow overnight, harvest with A",
-  "Sell your harvest to Sari at the market stall"];
+  "Move with the left stick (or WASD)",
+  "Walk north up the road → Sunpetal Village",
+  "Stand near Mayor Bram & press A to talk",
+  "Back home: stand on a garden bed, press A to plant seeds",
+  "Press A on the sprout to water it (Watering Can)",
+  "Enter your house & press A on the bed to sleep — crops grow overnight",
+  "Press A on grown crops to harvest, then sell at Sari's stall"];
 const STORY=[
  ["vo_intro1","Long ago, the valley of Sunpetal bloomed with golden flowers — and every summer, the whole village danced beneath the Festival of Light.","intro1"],
  ["vo_intro2","But seasons passed. The fields grew quiet, and the festival lanterns faded… one by one.","intro2"],
@@ -235,6 +237,14 @@ function bgm(name){
 // browsers block audio before first gesture — retry the queued track on any tap
 document.addEventListener('pointerdown',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
 document.addEventListener('touchstart',()=>{if(PENDING_BGM){const n=PENDING_BGM;PENDING_BGM='';BGMNAME='';bgm(n)}},true);
+/* pause all audio when the app goes to background / screen off */
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){if(BGM)BGM.pause();if(G.vo)G.vo.pause()}
+  else{if(SET.music&&BGMNAME){const n=BGMNAME;BGMNAME='';bgm(n)}
+       if(G.vo&&!G.vo._dead)G.vo.play().catch(()=>{})}
+});
+addEventListener('blur',()=>{if(BGM)BGM.pause();if(G.vo)G.vo.pause()});
+addEventListener('pagehide',()=>{if(BGM)BGM.pause();if(G.vo)G.vo.pause()});
 
 /* universal tap: works whether the WebView fires pointer, touch, or only click events */
 function tapDedup(fn){let lt=0;return e=>{const n=Date.now();if(n-lt<420)return;lt=n;fn(e)}}
@@ -352,16 +362,17 @@ function talkTo(o){
     startDlg(o,lines,festivalVisuals);return}
   startDlg(o,lines);
 }
+function uiBusy(){document.body.classList.toggle('busy',G.state==='dlg'||G.state==='bag'||G.state==='shop'||G.state==='intro'||G.state==='title'||G.state==='festival')}
 function startDlg(o,lines,onEnd){
   const vo=lines[0]===null?lines[1]:null;
   G.dlg={npc:o.meta,lines:lines.filter(l=>l&&l!==vo&&l!==null),i:0,portrait:o.meta.portrait||o.key,vo,onEnd};
   if(vo)playVO(vo);else sfx('sfx_talk');
-  G.state='dlg';
+  G.state='dlg';uiBusy();
 }
 function dlgAdvance(){
   const d=G.dlg; if(!d)return;
   d.i++;sfx('sfx_talk');
-  if(d.i>=d.lines.length){const cb=d.onEnd;G.dlg=null;G.state='play';save();if(cb)cb()}
+  if(d.i>=d.lines.length){const cb=d.onEnd;G.dlg=null;G.state='play';uiBusy();save();if(cb)cb()}
 }
 function drawPortrait(){
   const pc=$('dport'),dpr=window.devicePixelRatio||1,S=Math.round(64*dpr);
@@ -380,8 +391,8 @@ function drawPortrait(){
 }
 
 /* ------------------------------ shop ------------------------------------ */
-function openShop(){G.shop={tab:'buy'};G.state='shop';shopRender()}
-function closeShop(){G.shop=null;G.state='play';$('shop').style.display='none'}
+function openShop(){G.shop={tab:'buy'};G.state='shop';uiBusy();shopRender()}
+function closeShop(){G.shop=null;G.state='play';uiBusy();$('shop').style.display='none'}
 function shopTab(t){G.shop.tab=t;shopRender()}
 function shopRender(){
   const g=G.shop;$('shop').style.display='flex';
@@ -450,8 +461,8 @@ function drawIco(c,key,size){const s=IMG[key];if(!s)return;
   g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,(size-s.w*k)/2,(size-s.h*k)/2,s.w*k,s.h*k)}
 function toggleBag(v){
   G.bag=v===undefined?!G.bag:v; $('bag').style.display=G.bag?'flex':'none';
-  if(!G.bag){if(G.state==='bag')G.state='play';return}
-  if(G.state==='play')G.state='bag';
+  if(!G.bag){if(G.state==='bag'){G.state='play';uiBusy()}return}
+  if(G.state==='play'){G.state='bag';uiBusy()}
   G.inv.item=G.inv.item||{};
   // equipment header: active seed + hero
   const cf=(MAPS.farm.crop_frames[G.selSeed]||[]);
@@ -514,7 +525,8 @@ function interact(){
         if((G.inv.seed[G.selSeed]||0)>0){c.crop=+G.selSeed;c.stage=1;c.watered=false;G.inv.seed[G.selSeed]--;sfx('sfx_plant');
           G.flags.plantedCount=(G.flags.plantedCount||0)+1;
           if(G.flags.plantedCount>=3)G.flags.mq1done=true;
-          G.flags.planted=true;if(!G.inv.seed[G.selSeed])cycleSeed();hudRender();return}
+          G.flags.planted=true;if(!G.inv.seed[G.selSeed])cycleSeed();hudRender();
+          toast('🌱 Planted! Press '+(isTouch?'A':'E')+' on the sprout to water it');return}
         toast("No "+CROPS[G.selSeed]+" seeds left — buy more at Sari's stall (press BAG to switch seeds).");return}
       if(c.crop>0){
         const last=(MAPS[G.map].crop_frames[c.crop]||[]).length-1;
@@ -522,7 +534,8 @@ function interact(){
         if(c.stage>=last-1){G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;
           G.flags.harvested=(G.flags.harvested||0)+1;
           toast('Harvested a '+CROPS[c.crop]+'!');c.crop=0;c.stage=0;sfx('sfx_harvest');hudRender();save();return}
-        if(!c.watered){c.watered=true;G.flags.watered=true;sfx('sfx_water');return}
+        if(!c.watered){c.watered=true;G.flags.watered=true;sfx('sfx_water');
+          toast('💧 Watered! It grows overnight — sleep in your bed at home');return}
       }
       continue;
     }
@@ -605,7 +618,7 @@ function toast(msg){const el=$('toast');el.textContent=msg;el.style.display='blo
 let last=0;
 function loop(ts){
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
-  document.body.classList.toggle('ingame',G.state==='play');
+  document.body.classList.toggle('ingame',G.state==='play');uiBusy();
   if(G.state==='title'){titleRender(ts);requestAnimationFrame(loop);return}
   if(G.state==='intro'){introRender(ts,dt);requestAnimationFrame(loop);return}
   if(G.state==='festival'){festivalRender(ts);requestAnimationFrame(loop);return}
@@ -752,20 +765,20 @@ function promptScan(){
   for(const[cx,cy]of near(1)){
     const k=cx+','+cy,c=(G.crops[G.map]||{})[k];
     if(c&&c.soil){
-      if(c.crop===0){txt=G.map==='village'?(G.flags.haveSunseed&&!G.flags.sunpetalPlanted?BTN+' · plant the Sunpetal':'✦ sacred beds — Sunpetal only'):BTN+' · Plant '+CROPS[G.selSeed]+' seeds (x'+(G.inv.seed[G.selSeed]||0)+')';break}
+      if(c.crop===0){txt=G.map==='village'?(G.flags.haveSunseed&&!G.flags.sunpetalPlanted?BTN+' · 🌱 plant the Sunpetal':'✦ sacred beds — Sunpetal only'):BTN+' · 🌱 Plant '+CROPS[G.selSeed]+' seeds (x'+(G.inv.seed[G.selSeed]||0)+')';break}
       const fr=MAPS[G.map].crop_frames[c.crop],last=fr?fr.length-1:0;
       if(c.crop===22&&c.stage>=last){txt='✦ Sunpetal in bloom';break}
-      if(c.stage>=last-1){txt=BTN+' · Harvest '+CROPS[c.crop]+' (Basket)';break}
-      txt=c.watered?'growing… (watered ✓)':BTN+' · Water '+CROPS[c.crop]+' (Watering Can)';break}
+      if(c.stage>=last-1){txt=BTN+' · 🧺 Harvest '+CROPS[c.crop]+' — Basket';break}
+      txt=c.watered?'💧 '+CROPS[c.crop]+' growing — watered ✓':BTN+' · 💧 Water '+CROPS[c.crop]+' — Watering Can';break}
   }
   if(!txt)outer:for(const[cx,cy]of near(1)){
     for(const o of G.objs){const m=o.meta||{};
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-cy)<1.2){
-        if(m.kind==='chest'&&!o.opened){txt=BTN+' — open chest';break outer}
-        if(m.kind==='bed'){txt=BTN+' — sleep until morning';break outer}
-        if(m.kind==='forage'&&G.forageDay[G.map+'|'+o.fid]!==G.day){txt=BTN+' — gather '+(m.name||'herbs');break outer}
-        if(m.kind==='npc'){txt=BTN+' — talk to '+(m.name||'villager');break outer}
-        if(m.kind==='pig'||m.kind==='animal'){txt=BTN+' — pet '+(m.name||'animal');break outer}}}}
+        if(m.kind==='chest'&&!o.opened){txt=BTN+' · 📦 open chest';break outer}
+        if(m.kind==='bed'){txt=BTN+' · 🛏 Sleep until morning';break outer}
+        if(m.kind==='forage'&&G.forageDay[G.map+'|'+o.fid]!==G.day){txt=BTN+' · 🍄 Gather '+(m.name||'herbs');break outer}
+        if(m.kind==='npc'){txt=BTN+' · 💬 Talk to '+(m.name||'villager');break outer}
+        if(m.kind==='pig'||m.kind==='animal'){txt=BTN+' · ❤ Pet '+(m.name||'animal');break outer}}}}
   $('prompt').style.display=txt?'block':'none';$('prompt').textContent=txt;
 }
 /* ------------------------------ title / intro ---------------------------- */
