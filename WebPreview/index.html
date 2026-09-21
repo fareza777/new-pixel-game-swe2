@@ -277,8 +277,24 @@ function openSettings(){$('setov').style.display='flex';
   $('setmusicv').textContent=SET.music?'ON':'OFF';$('setsfxv').textContent=SET.sfx?'ON':'OFF'}
 
 /* ------------------------------ map handling ---------------------------- */
+// static map layers are baked once per map into an offscreen canvas — one drawImage per frame
+// instead of thousands of per-tile draws (main perf win on low-end phones)
+const LAYERCV={};
+function bakeLayer(id){
+  const M=MAPS[id];
+  const c=document.createElement('canvas');c.width=M.W*T*SCALE;c.height=M.H*T*SCALE;
+  const g=c.getContext('2d');g.imageSmoothingEnabled=false;
+  const put=(key,cx,cy)=>{const s=IMG[key];if(!s)return;
+    g.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,cx*T*SCALE,cy*T*SCALE,s.w*SCALE,s.h*SCALE)};
+  for(const name of M.order){const d=M.tiles[name];if(!d)continue;
+    for(const k in d){const[x,y]=k.split(',').map(Number);put(d[k],x,y)}}
+  const dec=M.tiles.decor||{};
+  for(const k in dec){const[x,y]=k.split(',').map(Number);put(dec[k],x,y)}
+  LAYERCV[id]=c;
+}
 function loadMap(id,sx,sy){
   G.map=id; const M=MAPS[id]; G.L=M;
+  if(!LAYERCV[id])bakeLayer(id);
   G.solid=new Set(M.solid); G.water=new Set(M.water||[]);
   G.objs=M.objects.map((o,ix)=>({...o,fid:ix,hx:o.x,hy:o.y,ph:Math.random()*10}));
   if(!G.crops[id]){G.crops[id]={}; (M.tilled||[]).forEach(c=>G.crops[id][c]={crop:0,stage:0,watered:false,soil:true});}
@@ -547,9 +563,9 @@ function pickAction(){
     if(c&&c.soil&&c.crop>0){
       const last=(MAPS[G.map].crop_frames[c.crop]||[]).length-1;
       if(c.crop===22&&c.stage>=last){if(bestP<50+own){best={kind:'bloom'};bestP=50+own}}
-      else if(c.stage>=last-1){if(bestP<50+own){best={kind:'crop',c};bestP=50+own}}
-      else if(!c.watered){if(bestP<45+own){best={kind:'crop',c};bestP=45+own}}}
-    else if(c&&c.soil&&c.crop===0){if(bestP<40+own){best={kind:'crop',c};bestP=40+own}}
+      else if(c.stage>=last-1){if(bestP<50+own){best={kind:'crop',c,cx,cy};bestP=50+own}}
+      else if(!c.watered){if(bestP<45+own){best={kind:'crop',c,cx,cy};bestP=45+own}}}
+    else if(c&&c.soil&&c.crop===0){if(bestP<40+own){best={kind:'crop',c,cx,cy};bestP=40+own}}
     else if(!c&&zone.length&&zone.some(r=>cx>=r[0]&&cx<=r[2]&&cy>=r[1]&&cy<=r[3])){
       // no own-tile bonus for till — watering/planting a crop ahead always beats digging where you stand
       if(bestP<30){best={kind:'till',cx,cy,k};bestP=30}}
@@ -754,9 +770,11 @@ function render(ts){
   if(G.L.W*T*SCALE<cv.width)camX=(cv.width-G.L.W*T*SCALE)/2;
   if(G.L.H*T*SCALE<cv.height)camY=(cv.height-G.L.H*T*SCALE)/2;
   const L=G.L;
-  for(const name of L.order){const d=L.tiles[name];if(!d)continue;
+  const lc=LAYERCV[G.map];
+  if(lc)ctx.drawImage(lc,Math.round(camX),Math.round(camY));
+  else{for(const name of L.order){const d=L.tiles[name];if(!d)continue;
     for(const k in d){const[x,y]=k.split(',').map(Number);drawTile(d[k],x,y,camX,camY)}}
-  for(const k in L.tiles.decor){const[x,y]=k.split(',').map(Number);drawTile(L.tiles.decor[k],x,y,camX,camY)}
+    for(const k in L.tiles.decor){const[x,y]=k.split(',').map(Number);drawTile(L.tiles.decor[k],x,y,camX,camY)}}
   // tilled soil + crops
   const crops=G.crops[G.map]||{};
   for(const k in crops){const c=crops[k];const[x,y]=k.split(',').map(Number);
@@ -775,6 +793,7 @@ function render(ts){
     ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,
       Math.round(camX+x*T*SCALE-s.w*SCALE/2+8*SCALE),
       Math.round(camY+y*T*SCALE-(s.h-16)*SCALE),s.w*SCALE,s.h*SCALE);}
+  G.act=G.state==='play'?pickAction():null;   // shared by marker + promptScan
   // objects + hero sorted by y
   const draw=G.objs.concat([{key:'_h',x:G.hero.x,y:G.hero.y,hero:true}]);
   draw.sort((a,b)=>a.y-b.y);
@@ -788,6 +807,18 @@ function render(ts){
     const px=Math.round(camX+o.x*T*SCALE-dw/2),py=Math.round(camY+o.y*T*SCALE-dh+T*SCALE*.9);
     ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,px,py,dw,dh);
     if(o.heart>0){o.heart--;ctx.font='bold 12px monospace';ctx.fillStyle='#f66';ctx.fillText('<3',px+dw/2-4,py-4)}
+  }
+  // target-cell marker: pulsing dashed outline on the cell A will act on
+  const pa=G.act;
+  if(pa&&(pa.cx!==undefined||pa.o)){
+    const mx=pa.cx!==undefined?pa.cx:Math.floor(pa.o.x),my=pa.cy!==undefined?pa.cy:Math.floor(pa.o.y);
+    const pulse=.7+.3*Math.sin(ts/170);
+    ctx.fillStyle=`rgba(255,235,120,${pulse*.14})`;
+    ctx.fillRect(Math.round(camX+mx*T*SCALE),Math.round(camY+my*T*SCALE),T*SCALE,T*SCALE);
+    ctx.strokeStyle=`rgba(255,240,140,${pulse})`;ctx.lineWidth=Math.max(2,SCALE);
+    ctx.setLineDash([6,3]);
+    ctx.strokeRect(Math.round(camX+mx*T*SCALE)+1.5,Math.round(camY+my*T*SCALE)+1.5,T*SCALE-3,T*SCALE-3);
+    ctx.setLineDash([]);
   }
   // ---- tool swing animation + particles ----
   if(G.swing){const age=ts-G.swing.t0;
@@ -807,7 +838,7 @@ function render(ts){
         ctx.fillRect(camX+p.x*T*SCALE,camY+p.y*T*SCALE,p.sz*SCALE,p.sz*SCALE);}}
     ctx.globalAlpha=1;G.fx=G.fx.filter(p=>p.life>0);}
   hudRender();
-  promptScan();
+  if(ts-(G._psT||0)>120){G._psT=ts;promptScan()}   // ~8fps is plenty for the hint label
   // night tint + lights
   const h=G.clock/60;let a=0;
   if(h<5.5||h>21)a=.38;else if(h<7)a=.38*(7-h)/1.5;else if(h>19)a=.38*(h-19)/2;
@@ -859,7 +890,7 @@ function hudRender(){
 function promptScan(){
   if(G.state!=='play'){$('prompt').style.display='none';return}
   const BTN=isTouch?'A':'E';let txt='';
-  const b=pickAction();
+  const b=G.act||pickAction();
   if(b){
     if(b.kind==='till')txt=G.tool==='hoe'?BTN+' · 🪓 Till soil':TOOL_EMOJI.hoe+' Equip Hoe (tap TOOL)';
     else if(b.kind==='fish')txt=G.tool==='rod'?BTN+' · 🎣 Fish':TOOL_EMOJI.rod+' Equip Fishing Rod (tap TOOL)';
