@@ -1312,6 +1312,11 @@ function talkTo(o){
     f['tour'+G.day]=1;G.flags.tourEnd=Date.now()+90000;
     lines.unshift("TOURNEY DAY! Rules are simple: one fish, ninety seconds, right here. GO!")
     lines.push("...catch it and I'll make it worth your while.");}
+  if(m.id==='fen'&&G.clock/60<12&&G.flags.fenTip!==G.day){
+    G.flags.fenTip=G.day;
+    const spot=[['pond','Your pond, by the reeds'],['river','The ford past the old bridge'],['islet','The tidepool shallows']][G.day%3];
+    startDlg(o,['Mornin\u2019, kid. I read the water like a page, see.',
+                'The '+['pond','river','brine'][G.day%3]+' is talking today — '+spot[1]+'. Fish will be biting there till noon. (+catch odds today)']);return}
   if(m.id==='fen'){f.metFen=true;
     // Fen's Favor — give any crop
     const have=Object.keys(G.inv.crop).find(k=>G.inv.crop[k]>0);
@@ -2008,7 +2013,7 @@ function interact(){
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
     swing('rod',best.cx+.5,best.cy+.5);sfx('sfx_water');
-    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fid=_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';collect(fid);
+    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fid=_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';collect(fid);
       G.inv.item[fid]=(G.inv.item[fid]||0)+1;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',6);
       toast(fid==='eel'?'⚡ A Night Eel! It writhes silver in the dark — worth 55g':fid==='icefish'?'🐟 Caught a Frostfish through the ice! Worth 30g':fid==='rfish'?'🐟 Caught a River Fish! Bigger — worth 25g':'🐟 Caught a Pond Fish! Sell it at Sari\'s stall');}
     else toast('🐟 It got away… try again');
