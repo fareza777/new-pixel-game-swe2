@@ -407,6 +407,13 @@ function loadMap(id,sx,sy){
   // eggs laid by petted hens appear at the coop each morning
   // villagers keep hours — plaza empties at night, everyone home by the fire
   const nighth=(G.clock/60>=20||G.clock/60<6);
+  if(id==='village'&&G.day%28===14&&G.clock/60>=18&&G.clock/60<21){
+    const adr=[['sari',11.0,10.5],['vilo',13.0,11.0],['nana',9.0,10.8],['mira',8.5,12.2],['pip',12.0,12.6],['hazel',14.0,10.2],['elle',10.0,9.2]];
+    adr.forEach(([pid,px2,py2],i)=>{if(!G.objs.some(o=>o.meta&&o.meta.id===pid))
+      G.objs.push({key:(pid==='mira'?'npc5':pid)+'_down0',x:px2,y:py2,anchor:'bc',
+        meta:{kind:'npc',id:pid,name:VNAME[pid],portrait:(pid==='mira'?'npc5':pid)+'_portrait'},fid:'adr_'+pid,hx:px2,hy:py2,ph:i})});
+    if(!G.objs.some(o=>o.fid==='pulp0'))
+      G.objs.push({key:'crate01',x:11.0,y:9.0,anchor:'bc',meta:{kind:'pulpit',name:'the mayor\u2019s crate-pulpit'},fid:'pulp0',hx:11.0,hy:9.0,ph:0})}
   if(id==='village'&&nighth)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='npc'));
   if(!nighth)G.objs=G.objs.filter(o=>!o.nightOnly);
   if(G.day%7!==0)G.objs=G.objs.filter(o=>!o.martOnly);
@@ -1973,7 +1980,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','fbooth','sprout'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','fbooth','sprout'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2406,6 +2413,14 @@ function interact(){
     if(G.flags['fbooth'+G.day]){sfx('sfx_deny');toast('🎪 One treat per festival — savor it!');return}
     G.flags['fbooth'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+25);sfx('sfx_eat');
     startDlg(o,["The boothkeeper grins and hands you "+m.tname+".",'Warmth spreads through you — festival food always tastes of celebration.',"[+25⚡]"]);return}
+  if(m.kind==='pulpit'){
+    if(G.flags['pulp'+G.day]){toast('🏛 The address is over — folks drift home warm');return}
+    G.flags['pulp'+G.day]=1;
+    ['sari','vilo','nana','mira','pip','hazel','elle'].forEach(pid=>{G.hearts[pid]=Math.min(10,(G.hearts[pid]||0)+1);checkKindred(pid)});
+    sfx('sfx_success');
+    startDlg(o,['Bram clears his throat on the crate: “Sunpetal Valley! We plant, we fish, we endure.”',
+                '“And this year — this year a new pair of hands has joined the rows. Give the kid a cheer!”',
+                'The plaza erupts. You blush. (+1 ♥ everyone present)']);return}
   if(m.kind==='barrel'){
     if(G.weather==='rain'||G.weather==='storm'||G.prevWeather==='rain'||G.prevWeather==='storm'){
       if(G.flags['barr'+G.day]){toast('🛢 The barrel needs another rain to fill');return}
@@ -2837,6 +2852,7 @@ function dayTick(){
   if(G.day%7===2)setTimeout(()=>toast('🫖 Tea at Nana\u2019s cottage this afternoon (15:00-18:00)'),1200);
   if(((G.day-1)%28)+1===11)setTimeout(()=>toast('🪵 It\u2019s Elm\u2019s birthday — the valley sneaks to his cabin this evening (17:00-21:00)'),1250);
   if(G.flags.bl_birdh)setTimeout(()=>sfx('sfx_talk'),400);
+  if(G.day%28===14)setTimeout(()=>toast('🏛 MAYOR\u2019S ADDRESS tonight at the plaza, 18:00-21:00'),840);
   if(G.day%28===25&&G.flags.bl_barn)setTimeout(()=>toast('💃 BARN DANCE tonight at your barn, 19:00-23:00 — Hazel’s bringing the fiddle'),850);
   if(G.day%28===0)setTimeout(()=>toast('🍽 THE FOUNDER\u2019S FEAST tonight at the Lantern Inn, 18:00-22:00 — the whole valley gathers'),900);
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
@@ -3449,6 +3465,7 @@ function promptScan(){
       else if(m.kind==='horse')txt=BTN+' · 🐎 Ride the mare'
       else if(m.kind==='sprout')txt=b.o.tamed?BTN+' · 🌱 Pat the sproutling':BTN+' · 🌱 Greet the sproutling'
       else if(m.kind==='fbooth')txt=G.flags['fbooth'+G.day]?'🎪 The booth has packed up its treats':BTN+' · 🎪 Take '+m.tname+' (free treat)'
+      else if(m.kind==='pulpit')txt=G.flags['pulp'+G.day]?'🏛 The crate stands quiet now':BTN+' · 🏛 Hear the Mayor\u2019s address';
       else if(m.kind==='barrel')txt=(G.weather==='rain'||G.weather==='storm'||G.prevWeather==='rain'||G.prevWeather==='storm')?(G.flags['barr'+G.day]?'🛢 Empty till the next rain':BTN+' · 🛢 Use saved rainwater'):'🛢 The rain barrel — dry for now';
       else if(m.kind==='willow')txt=(G.clock/60>=12&&G.clock/60<17)?(G.flags['wil'+G.day]?'🌿 The willow waits for tomorrow':BTN+' · 🌿 Nap under the willow'):'🌿 An old willow — best at midday';
       else if(m.kind==='knit')txt=G.flags['knit'+G.day]?'🧶 The circle keeps clicking without you':BTN+' · 🧶 Sit with the knitting circle';
