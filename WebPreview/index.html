@@ -2290,6 +2290,11 @@ function interact(){
     G.flags['chorus'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');
     toast('🐸 The pond frogs sing you a rain-song — soul soothed (+6⚡)');hudRender();save();return}
   if(m.kind==='cfire'){
+    const hhh=G.clock/60;
+    if(hhh>=19&&!G.flags['tale'+G.day]){
+      G.flags['tale'+G.day]=1;G.flags['cfire'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+12);sfx('sfx_success');
+      const TALES=["…and the Marlin of Mire Lake pulled three men and a goat clean off the dock. True story.","…they say the Old Silverleaf King still runs the deep channel. I saw his wake once — silver as moonlight.","…my grandfather hooked something that pulled for TWO days. When the line came back, the hook was tied in a bow. We never spoke of it.","…best catch I ever lost was the one I never told anyone about. That's the fisherman’s rule."];
+      toast('🐟 Fen leans in: "'+TALES[G.day%TALES.length]+'" (+12⚡)');return}
     if(G.flags['cfire'+G.day]){sfx('sfx_deny');toast('🔥 Already warmed through');return}
     G.flags['cfire'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
     const TALES=["Tom pokes the fire: 'River carried a whole rowboat past once — never found the owner.'",
