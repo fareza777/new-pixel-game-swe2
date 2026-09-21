@@ -1328,8 +1328,27 @@ function pickAction(){
 }
 function spendSta(n){
   n=G.flags.bl_steel?Math.max(1,n-2):(G.flags.copper?Math.max(1,n-1):n);
+  if(G.sta<=0){faint();return false}
   if(G.sta<n){toast('😮‍💨 Too tired — eat a crop from your BAG or sleep in your bed');return false}
-  G.sta=Math.max(0,G.sta-n);hudRender();return true}
+  G.sta=Math.max(0,G.sta-n);hudRender();
+  if(G.sta<=0)setTimeout(faint,500);
+  return true}
+function faint(){
+  if(G.state!=='play')return;
+  if(G.flags.fainted===G.day){G.sta=5;return}
+  G.flags.fainted=G.day;
+  const fee=Math.min(G.gold,15);G.gold-=fee;
+  G.sta=35;G.clock=Math.min(G.clock+240,23*60);
+  hudRender();
+  loadMap('mirahouse',7.5,10.5);
+  setTimeout(()=>{
+    if(G.state!=='play')return;
+    startDlg({meta:{id:'mira',name:'Mira',portrait:'npc5_portrait'}},[
+      "Easy now — breathe. You collapsed out in the fields.",
+      fee>0?"I patched you up — that'll be "+fee+"g for the tonic. Worth it, trust me.":"I patched you up — and don't worry about a fee, you look like you need it more than I do.",
+      "The farm will wait, little seedling. Eat something warm and rest before you push that hard again."]);
+  },800);
+}
 function interact(){
   if(G.state==='dlg'){dlgAdvance();return}
   if(G.state!=='play')return;
