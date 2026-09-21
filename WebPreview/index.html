@@ -2048,7 +2048,15 @@ function toggleBag(v){
     h+='<div class="invrow" style="color:#e8c96a"><span>📖 Collection — '+Object.keys(G.col).length+' discovered</span></div>';
     for(const k of Object.keys(G.col))h+=`<div class="invrow" style="opacity:.85"><span style="padding-left:14px">${colName(k)}</span><span class="ct" style="margin-left:auto">×${G.col[k]}</span></div>`;
     h+='<div class="invsec">VALLEY DEEDS</div>';
-    evalDeeds();
+    if(Math.random()<0.22){
+    const DR=["💭 You dreamt of a sunflower the size of the barn, humming.",
+      "💭 You dreamt Grandfather waved from the hilltop, hat in hand.",
+      "💭 You dreamt the pond was full of silver fish, leaping like rain in reverse.",
+      "💭 You dreamt of flying low over the fields — everything smelled of warm bread.",
+      "💭 You dreamt Mochi could talk, and all she said was 'dinner'.",
+      "💭 You dreamt the sunflowers spelled your name under a pink sky."];
+    setTimeout(()=>toast(DR[(Math.random()*DR.length)|0]),1700)}
+  evalDeeds();
     for(const d of DEEDS){const got=G.flags['deed_'+d[0]];
       h+=`<div class="invrow" style="opacity:${got?1:.5}"><span>${got?d[1]:'🔒 '+d[1]}</span><span class="ct" style="margin-left:auto;font-size:10px">${got?'earned':d[2]}</span></div>`}
     h+='<div class="invsec">COOKBOOK</div>';
