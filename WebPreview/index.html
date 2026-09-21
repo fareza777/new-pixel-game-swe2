@@ -529,6 +529,8 @@ function loadMap(id,sx,sy){
     for(let i=0;i<3;i++){const fid='deb'+i;
       if(G.forageDay['river|'+fid]!==G.day&&!G.objs.some(o=>o.fid===fid))
         G.objs.push({key:'driftwood',x:4.5+i*2.2,y:13.5+(i%2),meta:{kind:'forage',item:i===0?'shell':(i===1?'driftwood':'crab'),name:i===0?'a storm-tossed Shell':(i===1?'a chunk of Driftwood':'a stunned Crab')},fid:fid,hx:4.5+i*2.2,hy:13.5+(i%2),ph:0})}
+  if(id==='river'&&G.day%7===5&&G.clock/60>=21&&!G.objs.some(o=>o.fid==='nf_f'))
+    G.objs.push({key:'npc20_down0',x:9.5,y:8.5,anchor:'bc',meta:{kind:'npc',id:'fen',name:'Fen',portrait:'npc20_portrait'},fid:'nf_f',hx:9.5,hy:8.5,ph:0});
   if(id==='river'&&G.flags.tomDone&&G.clock/60>=9&&G.clock/60<17){
     if(!G.objs.some(o=>o.meta&&o.meta.id==='tom'))
       G.objs.push({key:'tom_down0',x:4.5,y:9.5,anchor:'bc',meta:{kind:'npc',id:'tom',name:'Tom',portrait:'tom_portrait'},fid:'tomferry',hx:4.5,hy:9.5,ph:0});}
@@ -2097,9 +2099,10 @@ function interact(){
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
     swing('rod',best.cx+.5,best.cy+.5);sfx('sfx_water');
-    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fid=fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';collect(fid);
+    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fenLes=G.map==='river'&&G.day%7===5&&G.clock/60>=21&&!G.flags['nfl'+G.day];const fid=fenLes?'kingfish':fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';collect(fid);
+      if(fenLes){G.flags['nfl'+G.day]=1;G.hearts.fen=Math.min(10,(G.hearts.fen||0)+1)}
       G.inv.item[fid]=(G.inv.item[fid]||0)+1;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',6);
-      toast(fid==='eel'?'⚡ A Night Eel! It writhes silver in the dark — worth 55g':fid==='icefish'?'🐟 Caught a Frostfish through the ice! Worth 30g':fid==='rfish'?'🐟 Caught a River Fish! Bigger — worth 25g':'🐟 Caught a Pond Fish! Sell it at Sari\'s stall');}
+      toast(fenLes?'🎣 Fen whistles low — “There. The Pond King himself. Yours, pupil.” (+1 ♥)':fid==='eel'?'⚡ A Night Eel! It writhes silver in the dark — worth 55g':fid==='icefish'?'🐟 Caught a Frostfish through the ice! Worth 30g':fid==='rfish'?'🐟 Caught a River Fish! Bigger — worth 25g':'🐟 Caught a Pond Fish! Sell it at Sari\'s stall');}
     else toast('🐟 It got away… try again');
     hudRender();return}
   if(best.kind==='till'){
@@ -3029,6 +3032,7 @@ function dayTick(){
   if(G.day%28===0)setTimeout(()=>toast('🍽 THE FOUNDER\u2019S FEAST tonight at the Lantern Inn, 18:00-22:00 — the whole valley gathers'),900);
   if(G.day%14===0)setTimeout(()=>toast('🌕 Full moon tonight — Moon Dew condenses on the hilltop after dark'),1400);
   if(G.day%28===14)setTimeout(()=>toast('🎪 Seasonal Festival this evening at the plaza (17:00-22:00) — free treats!'),1500);
+  if(G.day%7===5)setTimeout(()=>toast('🌙 Fen runs a night-fishing lesson at the river after 21:00 — the Kingfish bites'),1180);
   if(G.day%7===0)setTimeout(()=>toast('🐦 Wren leads birdwatching in the forest this morning — bring your eyes'),860);
   if(G.day>1&&(G.day-1)%7===0){
     const prev=(Math.floor((G.day-2)/7))%4,earned=Math.max(0,(G.stats.gold||0)-(G.seasonBase||0)),bonus=Math.min(300,Math.floor(earned/4))+20;
