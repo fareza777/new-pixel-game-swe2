@@ -418,7 +418,7 @@ function loadMap(id,sx,sy){
       G.objs.push({key:'crate01',x:11.0,y:9.0,anchor:'bc',meta:{kind:'pulpit',name:'the mayor\u2019s crate-pulpit'},fid:'pulp0',hx:11.0,hy:9.0,ph:0})}
   if(id==='village'&&nighth)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='npc'));
   if(!nighth)G.objs=G.objs.filter(o=>!o.nightOnly);
-  if(G.day%7!==0)G.objs=G.objs.filter(o=>!o.martOnly);
+  if(G.day%7!==0&&!(G.weather==='fog'&&G.clock/60<13))G.objs=G.objs.filter(o=>!o.martOnly);
   if(id==='house')for(const d of DECOR)if(G.flags[d.id]){
     G.objs.push({key:d.spr,x:d.x,y:d.y,meta:{kind:'deco'},fid:'deco_'+d.id,hx:d.x,hy:d.y,ph:0});
     if(d.spr==='lamp01')G.objs[G.objs.length-1].meta.light=true;}
@@ -1416,6 +1416,8 @@ function talkTo(o){
       pip:"When I grow up I wanna be just like you!",
       mart:"Ten valleys, kid. This one — this one feels like home."};
     if(H8[m.id]){lines.push(H8[m.id]+'  (+10g keepsake)');G.gold+=10}}
+  if(m.id==='mart'&&G.weather==='fog'&&G.day%7!==0)
+    lines.unshift('“Fog keeps the road quiet — perfect day to roll the cart through. Take a look, prices are mist-soft.”');
   if(m.id==='mart'){f.metMart=true;G.flags.martShop=1;openMartPending=true}
   if(m.id==='hazel'){f.metHazel=true;G.flags.innShop=1;openInnPending=true}
   if(m.id==='cora'){f.metCora=true;G.flags.carpShop=1;openCarpPending=true}
