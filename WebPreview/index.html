@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v3.98</div></div></div>
+    <div class="ver">v3.99</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -467,6 +467,8 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.ptree&&!G.objs.some(o=>o.fid==='ptr0')){
     const ps=G.ptreeSpot||[30.5,20.5];
     G.objs.push({key:G.day>G.flags.ptreeDay?'tree05':'sprout',x:ps[0],y:ps[1],anchor:'bc',meta:{kind:'ptree',name:'your pear tree'},fid:'ptr0',hx:ps[0],hy:ps[1],ph:0})}
+  if(id==='farm'&&G.clock/60>=5&&G.clock/60<12&&G.forageDay['farm|mg0']!==G.day&&!G.objs.some(o=>o.fid==='mg0'))
+    G.objs.push({key:'flower_b',x:23.5,y:9.4,anchor:'c',meta:{kind:'forage',item:'mglory',name:'a morning glory, open to the sun'},fid:'mg0',hx:23.5,hy:9.4,ph:0});
   if(id==='farm'&&G.flags.bl_dewc&&!G.objs.some(o=>o.fid==='dew0'))
     G.objs.push({key:'fwell',x:38.5,y:11.5,anchor:'bc',meta:{kind:'deco',name:'the dew collector, beaded with morning'},fid:'dew0',hx:38.5,hy:11.5,ph:0});
   if(id==='farm'&&G.flags.totem&&!G.objs.some(o=>o.fid==='tot0'))
@@ -2079,7 +2081,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              honey:{name:'Wild Honey',icon:'honey',sell:20},
              truffle:{name:'Forest Truffle',icon:'truffle',sell:45},
              candy:{name:'Pip\'s Candy',icon:'berry',sell:5},
-             pear:{name:'Golden Pear',icon:'apple',sell:20,edible:8},mint:{name:'Wild Mint',icon:'herb',sell:8,edible:4},sowl:{name:'Snow Owl Feather',icon:'ofeather',sell:45},psap:{name:'Pear Sapling',icon:'seed',sell:0},
+             pear:{name:'Golden Pear',icon:'apple',sell:20,edible:8},mglory:{name:'Morning Glory',icon:'flower_b',sell:9},mint:{name:'Wild Mint',icon:'herb',sell:8,edible:4},sowl:{name:'Snow Owl Feather',icon:'ofeather',sell:45},psap:{name:'Pear Sapling',icon:'seed',sell:0},
              ball:{name:'Pip\'s Red Ball',icon:'ball',sell:0},
              apple:{name:'Crisp Apple',icon:'apple',sell:12},parcel:{name:'Sealed Parcel',icon:'parcel',sell:0},cherry:{name:'Sweet Cherry',icon:'cherry',sell:14},cpie:{name:'Cherry Pie',icon:'apie',sell:60},
              clover:{name:'Lucky Clover',icon:'clover',sell:80},
