@@ -2237,7 +2237,9 @@ function interact(){
     G.gold+=earn;sfx('sfx_success');toast('🎪 You made '+earn+'g at the market!');hudRender();save();return}
   if(m.kind==='horse'){
     if(G.L.indoor){toast('🐎 She waits outside — too low a ceiling in here');return}
-    G.mounted=true;sfx('sfx_talk');toast('🐎 You swing up — she canters when you run');hudRender();return}
+    if(G.petDay['horse']!==G.day){G.petDay['horse']=G.day;G.flags.horseBrush=G.day;o.heart=50;sfx('sfx_talk');
+      toast('🐎 You pat her neck — she’ll gallop like the wind today (1.85×)')}
+    G.mounted=true;toast('🐎 You swing up — she canters when you run');hudRender();return}
   if(m.kind==='piano'){
     if(G.flags['piano'+G.day]){sfx('sfx_deny');toast('🎹 One song a day — the keys need rest');return}
     G.flags['piano'+G.day]=1;sfx('sfx_success');
@@ -2543,7 +2545,7 @@ function loop(ts){
   let my=(K['w']||K['arrowup']?-1:0)+(K['s']||K['arrowdown']?1:0);
   if(joy.mag>0.15){mx=joy.x*joy.mag;my=joy.y*joy.mag}
   const canMove=G.state==='play';
-  const sp=((K['shift']||K['run'])?5.4:3.2)*(joy.mag>0.15?Math.max(.4,joy.mag):1)*(G.mounted?1.7:1);
+  const sp=((K['shift']||K['run'])?5.4:3.2)*(joy.mag>0.15?Math.max(.4,joy.mag):1)*(G.mounted?(G.flags.horseBrush===G.day?1.85:1.7):1);
   G.hero.move=canMove&&!!(mx||my);
   if(canMove&&(mx||my)){
     const l=Math.hypot(mx,my);mx/=l;my/=l;
