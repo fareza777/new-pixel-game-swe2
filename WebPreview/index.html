@@ -645,6 +645,8 @@ function loadMap(id,sx,sy){
         anim:{frames:['elm_down0','elm_down1','elm_down2','elm_down1'],fps:6}});
     if(!G.objs.some(o=>o.fid==='bf_elm'))
       G.objs.push({key:'bonfire',x:11.5,y:22.8,anchor:'bc',meta:{kind:'deco',name:'the birthday fire'},fid:'bf_elm',hx:11.5,hy:22.8,ph:0})}
+  if(id==='forest'&&season()===3&&G.clock/60>=7&&G.clock/60<17&&G.bugDay['forest|snow0']!==G.day&&!G.objs.some(o=>o.fid==='snow0'))
+    G.objs.push({key:'barnowl',x:8.5,y:14.5,anchor:'bc',meta:{kind:'critter',item:'sowl',name:'a Snow Owl'},fid:'snow0',hx:8.5,hy:14.5,ph:0});
   if(id==='forest'&&G.day%7===0&&G.clock/60>=21&&!G.objs.some(o=>o.fid==='owln0'))
     G.objs.push({key:'wren_down0',x:14.5,y:10.5,anchor:'bc',meta:{kind:'npc',id:'wren',name:'Wren',portrait:'wren_portrait'},fid:'owln0',hx:14.5,hy:10.5,ph:0});
   if(id==='forest'&&G.day%7===6&&G.clock/60>=5.5&&G.clock/60<8.5&&!G.objs.some(o=>o.fid==='bw0'))
@@ -2066,7 +2068,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              honey:{name:'Wild Honey',icon:'honey',sell:20},
              truffle:{name:'Forest Truffle',icon:'truffle',sell:45},
              candy:{name:'Pip\'s Candy',icon:'berry',sell:5},
-             pear:{name:'Golden Pear',icon:'apple',sell:20,edible:8},psap:{name:'Pear Sapling',icon:'seed',sell:0},
+             pear:{name:'Golden Pear',icon:'apple',sell:20,edible:8},sowl:{name:'Snow Owl Feather',icon:'ofeather',sell:45},psap:{name:'Pear Sapling',icon:'seed',sell:0},
              ball:{name:'Pip\'s Red Ball',icon:'ball',sell:0},
              apple:{name:'Crisp Apple',icon:'apple',sell:12},parcel:{name:'Sealed Parcel',icon:'parcel',sell:0},cherry:{name:'Sweet Cherry',icon:'cherry',sell:14},cpie:{name:'Cherry Pie',icon:'apie',sell:60},
              clover:{name:'Lucky Clover',icon:'clover',sell:80},
