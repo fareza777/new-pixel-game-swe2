@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.04</div></div></div>
+    <div class="ver">v5.05</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1989,6 +1989,13 @@ function talkTo(o){
   if(m.id==='cora'&&!f.viloFrame&&(G.inv.item.sketch||0)>0){
     f.viloFrame=1;G.inv.item.sketch--;G.flags.viloportrait=1;sfx('sfx_success');
     lines.unshift("Vilo's sketch of you? Say no more — I'll frame it in oak and hang it myself. Go see your farmhouse wall!")}
+  if(m.id==='cora'&&G.day%28===5&&!f['cinsp'+Math.floor(G.day/28)]){
+    f['cinsp'+Math.floor(G.day/28)]=1;
+    const nB=BUILDS.filter(b=>G.flags[b.flag]).length;
+    if(nB>=3){f['cinsp'+Math.floor(G.day/28)]=1;G.gold+=15;G.hearts.cora=Math.min(10,(G.hearts.cora||0)+2);sfx('sfx_success');
+      lines.unshift('Cora walks the farm with a clipboard and a carpenter’s eye.',
+        '“'+nB+' builds and not a nail out of place. Township rebate: 15g, and my respects.” (+2 ♥)')}
+    else lines.unshift('Cora taps her clipboard. “Three builds and the township owes you a rebate. Keep nailing.”')}
   if(m.id==='cora'){f.metCora=true;G.flags.carpShop=1;openCarpPending=true}
   if(m.id==='elle'&&(G.inv.item.sglass||0)>=3&&!G.flags.sgpend){
     lines.unshift('Elle turns the shards in her palm, holding them to the light.',
