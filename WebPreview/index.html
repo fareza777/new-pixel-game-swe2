@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.57</div></div></div>
+    <div class="ver">v4.58</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1368,6 +1368,15 @@ function talkTo(o){
     f['llr'+G.day]=1;G.inv.item.llant--;G.gold+=20;
     G.hearts.hazel=Math.min(10,(G.hearts.hazel||0)+2);
     lines.unshift('“My lantern! I set it down two songs ago and the wind must\u2019ve walked off with it.”','“Twenty gold and my thanks — you\u2019ve saved the evening chorus. (+20g, +2 ♥)”')}
+  if(m.id==='elle'&&!G.flags.wreath&&G.gold>=60&&!f['wroff'+G.day]){
+    f['wroff'+G.day]=1;
+    startDlg(o,['Elle holds up a hoop of braided vine, still smelling of cedar.','“I\u2019ve started making door wreaths — flowers of the season, woven to order. Sixty gold, and your farmhouse door stops looking so bare.”'],
+      null,[
+        {label:'🌸 Buy the wreath (60g)',cb:()=>{
+          G.gold-=60;G.flags.wreath=1;sfx('sfx_coin');
+          toast('🌸 Elle ties it on your door herself — it will bloom differently every season')}},
+        {label:'Maybe later',cb:()=>toast('Elle drapes the wreath over her arm. “It\u2019ll wait — beauty does.”')}]);
+    return}
   if(m.id==='fen'&&(G.inv.item.fish||0)+(G.inv.item.rfish||0)>0&&!f['tale'+G.day]){
     f['tale'+G.day]=1;
     const TALE=['“Pfeh — that\u2019s nothing. Once I hooked a carp the size of a rowboat. We shared lunch. He paid.”',
@@ -4344,6 +4353,8 @@ function render(ts){
     jg.addColorStop(0,'rgba(255,140,40,.6)');jg.addColorStop(1,'rgba(255,140,40,0)');
     ctx.fillStyle=jg;ctx.beginPath();ctx.arc(jx,jy,26*SCALE,0,7);ctx.fill()}
   // farmhouse porchlight after dusk
+  if(G.map==='farm'&&G.flags.wreath){const wkey=['deco_spr','deco_sum','deco_aut','deco_win'][season()];
+    const wimg=IMG[wkey];if(wimg)ctx.drawImage(wimg,camX+41.6*T*SCALE,camY+4.3*T*SCALE,T*SCALE*.7,T*SCALE*.7)}
   if(G.map==='farm'&&(G.clock/60>=19||G.clock/60<5)){
     const px=camX+42*T*SCALE,py=camY+5.6*T*SCALE;
     const g2=ctx.createRadialGradient(px,py,4,px,py,60*SCALE);
