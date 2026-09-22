@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.99</div></div></div>
+    <div class="ver">v5.00</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1434,6 +1434,10 @@ function talkTo(o){
     G.flags['ad_'+m.id+'_'+G.outfit]=1;
     const CMPL={bram:"Sharp new colors, kid — the valley notices.",sari:"Ooh, is that Elle's work? Turn around — yes, very fine stitch.",vilo:"New duds! The river reflects you handsomely today.",nana:"What lovely weaving, dear — reminds me of harvest fairs gone by.",mira:"A tidy outfit signals a tidy mind. Wear it well.",pip:"WHOA new outfit! You look like a festival flagpole!",fen:"Bright colors on the water — the fish will see you coming, ha!",wren:"That shade… I'm noting it in the margin of my sketchbook.",luna:"You shine like a small aurora, farmer.",hazel:"Look at you! The inn's lighting flatters that color.",cora:"Sturdy cut. Elle's work? Built to last.",elle:"MY stitchwork! Oh, it drapes beautifully on you — come by again.",mart:"Now that is a fine coat — worth every coin, I daresay.",tom:"Hmmph — good color for weather-watching. The sky will approve."};
     const cl=CMPL[m.id];if(cl){putLine([null,cl]);G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1)}}
+  if(G.day%28===1&&G.day>1&&!f['anv'+m.id+G.day]){
+    f['anv'+m.id+G.day]=1;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_success');
+    const ANV={bram:"A farm-iversary! The valley voted — you're officially one of ours.",sari:"Your anniversary! Come by the shop — I saved you a seed cake.",vilo:"One more season-cycle of you! I sketched the farm at dawn for the album.",nana:"Another turn of the wheel, dearie — your grandfather would be so proud.",mira:"Anniversary of your arrival — vitals excellent, heart fuller. Doctor's note: keep it up.",pip:"FARM-VERSARY!! I made you a mud pie! It's the good kind of mud!",fen:"Marking another tide-turn on the farm, eh? The river remembers your first day.",wren:"Cyclically significant! Your arrival anniversary — I've logged it under 'notable bloomings'.",luna:"The moon has turned a full circle since you came. It approves of you.",hazel:"Anniversary! Tonight's stew is on the house — it was always going to be.",cora:"One more cycle standing — like good joinery, you're holding.",elle:"Your farm-iversary, love! Every hem I sew, I sew a little valley-pride in.",mart:"An anniversary of commerce AND friendship — rare and precious!",tom:"Hmh. Another cycle. You're still here. Good.",elm:"You've put down roots deeper than some of my pines. Happy anniversary.",gus:"The mine hums a little brighter on your anniversary, kid.",rex:"Woof! Woof woof! (Translation: happy farm-iversary!)",mochi:"Mrrrow? — she headbutts your shin. That's cat for congratulations.",pip2:""};
+    const an=ANV[m.id];if(an)lines.unshift(an)}
   if(G.talkDay[m.id]!==G.day){G.talkDay[m.id]=G.day;
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
@@ -4263,6 +4267,7 @@ function dayTick(){
       }
     hudRender();
     const WD=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
+    if(G.day%28===1&&G.day>1)setTimeout(()=>toast('🎉 FARM ANNIVERSARY — the valley marks another cycle since you arrived. Villagers greet you warmly today (+2♥ each)'),2600);
     if((G.day-1)%28===21)setTimeout(()=>toast('❄️ FIRST FROST — the valley wakes in lace. Frostberries ripen on the hill all season'),2600);
     toast('Day '+G.day+' · '+WD[(G.day-1)%7]+' · '+SEASON_ICON[season()]+' '+SEASON[season()]+(G.weather==='storm'?' — ⛈ a thunderstorm rattles the valley':G.weather==='rain'?' — 🌧 rain waters your crops':G.weather==='wind'?' — 🍃 leaves on the wind':G.weather==='snow'?' — 🌨 soft snow settles over the valley':G.weather==='fog'?' — 🌫 a misty morning over the valley':'')+(((G.day-1)%7===0&&G.day>1)?' — the season turns!':''));
   if(bds.length)setTimeout(()=>toast('🎂 Today is '+bds.map(k=>VNAME[k]).join(' & ')+"'s birthday — a gift would mean the world!"),1400);}
