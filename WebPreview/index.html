@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.70</div></div></div>
+    <div class="ver">v10.71</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -6678,6 +6678,8 @@ function render(ts){
       if(hs){const hw=hs.w*SCALE,hh=hs.h*SCALE;
         ctx.drawImage(ATLAS,hs.sx,hs.sy,hs.w,hs.h,Math.round(camX+o.x*T*SCALE-hw/2),Math.round(camY+o.y*T*SCALE-hh+T*SCALE*1.05),hw,hh);}
       py-=T*SCALE*.32;}
+    if(s.h>=12){ctx.fillStyle='rgba(10,20,12,.16)';ctx.beginPath();
+      ctx.ellipse(camX+o.x*T*SCALE,camY+o.y*T*SCALE+T*SCALE*.06,Math.min(dw*.42,T*SCALE*.62),Math.min(dw*.13,T*SCALE*.2),0,0,7);ctx.fill()}
     ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,px,py,dw,dh);
     if(o.hero&&G.flags.scarfOn){ctx.fillStyle='#c23c3c';ctx.fillRect(px+dw*.22,py+dh*.40,dw*.56,Math.max(2,SCALE*1.8));ctx.fillRect(px+dw*.62,py+dh*.40+Math.max(2,SCALE*1.8),dw*.13,Math.max(3,SCALE*3))}
     if(o.heart>0){o.heart--;ctx.font='bold 12px monospace';ctx.fillStyle='#f66';ctx.fillText('<3',px+dw/2-4,py-4)}
