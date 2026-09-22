@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.29</div></div></div>
+    <div class="ver">v5.30</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2238,7 +2238,8 @@ function shopRender(){
     for(const gd of MART_GOODS){
       const r=document.createElement('div');r.className='srow';
       const owned=gd.kind==='fdec'&&G.flags[gd.id];
-      r.innerHTML=`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${owned?'owned':gd.price+'g'}</span>`;
+      const mp=G.flags.mvip?Math.ceil(gd.price*.9):gd.price;
+      r.innerHTML=`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${owned?'owned':mp+'g'}${G.flags.mvip?' 🤝':''}</span>`;
       r.onclick=()=>buyMart(gd);rows.appendChild(r);}
   }else if(g.tab==='buy'){
     if(G.day%7===0)rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🎪 Sunday market — all seeds 30% off!</div>';
@@ -2418,6 +2419,11 @@ function buyBuild(gd){
   $('shopmsg').textContent="Cora nods: '"+gd.name+" — it'll be standing on your farm by morning.'";shopRender();hudRender();save()}
 function buyMart(gd){
   if(G.shop&&G.shop.tab==='night'&&G.flags.nvip)gd={...gd,price:Math.ceil(gd.price*.9)};
+  if(G.shop&&G.shop.tab==='mart'&&G.flags.mvip)gd={...gd,price:Math.ceil(gd.price*.9)};
+  if(G.shop&&G.shop.tab==='mart'&&gd.kind!=='mbox'&&gd.kind!=='psap'&&gd.kind!=='cookbook'&&gd.kind!=='pcard'&&G.gold>=gd.price){
+    G.stats.martBuys=(G.stats.martBuys||0)+1;
+    if(G.stats.martBuys>=10&&!G.flags.mvip){G.flags.mvip=1;
+      setTimeout(()=>toast('🤝 Mart slaps your shoulder — “A regular! From today: the friends-of-the-cart rate. 10% off, always.”'),400)}}
   if(gd.kind==='mbox'){
     if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
     G.gold-=gd.price;sfx('sfx_buy');
