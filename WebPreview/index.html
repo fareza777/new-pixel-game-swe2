@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.21</div></div></div>
+    <div class="ver">v11.22</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -698,7 +698,7 @@ function loadMap(id,sx,sy){
         '"By sunpetal and spring water, by the sweat of this good earth — you are wed!"',
         '✨ Petals rain down. The whole valley cheers. (+3♥ everyone)',
         VNAME[spid]+' kisses you under the arch of wildflowers. "Home. It\u2019s home now."'])},700)}
-  if(G.spouse&&G.flags.wedDone&&!G.flags.kid&&G.day-(G.flags.proposeDay||0)>=14){G.flags.kid=1;
+  if(G.spouse&&G.flags.wedDone&&!G.flags.kid&&G.day-(G.flags.proposeDay||0)>=14){G.flags.kid=1;G.flags.kidDay=G.day;
     sendMail('Nana','Heard the news — a little sprout at the farm! Blessings on the three of you. — Nana');
     toast('👶 A new little farmer arrived in the night — meet the baby at home!')}
   if(G.flags.kid&&!G.flags.toddler&&G.day-(G.flags.proposeDay||0)>=28){G.flags.toddler=1;
@@ -706,6 +706,9 @@ function loadMap(id,sx,sy){
   if(G.flags.toddler&&!G.flags.kidwalk&&G.day-(G.flags.proposeDay||0)>=56){G.flags.toddler=0;G.flags.kidwalk=1;
     sendMail('Nana','Little legs carry big adventures — Sunny walked all the way to my gate today. — Nana');
     setTimeout(()=>toast('🧒 Sunny isn\'t a toddler anymore — today they started exploring the valley!'),2600)}
+  if(G.flags.kidwalk&&G.flags.kidDay&&G.day>G.flags.kidDay&&(G.day-G.flags.kidDay)%56===0&&!G.flags['kday'+G.day]){
+    G.flags['kday'+G.day]=1;sendMail('Nana','Sunny\'s birthday today — I baked a tiny sunpetal cake. Come eat! — Nana');
+    setTimeout(()=>toast('🎂 It\'s Sunny\'s birthday — your little farmer waits at home with something for you!'),2800)}
   if(G.flags.kidwalk){
     const kh=G.clock/60,kIn=id==='house'&&kh<9,kF=id==='farm'&&kh>=9&&kh<19;
     if((kIn||kF)&&!G.objs.some(o=>o.fid==='kid0'))
@@ -3533,6 +3536,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              ore:{name:'Iron Ore',icon:'rock11',sell:18},
              gem:{name:'Old Gem',icon:'gem',sell:60}, goldore:{name:'Gold Vein',icon:'goldrock',sell:40}, crystal:{name:'Star Crystal',icon:'crystal',sell:80},
              soup:{name:'Hearty Soup',icon:'soup',sell:22},lunch:{name:'Packed Lunch',icon:'soup',sell:20,edible:35},
+             drawing:{name:'Crayon Drawing',icon:'item_letter',sell:0},
              honey:{name:'Wild Honey',icon:'honey',sell:20},
              truffle:{name:'Forest Truffle',icon:'truffle',sell:45},
              candy:{name:'Pip\'s Candy',icon:'berry',sell:5},
@@ -5281,6 +5285,9 @@ function interact(){
     G.flags['td'+G.day]=1;const todE=G.flags.bl_famroom?8:5;G.sta=Math.min(100+(G.maxsta||0),G.sta+todE);sfx('sfx_success');
     toast('👣 Sunny toddles into your legs and laughs: “Da! Da!” (+'+todE+'⚡)');return}
   if(m.kind==='kidwalk'){
+    if(G.flags['kday'+G.day]&&!G.flags['kgft'+G.day]){G.flags['kgft'+G.day]=1;
+      G.inv.item=G.inv.item||{};G.inv.item.drawing=(G.inv.item.drawing||0)+1;collect('drawing');sfx('sfx_success');
+      toast('🖍 Sunny hands you a crayon drawing — three stick figures, a barn, and “DA + MOM + ME”. It\'s going on the fridge.');save();return}
     const KW=["Sunny shows you a beetle cupped in both hands. \"Look — it has GREEN armor!\"",
      "\"I counted TWELVE crows today, Da. They all know me now.\"",
      "Sunny spins in the grass until they tip over, laughing. \"Again!\"",
@@ -7022,6 +7029,11 @@ function loop(ts){
         if(Math.hypot(nx-(o.hx||o.x),ny-(o.hy||o.y))<2.5&&!blocked(nx,ny)){o.x=nx;o.y=ny}
         o.anim={frames:['luna_'+['down','left','right','up'][o.d]+'0','luna_'+['down','left','right','up'][o.d]+'1','luna_'+['down','left','right','up'][o.d]+'2'].filter(f=>IMG[f]),fps:4}}
       else o.anim={frames:['luna_up0'],fps:1}}
+    if(m.kind==='kidwalk'&&m.wander){o.ph-=dt;
+      if(o.ph<=0){o.ph=1.5+Math.random()*3;o.d=Math.floor(Math.random()*5)}
+      if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
+        const nx=o.x+dx*.3*dt,ny=o.y+dy*.3*dt;
+        if(Math.hypot(nx-(o.hx||o.x),ny-(o.hy||o.y))<3&&!blocked(nx,ny)){o.x=nx;o.y=ny}}}
     if(m.kind==='cow'&&m.wander){o.ph-=dt;
       if(o.ph<=0){o.ph=2+Math.random()*4;o.d=Math.floor(Math.random()*5)}
       if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
