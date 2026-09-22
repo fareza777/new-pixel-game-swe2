@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.45</div></div></div>
+    <div class="ver">v4.46</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1386,6 +1386,9 @@ function talkTo(o){
     G.flags.parcelFor=0;f['drun'+G.day]=1;G.gold+=15;
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);G.hearts.nana=Math.min(10,(G.hearts.nana||0)+1);sfx('sfx_success');
     lines.unshift(m.id==='elm'?"Nana\u2019s tonic? *he sniffs it, winces, drinks it straight* — ah. Tell the old girl her bark-broth still bites. (+15g, +1 ♥ for us both)":"For me? *Fen drinks, and color returns to his beard* — bless Nana. Tell her the river sends its regards. (+15g, +1 ♥ for us both)")}
+  if(m.id==='nana'&&(G.inv.item.apple||0)>=2&&!f.graft){
+    f.graft=1;G.inv.item.apple-=2;G.hearts.nana=Math.min(10,(G.hearts.nana||0)+2);sfx('sfx_success');G.stats.quests++;
+    lines.unshift('Nana rolls up her sleeves at the sight of your apples.','“Watch an old gardener work — a cut, a splice, a bit of twine…”','“Your orchard tree will bear double now. Grandmother\u2019s graft — the best in the valley.” (apple trees give 2/day)')}
   if(m.id==='nana'&&G.day%5===3&&G.day>3&&!f['drun'+G.day]){
     const target=G.day%10===3?'elm':'fen';
     if(!G.flags.parcelFor||G.flags.parcelDay!==G.day){G.flags.parcelFor=target;G.flags.parcelDay=G.day;
@@ -2625,6 +2628,7 @@ function interact(){
     G.inv.item=G.inv.item||{};const iid=m.item||'mushroom';
     G.inv.item[iid]=(G.inv.item[iid]||0)+1;G.stats.forage++;collect(iid);gainXP('forage',4);
     if(Math.random()<(G.flags.luckyDay===G.day?.3:0)+skLvl(G.xp.forage)*.08){G.inv.item[iid]++;collect(iid);toast('✨ Double gather!')}
+    if(iid==='apple'&&G.flags.graft){G.inv.item.apple++;toast('🍎 The grafted branch gives an extra apple!')}
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
     sfx('sfx_harvest');toast('Picked a '+(ITEMS[iid]?ITEMS[iid].name:m.name)+'!');hudRender();save();return}
   if(m.kind==='npc'){
