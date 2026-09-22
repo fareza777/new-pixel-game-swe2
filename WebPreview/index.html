@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.07</div></div></div>
+    <div class="ver">v11.08</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -2985,10 +2985,18 @@ function shipEverything(){
   if(!n){$('shopmsg').textContent='The bin is already packed and waiting for the cart.';return}
   G.gold+=total;G.stats.gold=(G.stats.gold||0)+total;G.flags.sold2=(G.flags.sold2||0)+n;sfx('sfx_success');
   $('shopmsg').textContent='📦 Everything packed — '+n+' items → +'+total+'g on the morning cart!';shopRender();hudRender();save()}
+function cookRecipe(r){
+  const it=G.inv.item||{};
+  for(const k in r.need){const isC=/^c\d+$/.test(k),hv=isC?(G.inv.crop[+k.slice(1)]||0):(it[k]||0);
+    if(hv<r.need[k]){const nm=isC?CROPS[+k.slice(1)]:(ITEMS[k]?ITEMS[k].name:k);
+      $('shopmsg').textContent='Need '+r.need[k]+'× '+nm+' — you have '+hv+'.';return}}
+  for(const k in r.need){if(/^c\d+$/.test(k))G.inv.crop[+k.slice(1)]-=r.need[k];else it[k]-=r.need[k]}
+  it[r.id]=(it[r.id]||0)+1;G.flags.cookedOnce=true;G.flags.cookedDay=G.day;collect(r.id);
+  sfx('sfx_success');$('shopmsg').textContent=RECIPE_SAY[r.id]||('Cooked '+ITEMS[r.id].name+'!');shopRender();hudRender();save()}
 function shopRender(){
   const g=G.shop;$('shop').style.display='flex';
-  $('shopname').textContent=g.tab==='inn'?'🏮 The Lantern Inn':(g.tab==='mart'?"🎪 Mart's Wagon":(g.tab==='build'?"🔨 Cora's Carpentry":(g.tab==='tailor'?"🧵 Elle's Tailoring":(g.tab==='museum'?"🏺 The Village Archive":(g.tab==='night'?"🌙 Mart's Night Wagon":(g.tab==='ship'?"📦 Shipping Bin":"🌻 Sari's Market"))))));
-  $('shoptabs').style.display=(g.tab==='mart'||g.tab==='inn'||g.tab==='build'||g.tab==='tailor'||g.tab==='museum'||g.tab==='night'||g.tab==='ship')?'none':'flex';
+  $('shopname').textContent=g.tab==='inn'?'🏮 The Lantern Inn':(g.tab==='mart'?"🎪 Mart's Wagon":(g.tab==='build'?"🔨 Cora's Carpentry":(g.tab==='tailor'?"🧵 Elle's Tailoring":(g.tab==='museum'?"🏺 The Village Archive":(g.tab==='night'?"🌙 Mart's Night Wagon":(g.tab==='ship'?"📦 Shipping Bin":(g.tab==='cook'?"🍲 The Cooking Pot":"🌻 Sari's Market")))))));
+  $('shoptabs').style.display=(g.tab==='mart'||g.tab==='inn'||g.tab==='build'||g.tab==='tailor'||g.tab==='museum'||g.tab==='night'||g.tab==='ship'||g.tab==='cook')?'none':'flex';
   $('tabBuy').className='tab'+(g.tab==='buy'?' on':'');$('tabSell').className='tab'+(g.tab==='sell'?' on':'');
   const td=$('tabDec');if(td)td.className='tab'+(g.tab==='decor'?' on':'');
   $('shopgold').textContent='Gold: '+G.gold+'g';
@@ -3077,6 +3085,19 @@ function shopRender(){
       r.innerHTML=(ITEMS[id].icon?`<canvas class="iico" width="30" height="30" data-k="${ITEMS[id].icon}"></canvas>`:'')+`<span>${ITEMS[id].name} ×${G.inv.item[id]}</span><span class="pr">ship ${ITEMS[id].sell}g</span><span class="pr" style="background:#4a3a14">all</span>`;
       r.onclick=()=>shipNow(id,false);
       r.querySelectorAll('.pr')[1].onclick=e=>{e.stopPropagation();shipNow(id,true)};rows.appendChild(r)}
+  }else if(g.tab==='cook'){
+    rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🍲 The pot is hot — tap a recipe you can afford in ingredients.</div>';
+    let ncook=0;
+    for(const r of RECIPES){
+      const need=Object.keys(r.need).map(k=>{const isC=/^c\d+$/.test(k),hv=isC?G.inv.crop[+k.slice(1)]:(G.inv.item[k]||0);
+        const nm=isC?CROPS[+k.slice(1)]:(ITEMS[k]?ITEMS[k].name:k);
+        return `<span style="color:${hv>=r.need[k]?'#8fd070':'#e0868a'}">${r.need[k]}×${nm}</span>`}).join(' + ');
+      const ok=Object.keys(r.need).every(k=>{const isC=/^c\d+$/.test(k);return ((isC?G.inv.crop[+k.slice(1)]:G.inv.item[k])||0)>=r.need[k]});
+      const ik=(ITEMS[r.id]||{}).icon||'';const known=(G.col[r.id]||0)>0;
+      const r_=document.createElement('div');r_.className='srow';r_.style.opacity=ok?'1':'.55';
+      r_.innerHTML=(ik?`<canvas class="iico" width="30" height="30" data-k="${ik}"></canvas>`:'')+`<span>${known?ITEMS[r.id].name:'???'} <span style="color:#998;font-size:11px">· ${need}</span></span><span class="pr" style="${ok?'background:#4a5a14':''}">${ok?'cook':'—'}</span>`;
+      r_.onclick=()=>cookRecipe(r);rows.appendChild(r_);if(ok)ncook++}
+    if(!ncook){const r=document.createElement('div');r.style.cssText='padding:8px;color:#998;font-size:11px';r.textContent='Nothing cookable yet — bring crops, fish, eggs, or herbs.';rows.appendChild(r)}
   }else if(g.tab==='buy'){
     if(G.day%7===0)rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">🎪 Sunday market — all seeds 30% off!</div>';
     for(const id of [1,3,6,8,10,13,16,18,21,23,24,25,26]){
@@ -6172,18 +6193,7 @@ function interact(){
     if(oid){G.inv.item[oid]--;G.flags.offered=ITEMS[oid].name}else{G.inv.crop[cid]--;G.flags.offered=CROPS[cid]}
     G.blessedFor=G.day+1;sfx('sfx_success');swing('basket',o.x,o.y);
     toast('⛩ Offered '+G.flags.offered+' — the shrine glows softly. Crops will grow faster tomorrow');save();return}
-  if(m.kind==='cook'){
-    const it=G.inv.item||{};
-    for(const r of RECIPES){let ok=true;for(const k in r.need){const isC=/^c\d+$/.test(k),hv=isC?G.inv.crop[+k.slice(1)]:it[k];if((hv||0)<r.need[k])ok=false}
-      if(ok){for(const k in r.need){if(/^c\d+$/.test(k))G.inv.crop[+k.slice(1)]-=r.need[k];else it[k]-=r.need[k]}it[r.id]=(it[r.id]||0)+1;
-        G.flags.cookedOnce=true;G.flags.cookedDay=G.day;collect(r.id);sfx('sfx_success');toast(RECIPE_SAY[r.id]);hudRender();save();return}}
-    if(G.flags.cookbook){
-      const NAME=k=>/^c\d+$/.test(k)?CROPS[+k.slice(1)]:ITEMS[k].name;
-      const lines=['📖 You open the Valley Cookbook, flour-dusted and loved.'];
-      for(const r of RECIPES){const ok=Object.keys(r.need).every(k=>{const isC=/^c\d+$/.test(k),hv=isC?G.inv.crop[+k.slice(1)]:(G.inv.item[k]||0);return hv>=r.need[k]});
-        lines.push((ok?'✅ ':'▫ ')+ITEMS[r.id].name+' — '+Object.keys(r.need).map(k=>r.need[k]+'× '+NAME(k)).join(' + '))}
-      startDlg(o,lines.slice(0,14));return}
-    toast('🍲 Recipes: soup=mushroom+berry · jam=2×berry · stew=fish+herb · grill=riverfish+herb · salad=tomato+cabbage · custard=duckegg+milk · chowder=frostfish+milk+herb · tea=honey+herb · crab soup=crab+herb');return}
+  if(m.kind==='cook'){G.shop={tab:'cook'};G.state='shop';uiBusy();shopRender();return}
   if(m.kind==='press'){
     if((G.inv.item.apple||0)>=2){G.inv.item.apple-=2;G.inv.item.cider=(G.inv.item.cider||0)+1;collect('cider');
       sfx('sfx_success');swing('can',o.x,o.y);toast('🍎 Pressed Apple Cider! (+15⚡ / 30g)');hudRender();save()}
