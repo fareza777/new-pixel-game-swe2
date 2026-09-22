@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.31</div></div></div>
+    <div class="ver">v5.32</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -577,6 +577,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'scarf',x:18.5,y:7.6,anchor:'c',meta:{kind:'wash',name:'the laundry line — strung between the apple tree and the porch'},fid:'wash0',hx:18.5,hy:7.6,ph:0});
   if(id==='farm'&&(G.clock/60>=23||G.clock/60<1)&&G.day%7===3&&!G.objs.some(o=>o.fid==='njr0'))
     G.objs.push({key:'bird2_down0',x:47.5,y:5.5,anchor:'c',meta:{kind:'njr',name:'a nightjar, singing its whirring song'},fid:'njr0',hx:47.5,hy:5.5,ph:0});
+  if(id==='farm'&&!G.objs.some(o=>o.fid==='btx0'))
+    G.objs.push({key:'tincan',x:43.5,y:17.5,anchor:'c',meta:{kind:'baitbx',name:'a bait box of wriggling grubs, kept in pond shade'},fid:'btx0',hx:43.5,hy:17.5,ph:0});
   if(id==='farm'&&season()===3&&(G.clock/60>=18||G.clock/60<5)&&!G.objs.some(o=>o.fid==='iceL'))
     G.objs.push({key:'lamp',x:29.5,y:11.8,anchor:'c',meta:{kind:'icelant',name:'an ice lantern, glowing blue in the snow'},fid:'iceL',hx:29.5,hy:11.8,ph:0});
   if(id==='farm'&&G.clock/60>=18&&G.clock/60<22&&!G.objs.some(o=>o.fid==='plnt'))
@@ -2769,7 +2771,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight','wash','libr','bath','wgoose','dbell','swing2','hollow','wstone','scnote','icelant','swindow','brub','pframe','stkite','sdswap','njr','murm','ttale','fawn','batf','gauge','lick','fsign'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight','wash','libr','bath','wgoose','dbell','swing2','hollow','wstone','scnote','icelant','swindow','brub','pframe','stkite','sdswap','njr','murm','ttale','fawn','batf','gauge','lick','fsign','baitbx'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2812,7 +2814,7 @@ function interact(){
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
     swing('rod',best.cx+.5,best.cy+.5);sfx('sfx_water');
-    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0) +(G.flags.ppDone?.05:0)+(G.flags.rpend?.08:0)+(G.flags.heronTip===G.day?.10:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fenLes=G.map==='river'&&G.day%7===5&&G.clock/60>=21&&!G.flags['nfl'+G.day];let fid=fenLes?'kingfish':fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.clock/60>=5&&G.clock/60<8&&Math.random()<.25?'dawnfish':G.weather==='fog'&&G.clock/60<9&&Math.random()<.4?'mistfish':G.rainbowDay===G.day&&Math.random()<.3?'prism':G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';
+    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0) +(G.flags.ppDone?.05:0)+(G.flags.rpend?.08:0)+(G.flags.heronTip===G.day?.10:0)    +(G.flags.baitToday===G.day?.15:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fenLes=G.map==='river'&&G.day%7===5&&G.clock/60>=21&&!G.flags['nfl'+G.day];let fid=fenLes?'kingfish':fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.clock/60>=5&&G.clock/60<8&&Math.random()<.25?'dawnfish':G.weather==='fog'&&G.clock/60<9&&Math.random()<.4?'mistfish':G.rainbowDay===G.day&&Math.random()<.3?'prism':G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';
       const garSpot=G.flags.fenLesson&&!G.flags.gar&&G.map==='river'&&G.hero.y<7;
       if(garSpot){fid='gar';G.flags.gar=1}collect(fid);
       if(fenLes){G.flags['nfl'+G.day]=1;G.hearts.fen=Math.min(10,(G.hearts.fen||0)+1)}
@@ -4115,6 +4117,10 @@ function interact(){
     ['SCARECROW NOTES — Week '+Math.floor(G.day/7),'“The geese flying south looked at me. I nodded. They nodded. Professional respect.”','TODAY’S TIP: The cellar ages things beautifully — try the rack.','PS: Pip owes me a marble.'],
     ['SCARECROW NOTES — Week '+Math.floor(G.day/7),'“Windy day. I danced. Nobody saw. Best day all season.”','TODAY’S TIP: Frostberry mornings come when the first frost bites.','PS: Tell the farmer the scarecrow is proud of them.']];
     startDlg({meta:{id:'scnote',name:'The Scarecrow',portrait:'scrow'}},NT[Math.floor(G.day/7)%4]);return}
+  if(m.kind==='baitbx'){
+    if(G.flags.baitToday===G.day){toast('🪱 Empty for today — more grubs tonight');return}
+    G.flags.baitToday=G.day;sfx('sfx_pickup');
+    toast('🪱 A fat grub for the hook — +15% catch chance all day');return}
   if(m.kind==='fsign'){
     const NAMES=['Sunpetal Farm','Foxglove Acres','Hillrise Stead','Old Gus Acreage'];
     const cur=G.flags.farmName||'Sunpetal Farm';
@@ -5227,6 +5233,7 @@ function promptScan(){
       else if(m.kind==='fring')txt=BTN+' · 🍄 Step inside the fairy ring';
       else if(m.kind==='wgoose')txt=G.flags['gose'+G.day]?'🪶 The goose keeps to the shallows':(G.inv.item.bread||0)>0?BTN+' · 🪶 Offer bread to the wild goose':'🪶 A wild goose — it eyes your pockets for bread';
       else if(m.kind==='scnote')txt=BTN+' · 📌 Read the scarecrow\u2019s note';
+      else if(m.kind==='baitbx')txt=G.flags.baitToday===G.day?'🪱 The tin is closed till tomorrow':BTN+' · 🪱 Dig out a bait grub';
       else if(m.kind==='fsign')txt=BTN+' · 🪧 Read / repaint the farm sign';
       else if(m.kind==='lick')txt=G.flags['lick'+G.day]?'🧂 The block gleams, smooth from tongues':BTN+' · 🧂 Check the salt lick';
       else if(m.kind==='gauge')txt=G.flags['gauge'+G.day]?'🌧 The gauge rests, glass flashing':BTN+' · 🌧 Read the rain gauge';
