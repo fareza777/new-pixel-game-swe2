@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.75</div></div></div>
+    <div class="ver">v4.76</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2164,6 +2164,7 @@ const MART_GOODS=[...FARMDECOR.map(d=>({kind:'fdec',...d})),
                  {kind:'item',id:'truffle',name:'Forest Truffle',price:70,sub:'dug up at dawn'},
                  {kind:'item',id:'clover',name:'Lucky Clover',price:150,sub:'found once, maybe twice'},
                  {kind:'tool',id:'copper',name:'Copper Toolset',price:120,sub:'needs 3 iron ore — tools tire you less'},
+                 {kind:'cookbook',name:'Valley Cookbook',price:120,sub:'every recipe and its ingredients, gathered from the whole valley'},
                  {kind:'hen',id:'hen2',name:'Brown Hen',price:150,sub:'joins your coop — pet her daily for eggs'},
                  {kind:'horse',id:'horse1',name:'Chestnut Mare',price:900,sub:'needs a stable — saddle up and gallop'},
                  {kind:'psap',name:'Pear Sapling',price:200,sub:'plant it on bare earth — pears every autumn day'},
@@ -2269,6 +2270,8 @@ function buyMart(gd){
     if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
     G.gold-=gd.price;G.inv.item.psap=(G.inv.item.psap||0)+1;sfx('sfx_coin');
     $('shopmsg').textContent="'A quiet little sapling,' Mart says. 'Plant it anywhere on your land — she\u2019ll reward you every autumn.'";shopRender();hudRender();save();return}
+  if(gd.kind==='cookbook'){G.flags.cookbook=1;sfx('sfx_success');
+    toast('📖 The Valley Cookbook — Hazel\u2019s margin notes on every page. The kitchen pot will never puzzle you again');return}
   if(gd.kind==='pcard'){
     if(G.flags[gd.id]){$('shopmsg').textContent='That one already lives in your album.';return}
     if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
@@ -3865,6 +3868,12 @@ function interact(){
     for(const r of RECIPES){let ok=true;for(const k in r.need){const isC=/^c\d+$/.test(k),hv=isC?G.inv.crop[+k.slice(1)]:it[k];if((hv||0)<r.need[k])ok=false}
       if(ok){for(const k in r.need){if(/^c\d+$/.test(k))G.inv.crop[+k.slice(1)]-=r.need[k];else it[k]-=r.need[k]}it[r.id]=(it[r.id]||0)+1;
         G.flags.cookedOnce=true;G.flags.cookedDay=G.day;collect(r.id);sfx('sfx_success');toast(RECIPE_SAY[r.id]);hudRender();save();return}}
+    if(G.flags.cookbook){
+      const NAME=k=>/^c\d+$/.test(k)?CROPS[+k.slice(1)]:ITEMS[k].name;
+      const lines=['📖 You open the Valley Cookbook, flour-dusted and loved.'];
+      for(const r of RECIPES){const ok=Object.keys(r.need).every(k=>{const isC=/^c\d+$/.test(k),hv=isC?G.inv.crop[+k.slice(1)]:(G.inv.item[k]||0);return hv>=r.need[k]});
+        lines.push((ok?'✅ ':'▫ ')+ITEMS[r.id].name+' — '+Object.keys(r.need).map(k=>r.need[k]+'× '+NAME(k)).join(' + '))}
+      startDlg(o,lines.slice(0,14));return}
     toast('🍲 Recipes: soup=mushroom+berry · jam=2×berry · stew=fish+herb · grill=riverfish+herb · salad=tomato+cabbage · custard=duckegg+milk · chowder=frostfish+milk+herb · tea=honey+herb · crab soup=crab+herb');return}
   if(m.kind==='press'){
     if((G.inv.item.apple||0)>=2){G.inv.item.apple-=2;G.inv.item.cider=(G.inv.item.cider||0)+1;collect('cider');
