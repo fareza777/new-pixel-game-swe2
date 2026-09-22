@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.18</div></div></div>
+    <div class="ver">v4.19</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2434,7 +2434,11 @@ function interact(){
     sleep();return}
   if(m.kind==='well'){
     if(G.flags.luckyDay===G.day+1){toast('⛲ The well still shimmers with your wish');return}
-    if(G.gold<10){toast('⛲ A dry toss — you need 10g');return}
+    if(G.gold<10){
+      if(!G.flags['echo'+G.day]){G.flags['echo'+G.day]=1;sfx('sfx_talk');
+        const ECHO=['"…hello… hello… lo…"','"…sunpetal… petal…"','"…the water\u2019s cold… cold…"','"…bring a coin next time… time…"','"…grandfather heard you… you…"'];
+        startDlg(o,['⛲ You lean over the stone and call down:','“Hello-o-o!”','And the well answers: '+ECHO[G.day%ECHO.length]]);return}
+      toast('⛲ A dry toss — you need 10g');return}
     G.gold-=10;G.flags.luckyDay=G.day+1;sfx('sfx_success');swing('seeds',o.x,o.y);
     toast('⛲ You toss a coin — tomorrow may shine brighter');hudRender();save();return}
   if(m.kind==='sign'){sfx('sfx_talk');toast('🪧 '+m.text);return}
