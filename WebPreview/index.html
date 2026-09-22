@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.91</div></div></div>
+    <div class="ver">v4.92</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1003,6 +1003,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'mat',x:19.5,y:21.5,anchor:'bc',meta:{kind:'mat',name:'the porch mat'},fid:'mat0',hx:19.5,hy:21.5,ph:0});
   if(id==='river'&&(G.prevWeather==='rain'||G.prevWeather==='storm')&&!G.flags.locketDone&&!G.flags.nlocket&&G.forageDay['river|nlk']!==G.day&&!G.objs.some(o=>o.fid==='nlk0'))
     G.objs.push({key:'locket',x:16.5,y:9.5,anchor:'bc',meta:{kind:'forage',item:'nlocket',name:'something gold glinting in the wet stones'},fid:'nlk0',hx:16.5,hy:9.5,ph:0});
+  if(id==='farm'&&fullmoon()&&!G.objs.some(o=>o.fid==='whsp0'))
+    G.objs.push({key:'moondew',x:46.8,y:16.2,anchor:'bc',meta:{kind:'whisper',name:'the pond, whispering under the full moon'},fid:'whsp0',hx:46.8,hy:16.2,ph:0});
   if(id==='farm'&&G.flags.mflSeed&&!G.flags.mflPlant&&!G.objs.some(o=>o.fid==='mfbed'))
     G.objs.push({key:'sprout',x:26.5,y:11.5,anchor:'bc',meta:{kind:'mplant',name:'a bare patch of soft earth by the fence — the moonflower spot'},fid:'mfbed',hx:26.5,hy:11.5,ph:0});
   if(id==='farm'&&G.flags.mflPlant&&(G.clock/60>=19||G.clock/60<5)&&(G.forageDay['farm|mfl0']||-9)+3<=G.day&&!G.objs.some(o=>o.fid==='mfl0'))
@@ -2656,7 +2658,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3961,6 +3963,12 @@ function interact(){
     if(!n){toast('📦 Shipping bin — bring crops or finds here to sell instantly');return}
     G.gold+=total;G.stats.gold+=total;sfx('sfx_coin');swing('basket',o.x,o.y);
     toast('📦 Shipped '+n+' items → +'+total+'g');hudRender();save();return}
+  if(m.kind==='whisper'){
+    if(G.flags['whsp'+G.day]){toast('🌕 The water has said its piece tonight');return}
+    G.flags['whsp'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_wish');
+    const WN2={sun:'clear skies',rain:'soft rain',storm:'a rattling storm',wind:'restless wind',fog:'low white fog',snow:'falling snow'};
+    if(!G.nextWeather){const wr=Math.random();G.nextWeather=wr<0.08?'storm':wr<0.29?'rain':wr<0.47?'wind':wr<0.58?'fog':'sun'}
+    startDlg(o,['You kneel at the pond\u2019s edge; the moon lays a silver road across it.','The water murmurs in a voice almost like Grandfather\u2019s:','“Tomorrow the sky brings '+WN2[G.nextWeather||'sun']+'. Plant accordingly, little one.”','(+8⚡ — and the pond\u2019s word has never once been wrong)']);return}
   if(m.kind==='club'){
     if(G.flags['club'+Math.floor(G.day/7)]){startDlg(o,['🌳 The clubhouse: one comic, three slingshots, a crown of acorns.','Pip\u2019s rules, chalked on the wall: “No grown-ups. No chores. Always share your snacks.”']);return}
     G.flags['club'+Math.floor(G.day/7)]=1;sfx('sfx_success');
@@ -4918,6 +4926,7 @@ function promptScan(){
       else if(m.kind==='fboard')txt=BTN+' · 🎣 Read the catch board';
       else if(m.kind==='vintage')txt=BTN+' · 🍾 A dusty bottle…';
       else if(m.kind==='gbk')txt=BTN+' · 📖 The guestbook';
+      else if(m.kind==='whisper')txt=BTN+' · 🌕 Kneel at the whispering pond';
       else if(m.kind==='club')txt=G.flags['club'+Math.floor(G.day/7)]?'🌳 The clubhouse — Pip\u2019s kingdom':BTN+' · 🌳 Pip\u2019s clubhouse';
       else if(m.kind==='sangel')txt=G.flags['sang'+G.day]?'❄️ Your snow angel lies in the drift':BTN+' · ❄️ Make a snow angel';
       else if(m.kind==='mplant')txt=BTN+' · 🌙 Plant the Moonflower seed';
