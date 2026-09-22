@@ -220,10 +220,10 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.03</div></div></div>
+    <div class="ver">v11.04</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
-  <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
+  <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
     <h3 style="margin:0 0 10px;color:#ffd76e;font-size:16px">⚙ Settings</h3>
     <div class="srow" id="setmusic" style="display:flex;justify-content:space-between;padding:8px 4px;cursor:pointer"><span>Music</span><span class="pr" id="setmusicv">ON</span></div>
     <div class="srow" id="setsfx" style="display:flex;justify-content:space-between;padding:8px 4px;cursor:pointer"><span>Sound FX</span><span class="pr" id="setsfxv">ON</span></div>
@@ -7209,10 +7209,10 @@ function hudRender(){
   const html=`${G.day}|${hh}:${mm}|${G.gold}|${G.selSeed}|${G.inv.seed[G.selSeed]||0}|${q[0]}|${q[1]}|${G.tutStep}|${G.tool}|${G.sta}|${G.weather}|${G.questOpen}`;
   if(html===_hudCache)return;_hudCache=html;   // skip DOM churn → no HUD flicker
   const picon=IMG['hero_idle_DOWN0'];
-  const staw=Math.round(G.sta*34/(100+(G.maxsta||0))),stac=G.sta<25?'#e05050':G.sta<55?'#e0a050':'#7ec850';
+  const staw=Math.round(G.sta*44/(100+(G.maxsta||0))),stac=G.sta<25?'#e05050':G.sta<55?'#e0a050':'#7ec850';
   $('hud').innerHTML=`<canvas id="hico" width="26" height="26" style="image-rendering:pixelated"></canvas>
     <span><b>Day ${G.day}</b> ${hh}:${mm} ${G.weather==='rain'?'🌧':G.weather==='wind'?'🍃':'☀'} · ${SEASON_ICON[season()]} ${SEASON[season()]}<br><b>${G.gold}g</b> · ${TOOL_EMOJI[G.tool]} ${TOOL_NAME[G.tool]}<br>
-    <span style="display:inline-block;width:34px;height:5px;background:#333;border-radius:2px;vertical-align:middle"><span style="display:block;width:${staw}px;height:5px;background:${stac};border-radius:2px"></span></span> STA ${G.sta}</span>`;
+    <span style="display:inline-block;width:46px;height:7px;background:#180f06;border:1px solid #5a4525;border-radius:4px;vertical-align:middle;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)"><span style="display:block;width:${staw}px;height:5px;background:${stac};border-radius:3px;box-shadow:0 0 4px ${stac}"></span></span> STA ${G.sta}</span>`;
   const hc=$('hico').getContext('2d');hc.imageSmoothingEnabled=false;
   if(picon)hc.drawImage(ATLAS,picon.sx,picon.sy,picon.w,picon.h,0,0,26,26);
   // quest: collapses to a 📜 chip — expands 6s on change or on tap
