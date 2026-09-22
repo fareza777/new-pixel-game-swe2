@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.18</div></div></div>
+    <div class="ver">v5.19</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -934,6 +934,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'ghost',x:10.5,y:5.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'gus',name:'Old Gus',portrait:'ghost_portrait'},fid:'gus0',hx:10.5,hy:5.5,ph:0});
   if(id==='hill'&&G.flags.gwatch&&G.flags.bl_statue&&!G.flags.metGran&&(G.clock/60>=18||G.clock/60<5)&&!G.objs.some(o=>o.meta&&o.meta.id==='gran'))
     G.objs.push({key:'ghost',x:13.5,y:9.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'gran',name:'Grandfather',portrait:'ghost_portrait'},fid:'gran0',hx:13.5,hy:9.5,ph:0});
+  if(id==='hill'&&G.day%7===6&&G.clock/60>=6&&G.clock/60<8&&!G.objs.some(o=>o.meta&&o.meta.id==='mira'))
+    G.objs.push({key:'npc5_down0',x:12.5,y:9.5,anchor:'bc',meta:{kind:'npc',id:'mira',name:'Mira',portrait:'npc5_portrait',stretch:1},fid:'st_m',hx:12.5,hy:9.5,ph:0});
   if(id==='hill'&&!G.objs.some(o=>o.fid==='ring0')){
     G.objs.push({key:'rcrystal',x:30.5,y:8.5,anchor:'c',meta:{kind:'ring',name:'the old stone circle'},fid:'ring0',hx:30.5,hy:8.5,ph:0});
     [[29.5,7.5],[31.5,7.5],[29.5,9.5],[31.5,9.5]].forEach((pt,i)=>G.objs.push({key:'cairn',x:pt[0],y:pt[1],anchor:'bc',meta:{kind:'deco',name:'a standing stone, older than the village'},fid:'ring'+i+'s',hx:pt[0],hy:pt[1],ph:0}));}
@@ -2014,6 +2016,9 @@ function talkTo(o){
   if(m.id==='cora'&&!f.viloFrame&&(G.inv.item.sketch||0)>0){
     f.viloFrame=1;G.inv.item.sketch--;G.flags.viloportrait=1;sfx('sfx_success');
     lines.unshift("Vilo's sketch of you? Say no more — I'll frame it in oak and hang it myself. Go see your farmhouse wall!")}
+  if(m.id==='mira'&&m.stretch&&!f['str'+G.day]){
+    f['str'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);G.hearts.mira=(G.hearts.mira||0)+1;sfx('sfx_wish');
+    startDlg(o,['🧘 Morning! Breathe in — reach for the ridge... and hold.','“The mountain doesn’t hurry, and look how tall it stands.”','You stretch until the dawn wind feels like it’s carrying you. (+5⚡ +1♥)']);return}
   if(m.id==='cora'&&G.day%28===5&&!f['cinsp'+Math.floor(G.day/28)]){
     f['cinsp'+Math.floor(G.day/28)]=1;
     const nB=BUILDS.filter(b=>G.flags[b.flag]).length;
