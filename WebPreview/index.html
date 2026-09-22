@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.39</div></div></div>
+    <div class="ver">v4.40</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -500,8 +500,13 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_fence)for(let fx=10;fx<=22;fx++){if(fx===15)continue;
     G.objs.push({key:'fence',x:fx+.5,y:17.4,meta:{kind:'deco'},fid:'fence'+fx,hx:fx+.5,hy:17.4,ph:0});G.solid.add(fx+',17')}
   if(id==='farm'&&G.flags.bl_wagon)G.objs.push({key:'wagon',x:52,y:20.6,meta:{kind:'deco',name:'Farm Wagon'},fid:'bl_wagon',hx:52,hy:20.6,ph:0});
-  if(id==='farm'&&G.flags.horse&&!G.objs.some(o=>o.fid==='horse1'))
-    G.objs.push({key:'horse_down0',x:45.5,y:14.5,meta:{kind:'horse',name:'Chestnut Mare'},fid:'horse1',hx:45.5,hy:14.5,ph:0});
+  if(id==='farm'&&G.flags.bl_pasture){
+    for(let px=42;px<=50;px++){if(px===46)continue;
+      G.objs.push({key:'fence',x:px+.5,y:23.4,meta:{kind:'deco'},fid:'pst'+px,hx:px+.5,hy:23.4,ph:0});G.solid.add(px+',23')}
+  }
+  if(id==='farm'&&G.flags.horse&&!G.objs.some(o=>o.fid==='horse1')){
+    const grazed=G.flags.bl_pasture&&G.clock/60>=7&&G.clock/60<17;
+    G.objs.push({key:'horse_down0',x:grazed?46.5:45.5,y:grazed?20.5:14.5,meta:{kind:'horse',name:'Chestnut Mare'},fid:'horse1',hx:grazed?46.5:45.5,hy:grazed?20.5:14.5,ph:0});}
   if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
   if(id==='farm')for(const d of FARMDECOR)if(G.flags[d.id]){
     const dd={key:d.spr,x:d.x,y:d.y,meta:{kind:'deco',name:d.name},fid:d.id,hx:d.x,hy:d.y,ph:0};
@@ -2075,6 +2080,7 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_steel',name:'Steel Toolset',price:180,ore:3,sub:'needs Copper + 3 ore — chores cost 2 less energy'},
              {flag:'bl_fence',name:'Field Fence',price:90,sub:'white-rail fence along the crop field'},
              {flag:'bl_wagon',name:'Farm Wagon',price:60,sub:'a proper wagon by the lane'},
+             {flag:'bl_pasture',name:'Pasture Fence',price:350,sub:'a fenced paddock south of the coop — the mare grazes out all day'},
              {flag:'bl_hay',name:'Hay Bale',price:25,sub:'golden bale for the coop corner'},
              {flag:'bl_stable',name:'Horse Stable',price:700,sub:'a snug stable by the gate — room for a riding horse'},
              {flag:'bl_seedmk',name:'Seed Maker',price:300,sub:'feed it a crop — two seed packets by morning'},
