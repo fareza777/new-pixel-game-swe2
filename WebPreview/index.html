@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.42</div></div></div>
+    <div class="ver">v11.43</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -268,9 +268,10 @@ function collect(id){G.col[id]=(G.col[id]||0)+1}
 function skLvl(x){return x>=150?5:x>=80?4:x>=40?3:x>=15?2:x>=5?1:0}
 const PERKS={farm:[['🌱 Green Thumb','crops sell for 25% more','price'],['🧺 Rich Harvest','15% chance of one extra crop','harvest']],
  fish:[['🎯 River Sense','a much wider reel zone','zone'],['🌊 Sea Shanty','fish sell for 25% more','sell']],
- forage:[["👁 Keen Eye",'double-gathers 15% more often','eye'],["🍃 Nature's Gift",'foraging costs no energy','free']]};
+ forage:[["👁 Keen Eye",'double-gathers 15% more often','eye'],["🍃 Nature's Gift",'foraging costs no energy','free']],
+ cook:[['🍳 Golden Ladle','dishes sell for 25% more','ladle'],['🥗 Farm-to-Table','cooked food restores 25% more energy','table']]};
 function gainXP(k,n){const b=skLvl(G.xp[k]);G.xp[k]=(G.xp[k]||0)+n;const a=skLvl(G.xp[k]);
-  if(a>b){sfx('sfx_success');toast((k==='farm'?'🌾 Farming':k==='fish'?'🎣 Fishing':'🍄 Foraging')+' Lv '+a+'! '+(k==='farm'?'Crops sell for more':k==='fish'?'Fish bite easier':'More double-gathers'))}
+  if(a>b){sfx('sfx_success');toast((k==='farm'?'🌾 Farming':k==='fish'?'🎣 Fishing':k==='cook'?'🍳 Cooking':'🍄 Foraging')+' Lv '+a+'! '+(k==='farm'?'Crops sell for more':k==='fish'?'Fish bite easier':k==='cook'?'Dishes sell for more':'More double-gathers'))}
   if(a>=5&&(!G.perk||!G.perk[k])){G.perk=G.perk||{};const opts=PERKS[k];
     setTimeout(()=>startDlg({meta:{kind:'npc',id:'hero',name:'Mastery',portrait:'hero_portrait'}},
      ['Your '+k+' hands move on their own now — true mastery. Choose your calling:'],null,
@@ -399,7 +400,7 @@ const G={
   stats:{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0},
   letters:[],col:{},
   dlg:null, shop:null, bag:false,
-  tutStep:0, vo:null, fade:0, promptTxt:'', forageDay:{}, bugDay:{}, swing:null, fx:[], xp:{farm:0,fish:0,forage:0},
+  tutStep:0, vo:null, fade:0, promptTxt:'', forageDay:{}, bugDay:{}, swing:null, fx:[], xp:{farm:0,fish:0,forage:0,cook:0},
   tutSeen:-1, tutAt:0, questAt:0, questOpen:false,
 };
 const TUT=[
@@ -3085,7 +3086,7 @@ function cookRecipe(r){
     if(hv<r.need[k]){const nm=isC?CROPS[+k.slice(1)]:(ITEMS[k]?ITEMS[k].name:k);
       $('shopmsg').textContent='Need '+r.need[k]+'× '+nm+' — you have '+hv+'.';return}}
   for(const k in r.need){if(/^c\d+$/.test(k))G.inv.crop[+k.slice(1)]-=r.need[k];else it[k]-=r.need[k]}
-  it[r.id]=(it[r.id]||0)+1;G.flags.cookedOnce=true;G.flags.cookedDay=G.day;collect(r.id);
+  it[r.id]=(it[r.id]||0)+1;G.flags.cookedOnce=true;G.flags.cookedDay=G.day;collect(r.id);gainXP('cook',1);
   sfx('sfx_success');$('shopmsg').textContent=RECIPE_SAY[r.id]||('Cooked '+ITEMS[r.id].name+'!');shopRender();hudRender();save()}
 function shopRender(){
   const g=G.shop;$('shop').style.display='flex';
@@ -3533,7 +3534,9 @@ function buyFert(){
 }
 function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1))}
 const FISH_SELL={fish:1,kingfish:1,goldfish:1,moonfish:1,koi:1,trout:1,sardine:1,carp:1,catfish:1};
-function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0;return (G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])?Math.round(s*1.25):s}
+function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0;
+  if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1));
+  return (G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])?Math.round(s*1.25):s}
 function sellCrop(id){
   if(!G.inv.crop[id])return;
   const pr=cropSellPrice(id);
@@ -3717,9 +3720,9 @@ function toggleBag(v){
     const kin=Object.keys(G.flags).filter(k=>k.indexOf('kin_')===0).length;
     if(kin)h+=`<div class="invrow"><span>💛 Kindred spirits</span><span class="ct" style="margin-left:auto">${kin}</span></div>`;
     h+='<div class="invsec">SKILLS</div>';
-    const SKL=[['farm','🌾 Farming'],['forage','🍄 Foraging'],['fish','🎣 Fishing']],THL=[5,15,40,80,150];
+    const SKL=[['farm','🌾 Farming'],['forage','🍄 Foraging'],['fish','🎣 Fishing'],['cook','🍳 Cooking']],THL=[5,15,40,80,150];
     for(const[sk,nm]of SKL){const xp=G.xp[sk]||0,lv=skLvl(xp),nxt=lv<5?THL[lv]:null;
-      const perk=sk==='farm'?'+'+lv*10+'% crop price':sk==='forage'?'rare finds +'+lv*10+'%':'bite zone +'+(lv*1.4).toFixed(0)+'%';
+      const perk=sk==='farm'?'+'+lv*10+'% crop price':sk==='forage'?'rare finds +'+lv*10+'%':sk==='cook'?'+'+lv*10+'% dish price':'bite zone +'+(lv*1.4).toFixed(0)+'%';
       h+=`<div class="invrow"><span>${nm} · Lv${lv}</span><span class="ct" style="margin-left:auto">${nxt?xp+'/'+nxt+'xp · '+perk:'MAX · '+perk}</span></div>`;
       if(G.perk&&G.perk[sk]){const pl=PERKS[sk].find(pp=>pp[2]===G.perk[sk]);
         h+=`<div class="invrow" style="font-size:10px;color:#ffd76e"><span>✦ ${pl[0]} — ${pl[1]}</span></div>`}}
@@ -3795,8 +3798,11 @@ function toggleBag(v){
     const sp=MAPS[id].spawn||{x:5,y:5};
     toggleBag(false);sfx('sfx_chime');loadMap(id,sp.x,sp.y);toast('🗺 '+id.charAt(0).toUpperCase()+id.slice(1))}));
   document.querySelectorAll('#baglist [data-eati]').forEach(r=>onTap(r,()=>{
-    const id=r.dataset.eati;if((G.inv.item[id]||0)>0){G.inv.item[id]--;G.sta=Math.min(100+(G.maxsta||0),G.sta+(EAT2[id]||8)+(G.flags.cookbook?2:0));
-      sfx('sfx_harvest');toast('🍴 Ate '+ITEMS[id].name+' — +'+(EAT2[id]+(G.flags.cookbook?2:0)||8)+'⚡');toggleBag(true);hudRender()}}));
+    const id=r.dataset.eati;if((G.inv.item[id]||0)>0){G.inv.item[id]--;
+      let eg=(EAT2[id]||8)+(G.flags.cookbook?2:0);
+      if(G.perk&&G.perk.cook==='table'&&RECIPES.some(rr=>rr.id===id))eg=Math.round(eg*1.25);
+      G.sta=Math.min(100+(G.maxsta||0),G.sta+eg);
+      sfx('sfx_harvest');toast('🍴 Ate '+ITEMS[id].name+' — +'+eg+'⚡');toggleBag(true);hudRender()}}));
 }
 function cycleSeed(){
   const ids=Object.keys(G.inv.seed).filter(k=>G.inv.seed[k]>0).map(Number).sort((a,b)=>a-b);
