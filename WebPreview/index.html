@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.72</div></div></div>
+    <div class="ver">v10.73</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -6791,6 +6791,27 @@ function render(ts){
         ctx.fillStyle='rgba(255,255,255,.7)';ctx.fillRect(sx,sy,2,2)}}
     if(sn===0){const pt=ts/30;for(let i=0;i<12;i++){const px2=(i*91+pt*3)%(cv.width+40)-20,py=(i*57+pt*1.4)%(cv.height+20)-10;
         ctx.fillStyle='rgba(255,170,200,.4)';ctx.fillRect(px2,py,2,2)}}}
+  // per-area ambient motes: each locale drifts its own air
+  const AMB={kingsmead:'petal',nightingalewood:'petal',chapel:'petal',galepoint:'petal',
+    forest:'leaf',amberwood:'leaf',owlwood:'mote',nighthaunt:'mote',
+    marsh:'mote',fen:'mote',reedbed:'mote',sedgefen:'mote',windrow:'mote',
+    meadow:'seed',skylarkmead:'seed',down:'seed',wrenhaven:'seed',heavenfield:'seed',
+    grotto:'mote',summit:'snow',cave:'dust',cave2:'dust',cave3:'dust',cave4:'dust',cave5:'mote',
+    tarn:'mote',hollowmere:'mote',mossbarrow:'mote',tealhollow:'mote',
+    strand:'foam',cove:'foam',skerry:'foam',gullcliff:'foam',islet:'foam'};
+  const amb=AMB[G.map];
+  if(amb){const at=ts/40,AW=cv.width,AH=cv.height;
+    const modes={petal:{n:12,c:i=>`rgba(255,${165+i*8},200,.45)`,vx:2.6,vy:1.3,sway:9,sz:2},
+      leaf:{n:10,c:i=>i%3?`rgba(150,190,80,.5)`:`rgba(215,170,70,.5)`,vx:3.2,vy:1.8,sway:11,sz:2},
+      mote:{n:14,c:i=>`rgba(190,255,140,${.25+.45*Math.abs(Math.sin(at/40+i*2.1))})`,vx:1.1,vy:.6,sway:14,sz:2},
+      seed:{n:10,c:i=>`rgba(255,255,250,.5)`,vx:-1.4,vy:-.8,sway:10,sz:2},
+      dust:{n:12,c:i=>`rgba(220,200,160,.30)`,vx:.6,vy:.9,sway:5,sz:1.6},
+      foam:{n:10,c:i=>`rgba(225,242,255,.42)`,vx:1.8,vy:.4,sway:7,sz:2},
+      snow:{n:18,c:i=>`rgba(255,255,255,.65)`,vx:.9,vy:1.6,sway:6,sz:1.8}};
+    const md=modes[amb];if(md){
+      for(let i=0;i<md.n;i++){
+        const px2=(i*83+at*md.vx)%(AW+50)-25, py2=((i*67+at*md.vy)%(AH+30)-15)+Math.sin(at/9+i)*md.sway*.12;
+        ctx.fillStyle=md.c(i);ctx.fillRect(px2,py2,md.sz,md.sz)}}}
   if(G.rainbowDay===G.day&&G.clock/60<11.5&&!G.L.indoor){
     const rx=cv.width*.5,ry=cv.height*1.15,rr=cv.height*.9;
     const RC=['rgba(255,90,90,.30)','rgba(255,180,60,.30)','rgba(255,240,90,.30)','rgba(120,220,110,.30)','rgba(90,160,255,.30)','rgba(170,120,255,.30)'];
