@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.96</div></div></div>
+    <div class="ver">v10.97</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -3546,7 +3546,23 @@ function faint(){
       "The farm will wait, little seedling. Eat something warm and rest before you push that hard again."]);
   },800);
 }
+function landFish(){
+  const _night=G.clock/60>=20||G.clock/60<5;const fenLes=G.map==='river'&&G.day%7===5&&G.clock/60>=21&&!G.flags['nfl'+G.day];let fid=fenLes?'kingfish':fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.clock/60>=5&&G.clock/60<8&&Math.random()<.25?'dawnfish':G.weather==='fog'&&G.clock/60<9&&Math.random()<.4?'mistfish':G.rainbowDay===G.day&&Math.random()<.3?'prism':G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';
+  const garSpot=G.flags.fenLesson&&!G.flags.gar&&G.map==='river'&&G.hero.y<7;
+  if(garSpot){fid='gar';G.flags.gar=1}collect(fid);
+  if(fenLes){G.flags['nfl'+G.day]=1;G.hearts.fen=Math.min(10,(G.hearts.fen||0)+1)}
+  G.inv.item[fid]=(G.inv.item[fid]||0)+1;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',6);
+  toast(fid==='gar'?'👑 THE OLD GAR! Three feet of legend — Fen will want to hear about this (500g)':fenLes?'🎣 Fen whistles low — \u201cThere. The Pond King himself. Yours, pupil.\u201d (+1 \u2665)':fid==='eel'?'\u26a1 A Night Eel! It writhes silver in the dark — worth 55g':fid==='icefish'?'\ud83d\udc1f Caught a Frostfish through the ice! Worth 30g':fid==='prism'?'\ud83c\udf08 A PRISM FISH! Every color of the rainbow writhes in your hands — 90g':fid==='mistfish'?'\ud83c\udf2b A Mistfish! It materializes out of the fog like a rumor — 45g':fid==='dawnfish'?'\ud83c\udf05 A Dawnscale! It leaps rose-gold from the first light — 65g':fid==='rfish'?'\ud83d\udc1f Caught a River Fish! Bigger — worth 25g':'\ud83d\udc1f Caught a Pond Fish! Sell it at Sari\'s stall');
+}
+function resolveFishGame(){
+  const fg=G.fg||{t:0,span:1,z0:0,z1:0};G.fg=null;G.state='play';uiBusy();
+  const p=fg.t/fg.span;
+  if(p>=fg.z0&&p<=fg.z1){sfx('sfx_success');landFish()}
+  else{toast('\ud83d\udc1f It slipped the hook!');sfx('sfx_deny')}
+  hudRender();save();
+}
 function interact(){
+  if(G.state==='fishgame'){resolveFishGame();return}
   if(G.state==='dlg'){dlgAdvance();return}
   if(G.state!=='play')return;
   const best=pickAction();
@@ -3559,13 +3575,13 @@ function interact(){
     if(G.tool!=='rod'){toast(TOOL_EMOJI.rod+' Equip the Fishing Rod to fish — tap TOOL');return}
     if(!spendSta(3))return;
     swing('rod',best.cx+.5,best.cy+.5);sfx('sfx_water');
-    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0) +(G.flags.ppDone?.05:0)+(G.flags.rpend?.08:0)+(G.flags.heronTip===G.day?.10:0)    +(G.flags.baitToday===G.day?.15:0)+skLvl(G.xp.fish)*.05)){const _night=G.clock/60>=20||G.clock/60<5;const fenLes=G.map==='river'&&G.day%7===5&&G.clock/60>=21&&!G.flags['nfl'+G.day];let fid=fenLes?'kingfish':fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.clock/60>=5&&G.clock/60<8&&Math.random()<.25?'dawnfish':G.weather==='fog'&&G.clock/60<9&&Math.random()<.4?'mistfish':G.rainbowDay===G.day&&Math.random()<.3?'prism':G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';
-      const garSpot=G.flags.fenLesson&&!G.flags.gar&&G.map==='river'&&G.hero.y<7;
-      if(garSpot){fid='gar';G.flags.gar=1}collect(fid);
-      if(fenLes){G.flags['nfl'+G.day]=1;G.hearts.fen=Math.min(10,(G.hearts.fen||0)+1)}
-      G.inv.item[fid]=(G.inv.item[fid]||0)+1;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',6);
-      toast(fid==='gar'?'👑 THE OLD GAR! Three feet of legend — Fen will want to hear about this (500g)':fenLes?'🎣 Fen whistles low — “There. The Pond King himself. Yours, pupil.” (+1 ♥)':fid==='eel'?'⚡ A Night Eel! It writhes silver in the dark — worth 55g':fid==='icefish'?'🐟 Caught a Frostfish through the ice! Worth 30g':fid==='prism'?'🌈 A PRISM FISH! Every color of the rainbow writhes in your hands — 90g':fid==='mistfish'?'🌫 A Mistfish! It materializes out of the fog like a rumor — 45g':fid==='dawnfish'?'🌅 A Dawnscale! It leaps rose-gold from the first light — 65g':fid==='rfish'?'🐟 Caught a River Fish! Bigger — worth 25g':'🐟 Caught a Pond Fish! Sell it at Sari\'s stall');}
-    else toast('🐟 It got away… try again');
+    if(Math.random()<Math.min(.97,(G.flags.lure||G.flags.tomsBait?.85:.7)+(G.flags.luckyDay===G.day?.12:0)+(G.flags.pearlCharm?.10:0)+(G.flags.fenTip===G.day?.15:0)+(G.flags.fenLesson?.05:0) +(G.flags.ppDone?.05:0)+(G.flags.rpend?.08:0)+(G.flags.heronTip===G.day?.10:0)    +(G.flags.baitToday===G.day?.15:0)+skLvl(G.xp.fish)*.05)){
+      // a fish is on the line — now reel it in: timing bar minigame
+      const zw=Math.min(.42,.22+skLvl(G.xp.fish)*.014); // sweet spot widens with fishing skill
+      const z0=.25+Math.random()*(0.5-zw);
+      G.fg={t:0,span:1.5,z0:z0,z1:z0+zw};
+      G.state='fishgame';uiBusy();return}
+    else toast('🐟 Nothing nibbles… try again');
     hudRender();return}
   if(best.kind==='psap'){
     G.inv.item.psap--;G.flags.ptree=1;G.flags.ptreeDay=G.day;
@@ -6495,7 +6511,8 @@ function loop(ts){
   if(G.state==='title'){titleRender(ts);requestAnimationFrame(loop);return}
   if(G.state==='intro'){introRender(ts,dt);requestAnimationFrame(loop);return}
   if(G.state==='festival'){festivalRender(ts);requestAnimationFrame(loop);return}
-  if(G.state!=='play'&&G.state!=='dlg'&&G.state!=='bag'&&G.state!=='shop'){requestAnimationFrame(loop);return}
+  if(G.state!=='play'&&G.state!=='dlg'&&G.state!=='bag'&&G.state!=='shop'&&G.state!=='fishgame'){requestAnimationFrame(loop);return}
+  if(G.state==='fishgame'&&G.fg){G.fg.t+=dt;if(G.fg.t>=G.fg.span)resolveFishGame()}
   // time passes only while playing (not in dialogs/menus)
   if(G.state==='play'){G.clock+=dt*8;
     if(G.flags.bl_clock&&G.map==='village'){const hh=Math.floor(G.clock/60);
@@ -7050,6 +7067,18 @@ function render(ts){
       ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,4.5*T*SCALE,0,7);ctx.fill()}
     ctx.globalCompositeOperation='source-over'}
   if(G.fade)ctx.fillStyle=`rgba(0,0,0,${G.fade})`,ctx.fillRect(0,0,cv.width,cv.height);
+  if(G.state==='fishgame'&&G.fg){
+    const p=Math.min(1,G.fg.t/G.fg.span),bx=cv.width*.2,by=cv.height*.68,bw=cv.width*.6,bh=22;
+    ctx.fillStyle='rgba(10,8,20,.85)';ctx.fillRect(bx-10,by-38,bw+20,80);
+    ctx.strokeStyle='#c89b5a';ctx.lineWidth=2;ctx.strokeRect(bx-10,by-38,bw+20,80);
+    ctx.fillStyle='#ffe9c4';ctx.font='bold 13px monospace';ctx.textAlign='center';
+    ctx.fillText('REEL IN — tap A in the green!',bx+bw/2,by-14);
+    ctx.fillStyle='#3a2a18';ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle='#7ec860';ctx.fillRect(bx+bw*G.fg.z0,by,bw*(G.fg.z1-G.fg.z0),bh);
+    ctx.fillStyle='#fff8d0';ctx.fillRect(bx+bw*p-2,by-4,4,bh+8);
+    ctx.strokeStyle='#c89b5a';ctx.strokeRect(bx,by,bw,bh);
+    ctx.textAlign='left';
+  }
   if(G.state==='dlg'&&G.dlg){
     $('dlg').style.display='block';
     const hid=G.dlg.npc.id,ht=G.hearts[hid]||0;
