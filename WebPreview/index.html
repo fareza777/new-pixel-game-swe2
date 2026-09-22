@@ -37,9 +37,10 @@
   #dtext{font-size:14px;line-height:1.5;min-height:40px}
   #dnext{position:absolute;right:10px;bottom:6px;color:#ffd76e;font-size:12px;animation:blink 1s infinite}
   #dch{position:absolute;left:10px;right:10px;bottom:6px;display:none;gap:8px}
-  .dchb{flex:1;padding:7px 6px;background:#3a2a14;border:2px solid #c89b5a;border-radius:8px;color:#ffe9b8;
-    font-size:13px;font-family:inherit;text-align:center;cursor:pointer}
-  .dchb:active{background:#5a4220}
+  .dchb{flex:1;padding:8px 6px;background:linear-gradient(#3a2812,#241708);border:2px solid #c89b5a;border-radius:10px;color:#ffe9b8;
+    font-size:13px;font-family:inherit;text-align:center;cursor:pointer;
+    box-shadow:0 3px 0 #120a04,inset 0 1px 0 rgba(255,215,110,.2);transition:transform .08s,box-shadow .08s}
+  .dchb:active{background:#4a3a1a;transform:translateY(2px);box-shadow:0 1px 0 #120a04,inset 0 1px 0 rgba(255,215,110,.2)}
   @keyframes blink{50%{opacity:.2}}
   /* full-screen overlays */
   .ovl{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:10}
@@ -76,6 +77,7 @@
   .tab.on{background:#c89b5a;color:#241809;font-weight:bold}
   .srow{display:flex;justify-content:space-between;align-items:center;padding:7px 6px;border-bottom:1px dotted #5a4525;font-size:14px;cursor:pointer;border-radius:4px}
   .srow:hover{background:#3a2a14}
+  .srow:active{background:#4a3a1a}
   .srow .pr{color:#ffd76e}
   .srow.sel{background:#4a3a1a}
   #shopmsg{font-size:12px;color:#9fd0ff;min-height:16px;margin-top:4px}
@@ -115,6 +117,8 @@
     background:radial-gradient(circle at 40% 30%,#3a2a14,#1e130a);border:2px solid #4a3520;border-radius:8px}
   .toolchip.on{border-color:#ffd76e;box-shadow:0 0 10px rgba(255,215,110,.45),inset 0 1px 0 rgba(255,215,110,.25);color:#ffd76e}
   .toolchip.on canvas{border-color:#ffd76e}
+  .toolchip{transition:transform .07s}
+  .toolchip:active{transform:scale(.95)}
   .invrow{display:flex;align-items:center;gap:10px;padding:7px 6px;border-bottom:1px dotted #5a4525;font-size:14px;border-radius:8px}
   .invrow:last-child{border-bottom:none}
   .invrow.sel-seed{cursor:pointer}
@@ -137,13 +141,17 @@
   .itemcard .icname{font-size:11px;color:#ffe9c4;line-height:1.25}
   .itemcard .icct{font-size:10px;color:#cbb;background:#1a1208;border:1px solid #5a4525;border-radius:9px;padding:1px 8px}
   .itemcard .icsub{font-size:9px;color:#998;line-height:1.2}
+  .itemcard{transition:transform .07s}
   .itemcard:hover{background:#2a1d0d}
+  .itemcard:active{transform:scale(.95);background:#2a1d0d}
   .itemcard.on{border-color:#ffd76e;box-shadow:0 0 12px rgba(255,215,110,.5),inset 0 1px 0 rgba(255,215,110,.25)}
   .itemcard.on::after{content:'\25CF';position:absolute;top:5px;right:7px;color:#8fd070;font-size:9px}
   /* segmented tabs */
   .tabrow{gap:4px}
   .tab{flex:1;text-align:center;padding:6px 2px;background:#180f06;border:1px solid #5a4525;border-radius:7px;
     font-size:12px;cursor:pointer;color:#b8a988;letter-spacing:.5px}
+  .tab{transition:transform .07s}
+  .tab:active{transform:scale(.96)}
   .tab.on{background:linear-gradient(#e8bc6a,#c89b5a);color:#241809;font-weight:bold;
     box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 -2px 0 #8a5a20}
   .srow{gap:8px}
@@ -199,7 +207,7 @@
   <div class="btn" id="btnA">🌱<small>ACTION</small></div>
   <div class="btn" id="btnBag">🎒<small>BAG</small></div>
   <div class="btn" id="btnRun">»<small>RUN</small></div>
-  <div class="btn" id="btnTool">🪓<small>TOOL</small></div>
+  <div class="btn" id="btnTool">⛏<small>TOOL</small></div>
 </div>
 
 <div id="title" class="ovl" style="display:flex"><canvas id="tcv"></canvas>
@@ -212,7 +220,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.02</div></div></div>
+    <div class="ver">v11.03</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -7226,7 +7234,7 @@ function promptScan(){
   const b=G.act||pickAction();
   if(b){
     if(b.kind==='dismount')txt=BTN+' · 🐎 Hop off';
-    if(b.kind==='till')txt=G.tool==='hoe'?BTN+' · 🪓 Till soil':TOOL_EMOJI.hoe+' Equip Hoe (tap TOOL)';
+    if(b.kind==='till')txt=G.tool==='hoe'?BTN+' · ⛏ Till soil':TOOL_EMOJI.hoe+' Equip Hoe (tap TOOL)';
     if(b.kind==='psap')txt=BTN+' · 🌱 Plant pear sapling';
     else if(b.kind==='fish')txt=G.tool==='rod'?BTN+' · 🎣 Fish':TOOL_EMOJI.rod+' Equip Fishing Rod (tap TOOL)';
     else if(b.kind==='bloom')txt='✦ Sunpetal in bloom';
