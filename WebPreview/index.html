@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.24</div></div></div>
+    <div class="ver">v11.25</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3565,6 +3565,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              starflower:{name:'Starflower',icon:'starflower',sell:15}, bq:{name:'Moonbloom Bouquet',icon:'bq',sell:40}, cider:{name:'Apple Cider',icon:'cider',sell:30}, goldapple:{name:'Golden Apple',icon:'gaple',sell:60}, apie:{name:'Apple Pie',icon:'apie',sell:55},
              stew:{name:"Fisher's Stew",icon:'soup',sell:30},
              letter:{name:'Valley Letter',icon:'item_letter',sell:0}};
+for(const _gc in CROPS){ITEMS['g'+_gc]={name:'Golden '+CROPS[_gc],icon:(MAPS.farm&&MAPS.farm.crop_frames[_gc]||['gem']).slice(-1)[0],sell:Math.round((CROP_PRICE[_gc]||10)*2),edible:Math.round((CROP_PRICE[_gc]||10)/3)}}
 const TOOL_SET=[{id:'hoe',icon:'tool_hoe',name:'Hoe',sub:'till soil'},
                 {id:'seeds',icon:'tool_seed',name:'Seeds',sub:'plant on tilled soil'},
                 {id:'can',icon:'tool_can',name:'Watering Can',sub:'water crops'},
@@ -3908,8 +3909,8 @@ function interact(){
       G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+gq;G.stats.crops+=gq;collect('c'+c.crop);gainXP('farm',5);
       if(G.day%14===7&&season()===2&&(G.clock/60>=18||G.clock/60<5)){G.inv.crop[c.crop]++;G.stats.crops++;collect('c'+c.crop);
         sfx('sfx_success');toast('🌕 The Harvest Moon doubles your basket!')}
-      else if(Math.random()<.08){G.inv.item.goldstar=(G.inv.item.goldstar||0)+1;collect('goldstar');
-        sfx('sfx_success');toast('✨ A Golden Crop! It shines in your basket (+50g if sold)')}
+      else if(Math.random()<(.10+skLvl(G.xp.farm)*.04+((G.perk&&G.perk.farm==='harvest')?.08:0))){const gid2='g'+c.crop;G.inv.item[gid2]=(G.inv.item[gid2]||0)+1;collect(gid2);
+        sfx('sfx_success');toast('✨ A GOLDEN '+CROPS[c.crop]+'! It gleams in your basket (2× market price)')}
       G.flags.harvested=(G.flags.harvested||0)+1;
       swing('basket',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
       toast((gq>1?'🌟 A GIANT '+CROPS[c.crop]+'! Worth 3× at market':'🧺 Harvested a '+CROPS[c.crop]+'!')+(REGROW[c.crop]?' The vines keep fruiting — water them again':''));
