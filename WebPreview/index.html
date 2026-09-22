@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.93</div></div></div>
+    <div class="ver">v4.94</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -460,6 +460,11 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'lamp',x:10.5,y:3.2,anchor:'bc',meta:{kind:'hcandle',name:'the heirloom candle — lit on Founder\u2019s Eve'},fid:'hcd0',hx:10.5,hy:3.2,ph:0});
   if(id==='house'&&(G.inv.item.festphoto||0)>0&&!G.objs.some(o=>o.fid==='fph0'))
     G.objs.push({key:'gpage',x:12.5,y:2.6,anchor:'bc',meta:{kind:'deco',name:'the Festival Portrait — the whole village squinting at the moon'},fid:'fph0',hx:12.5,hy:2.6,ph:0});
+  if(id==='house'){
+    const MEMO=[['sketch','gpage','the sketch Vilo drew of you'],['festphoto','gpage','the Festival Portrait'],['brooch','locket','the Sunpetal Brooch'],['compass','locket','the Brass Compass'],['rpend','locket','the River Pendant'],['ghat','fcrown','Grandfather\u2019s Sun Hat'],['skywatch','starchart','the Sky Watcher\u2019s mark'],['gmarble','rcrystal','the Golden Marble']];
+    MEMO.forEach((mm,i)=>{
+      if((G.inv.item[mm[0]]||0)>0&&!G.objs.some(o=>o.fid==='mem'+i))
+        G.objs.push({key:mm[1],x:3.5+i*1.1,y:2.2,anchor:'bc',meta:{kind:'deco',name:mm[2]},fid:'mem'+i,hx:3.5+i*1.1,hy:2.2,ph:i})});}
   if(id==='house'&&G.flags.viloportrait&&!G.objs.some(o=>o.fid==='vportrait'))
     G.objs.push({key:'vportrait',x:7.5,y:3.2,anchor:'c',meta:{kind:'deco',name:'your framed portrait by Vilo & Cora'},fid:'vportrait',hx:7.5,hy:3.2,ph:0});
   if(id==='house'&&G.flags.fjar&&!G.objs.some(o=>o.fid==='fjar0'))
