@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.73</div></div></div>
+    <div class="ver">v4.74</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2724,6 +2724,11 @@ function interact(){
     G.objs=G.objs.filter(x=>!(x.fid&&String(x.fid).startsWith('f2_')));
     G.L.tillable.push([29,5,34,8]);
     toast('🌾 East Field purchased! Six more beds ready to till (+250g spent)');hudRender();save();return}
+  if(m.kind==='board'&&G.day%7===0){
+    const TIERS=[[10,'honor10',30],[25,'honor25',75],[50,'honor50',150]];
+    for(const[t,fk,gp]of TIERS){
+      if(!G.flags[fk]&&(G.stats.quests||0)>=t){G.flags[fk]=1;G.gold+=gp;sfx('sfx_success');
+        toast('🏅 VALLEY HONOR ROLL — your name goes up! '+t+' favors done for neighbors (+'+gp+'g)');save();return}}}
   if(m.kind==='board'){
     // daily villager request — deterministic per day
     const POOL=[{i:'mushroom',n:2,p:30,w:'Fen wants mushrooms for his stew'},
