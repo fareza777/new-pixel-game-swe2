@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.41</div></div></div>
+    <div class="ver">v11.42</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1858,7 +1858,7 @@ function loadMap(id,sx,sy){
     EGGSPOTS[id].forEach((pt,i)=>{const eid=String(id==='village'?i:i+3);
       if(!(G.flags['bloom'+G.day]&(1<<eid.charCodeAt(0)))&&!G.objs.some(o=>o.fid==='egg'+eid))
         G.objs.push({key:['egg_r','egg_b','egg_g'][i%3],x:pt[0],y:pt[1],meta:{kind:'egg',name:'a painted egg',eid},fid:'egg'+eid,hx:pt[0],hy:pt[1],ph:i});});}
-  const CARTS={farm:[52.5,18.4,'Village & Mine'],village:[2.5,17.5,'Farm & Mine'],cave:[17.5,4.5,'Farm & Village']};
+  const CARTS={farm:[52.5,18.4,'Village, Mine & Hill'],village:[2.5,17.5,'Farm, Mine & Hill'],cave:[17.5,4.5,'Farm, Village & Hill'],hill:[3.5,17.4,'Farm, Village & Mine']};
   if(CARTS[id]&&G.flags.bl_cart&&!G.objs.some(o=>o.fid==='cart0'))
     G.objs.push({key:'cart',x:CARTS[id][0],y:CARTS[id][1],meta:{kind:'cart',name:'the minecart — '+CARTS[id][2]},fid:'cart0',hx:CARTS[id][0],hy:CARTS[id][1],ph:0});
   if(fullmoon()){
@@ -3368,7 +3368,7 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_seedmk',name:'Seed Maker',price:300,sub:'feed it a crop — two seed packets by morning'},
              {flag:'bl_statue',name:'Founder Statue',price:500,sub:'only after you find every journal page'},
              {flag:'bl_loft',name:'Farmhouse Loft',price:800,sub:'a cozy upstairs room — desk, bed, memory trunk'},
-             {flag:'bl_cart',name:'Minecart Rails',price:600,sub:'carts link the farm, village & old mine'},
+             {flag:'bl_cart',name:'Minecart Rails',price:600,sub:'carts link the farm, village, mine & hill'},
              {flag:'bl_clock',name:'The Clocktower',price:420,sub:'the old clocktower chimes the hour over the plaza'},
              {flag:'bl_hive',name:'Beehive Box',price:120,sub:'honey from your own bees, every morning'},
              {flag:'bl_scare',name:'Scarecrow',price:80,sub:'no more crows raiding your field'},
@@ -4375,9 +4375,10 @@ function interact(){
     else toast('🌤 You sit a while — the valley hums below. Come back at sunset (17-19h) for a real treat.');
     save();return}
   if(m.kind==='cart'){
-    const dests={farm:[['village','Village gate',3.5,17.5],['cave','Old Mine',17.5,5.4]],
-                 village:[['farm','Farm gate',52.5,19.4],['cave','Old Mine',17.5,5.4]],
-                 cave:[['farm','Farm gate',52.5,19.4],['village','Village gate',3.5,17.5]]}[G.map]||[];
+    const dests={farm:[['village','Village gate',3.5,17.5],['cave','Old Mine',17.5,5.4],['hill','Sunpetal Hill',3.5,18.4]],
+                 village:[['farm','Farm gate',52.5,19.4],['cave','Old Mine',17.5,5.4],['hill','Sunpetal Hill',3.5,18.4]],
+                 cave:[['farm','Farm gate',52.5,19.4],['village','Village gate',3.5,17.5],['hill','Sunpetal Hill',3.5,18.4]],
+                 hill:[['farm','Farm gate',52.5,19.4],['village','Village gate',3.5,17.5],['cave','Old Mine',17.5,5.4]]}[G.map]||[];
     G.shop={tab:'cart',dests};G.state='shop';uiBusy();
     document.getElementById('shop').style.display='flex';
     document.getElementById('shopname').textContent='🛒 Minecart';document.getElementById('shopgold').textContent='the old rails still run true…';
@@ -6406,12 +6407,7 @@ function interact(){
     G.inv.item.clay-=2;G.flags.kilnBusy=1;G.flags.kilnReady=G.day+1;
     sfx('sfx_cook');swing('basket',o.x,o.y);
     toast('🏺 Clay meets fire — glazed by morning');hudRender();save();return}
-  if(m.kind==='cart'){
-    if(G.flags.mineB3){sfx('sfx_walk');loadMap('cave4',3.5,11.0);toast('🛒 The cart screams down to The Deep…')}
-    else if(G.flags.mineB2){sfx('sfx_walk');loadMap('cave3',2.5,11.0);toast('🛒 The cart rattles down into the deep…')}
-    else if(G.flags.mineB1){sfx('sfx_walk');loadMap('cave2',2.5,11.0);toast('🛒 The cart rattles down to B1…')}
-    else toast('🛒 The old cart sits cold — the winch unlocks once you have walked the deep shaft');
-    return}
+  if(m.kind==='cart'){return}
   if(m.kind==='fund'){
     const TIERS=[[100,'four bloom planters'],[250,'festival banners'],[500,'a sun-mosaic around the well']];
     const t=G.flags.fundTier||0;
