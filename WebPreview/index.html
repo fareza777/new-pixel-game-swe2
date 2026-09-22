@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.43</div></div></div>
+    <div class="ver">v11.44</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3060,8 +3060,8 @@ function shipNow(id,all){
   sfx('sfx_coin');$('shopmsg').textContent='Packed '+n+' '+(isC?(CROPS[+id]||'crops'):ITEMS[id].name)+' — +'+g+'g on the morning cart.';
   shopRender();hudRender();save()}
 function shipEverything(){
-  let total=0,n=0;const fm=(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1);
-  for(const id in G.inv.crop){const q=G.inv.crop[id];if(q>0){total+=q*Math.round((CROP_PRICE[id]||0)*fm);n+=q;G.inv.crop[id]=0}}
+  let total=0,n=0;
+  for(const id in G.inv.crop){const q=G.inv.crop[id];if(q>0){total+=q*cropSellPrice(+id);n+=q;G.inv.crop[id]=0}}
   for(const id in G.inv.item){const q=G.inv.item[id];if(q>0&&ITEMS[id]&&ITEMS[id].sell){total+=q*itemSellPrice(id);n+=q;G.inv.item[id]=0}}
   if(!n){$('shopmsg').textContent='The bin is already packed and waiting for the cart.';return}
   G.gold+=total;G.stats.gold=(G.stats.gold||0)+total;G.flags.sold2=(G.flags.sold2||0)+n;sfx('sfx_success');
@@ -3162,10 +3162,10 @@ function shopRender(){
       r.innerHTML=(ik?`<canvas class="iico" width="30" height="30" data-k="${ik}"></canvas>`:'')+`<span>${gd.name} <span style="color:#998;font-size:11px">· ${gd.sub}</span></span><span class="pr">${owned?'owned':mp+'g'}${G.flags.mvip?' 🤝':''}</span>`;
       r.onclick=()=>buyMart(gd);rows.appendChild(r);}
   }else if(g.tab==='ship'){
-    let tn=0,tg=0;const fm=(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1);
-    for(const id in G.inv.crop){const q=G.inv.crop[id];if(q>0){tn+=q;tg+=q*Math.round((CROP_PRICE[id]||0)*fm)}}
-    for(const id in G.inv.item){const q=G.inv.item[id];if(q>0&&ITEMS[id]&&ITEMS[id].sell){tn+=q;tg+=q*ITEMS[id].sell}}
-    rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">📦 Pack goods for the morning cart — Sari settles the bill at dawn.'+(tn?' In the bin so far: <b>'+tn+' items · '+tg+'g</b>.':' The bin is empty — bring crops or finds.')+'</div>';
+    let tn=0,tg=0;
+    for(const id in G.inv.crop){const q=G.inv.crop[id];if(q>0){tn+=q;tg+=q*cropSellPrice(+id)}}
+    for(const id in G.inv.item){const q=G.inv.item[id];if(q>0&&ITEMS[id]&&ITEMS[id].sell){tn+=q;tg+=q*itemSellPrice(id)}}
+    rows.innerHTML='<div style="padding:6px;color:#ffd76e;font-size:12px">📦 Pack goods for the morning cart — Sari settles the bill at dawn. <span style="color:#8df58d">🔥 Demand: '+CROPS[demandCrop()]+' pays 1.5× today.</span>'+(tn?' In the bin so far: <b>'+tn+' items · '+tg+'g</b>.':' The bin is empty — bring crops or finds.')+'</div>';
     if(tn){const ar=document.createElement('div');ar.className='srow';
       ar.innerHTML='<span style="color:#ffd76e;font-weight:bold">📦 SHIP EVERYTHING <span style="color:#998;font-weight:normal;font-size:11px">· '+tn+' items in one go</span></span><span class="pr" style="background:#4a5a14">+'+tg+'g</span>';
       ar.onclick=()=>shipEverything();rows.appendChild(ar)}
@@ -3231,10 +3231,11 @@ function shopRender(){
       r.onclick=()=>buyDeco(d);rows.appendChild(r);}
   }else{
     let any=false;
+    rows.innerHTML='<div style="padding:6px;color:#8df58d;font-size:12px">🔥 Demand today: <b>'+CROPS[demandCrop()]+'</b> — Sari pays 1.5× for it.</div>';
     for(const id in G.inv.crop){if(G.inv.crop[id]<=0)continue;any=true;
       const cfr=(MAPS.farm.crop_frames[id]||[]);
       const r=document.createElement('div');r.className='srow';
-      r.innerHTML=(cfr.length?`<canvas class="iico" width="30" height="30" data-k="${cfr[cfr.length-1]}"></canvas>`:'')+`<span>${CROPS[id]||'Crop'} ×${G.inv.crop[id]}</span><span class="pr">sell ${cropSellPrice(id)}g</span><span class="pr" style="background:#4a3a14">all</span>`;
+      r.innerHTML=(cfr.length?`<canvas class="iico" width="30" height="30" data-k="${cfr[cfr.length-1]}"></canvas>`:'')+`<span>${CROPS[id]||'Crop'} ×${G.inv.crop[id]}${+id===demandCrop()?' <span style="color:#8df58d;font-size:11px">🔥</span>':''}</span><span class="pr">sell ${cropSellPrice(id)}g</span><span class="pr" style="background:#4a3a14">all</span>`;
       r.onclick=()=>sellCrop(+id);
       r.querySelectorAll('.pr')[1].onclick=e=>{e.stopPropagation();sellCropAll(+id)};rows.appendChild(r);}
     for(const id in G.inv.item){if((G.inv.item[id]||0)<=0||!ITEMS[id]||!ITEMS[id].sell)continue;any=true;
@@ -3532,7 +3533,8 @@ function buyFert(){
   $('shopmsg').textContent="Bought Fertilizer — it feeds the next seed you plant.";
   shopRender();hudRender();save();
 }
-function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1))}
+function demandCrop(){const K=Object.keys(CROP_PRICE);return +K[(G.day*5+season()*3)%K.length]}
+function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1)*(+id===demandCrop()?1.5:1))}
 const FISH_SELL={fish:1,kingfish:1,goldfish:1,moonfish:1,koi:1,trout:1,sardine:1,carp:1,catfish:1};
 function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0;
   if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1));
@@ -3671,7 +3673,7 @@ function toggleBag(v){
     let any=false;h+='<div class="itemgrid">';
     for(const id in G.inv.crop)if(G.inv.crop[id]>0){any=true;
       const c2=(MAPS.farm.crop_frames[id]||[]);
-      h+=`<div class="itemcard sel-eat" data-eat="${id}"><canvas class="iico" width="40" height="40" data-k="${c2[c2.length-1]||''}"></canvas><span class="icname">${CROPS[id]}</span><span class="icct">x${G.inv.crop[id]}</span><span class="icsub">eat +18⚡ · sell ${CROP_PRICE[id]||'?'}g</span></div>`}
+      h+=`<div class="itemcard sel-eat" data-eat="${id}"><canvas class="iico" width="40" height="40" data-k="${c2[c2.length-1]||''}"></canvas><span class="icname">${CROPS[id]}</span><span class="icct">x${G.inv.crop[id]}</span><span class="icsub">eat +18⚡ · sell ${cropSellPrice(+id)}g${+id===demandCrop()?' 🔥':''}</span></div>`}
     h+='</div>';
     if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
     h+='<div class="invsec" style="color:#998;font-size:10px">tap a crop to eat it (+18⚡) · give crops to villagers for ♥</div>';
