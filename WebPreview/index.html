@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v6.13</div></div></div>
+    <div class="ver">v6.14</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -528,6 +528,8 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_silo){G.objs.push({key:'silo',x:60.5,y:9.0,meta:{kind:'deco',name:'Feed Silo'},fid:'bl_silo',hx:60.5,hy:9,ph:0});
     G.solid.add('60,7');G.solid.add('60,8');G.solid.add('61,7');G.solid.add('61,8')}
   if(id==='farm'&&G.flags.bl_owlbox)G.objs.push({key:'owlbox',x:28.5,y:14.5,anchor:'bc',meta:{kind:'deco',name:'an owl nesting box — soft hoots inside'},fid:'bl_owlbox',hx:28.5,hy:14.5,ph:0});
+  if(id==='farm'&&G.clock/60>=6&&G.clock/60<8&&G.weather!=='rain'&&G.weather!=='storm'&&!G.objs.some(o=>o.fid==='bdv0'))
+    G.objs.push({key:'songbird_down0',x:15.5,y:10.5,anchor:'bc',meta:{kind:'bdoves',name:'two doves cooing on the barn ridge'},fid:'bdv0',hx:15.5,hy:10.5,ph:0});
   if(id==='farm'&&season()===1&&G.clock/60>=18&&G.clock/60<21&&G.weather!=='rain'&&G.weather!=='storm'&&!G.objs.some(o=>o.fid==='ckt0'))
     G.objs.push({key:'grass',x:36.5,y:15.5,anchor:'c',meta:{kind:'crdusk',name:'the cricket chorus, tuning in the dusk'},fid:'ckt0',hx:36.5,hy:15.5,ph:0});
   if(id==='farm'&&G.clock/60>=19&&G.clock/60<21&&G.weather!=='rain'&&G.weather!=='storm'&&!G.objs.some(o=>o.fid==='csw0'))
@@ -2951,7 +2953,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight','wash','libr','bath','wgoose','dbell','swing2','hollow','wstone','scnote','icelant','swindow','brub','pframe','stkite','sdswap','njr','murm','ttale','fawn','batf','gauge','lick','fsign','baitbx','frostfl','clouds','ferret','cidbar','qbee','incat','hshoe','kettle','sough','choir','dchorus','csip','skips','nook','fstar','rowboat','gosl','potluck','skylark','chick','snail','flyover','tally','earlyloaf','omist','sunspot','cbeam','rook','rswing','leaprun','glowcap','vbell','owlhunt','gworm','heron','stepsit','msnack','kwin','wishpuff','abob','whgate','robinp','lmoth','tailsup','cdrip','chswift','stormfox','lampr','vanecrow','coach','hsettle','wharp','swall','foldc','crdusk','daylily','gclock','btnjar','foglamp','ssmoke','oladd','cglass','spools','washb','wipe','braid','marebr','sawdust','swsign','rgwind'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight','wash','libr','bath','wgoose','dbell','swing2','hollow','wstone','scnote','icelant','swindow','brub','pframe','stkite','sdswap','njr','murm','ttale','fawn','batf','gauge','lick','fsign','baitbx','frostfl','clouds','ferret','cidbar','qbee','incat','hshoe','kettle','sough','choir','dchorus','csip','skips','nook','fstar','rowboat','gosl','potluck','skylark','chick','snail','flyover','tally','earlyloaf','omist','sunspot','cbeam','rook','rswing','leaprun','glowcap','vbell','owlhunt','gworm','heron','stepsit','msnack','kwin','wishpuff','abob','whgate','robinp','lmoth','tailsup','cdrip','chswift','stormfox','lampr','vanecrow','coach','hsettle','wharp','swall','foldc','crdusk','daylily','gclock','btnjar','foglamp','ssmoke','oladd','cglass','spools','washb','wipe','braid','marebr','sawdust','swsign','rgwind','bdoves'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3505,6 +3507,10 @@ function interact(){
     else{sfx('sfx_deny');
       startDlg(o,['🪿 HONK. HONK HONK.','Honk spreads her wings to their full, terrifying ten-inch span.','Perhaps an offering? Sweet corn, or bread.'])}
     return}
+  if(m.kind==='bdoves'){
+    if(G.flags['bd'+G.day]){toast('🕊 They’re off cooing somewhere else');return}
+    G.flags['bd'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+1);sfx('sfx_bird');
+    toast('🕊 Coo-coo-coo — the barn’s morning hymn, gentle as smoke. (+1⚡)');return}
   if(m.kind==='rgwind'){
     if(G.flags['rw'+G.day]){toast('🌬 The wind’s said what it had to say');return}
     G.flags['rw'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+1);sfx('sfx_wind');
@@ -5603,6 +5609,7 @@ function promptScan(){
       else if(m.kind==='laundry')txt=G.weather==='wind'?(G.flags['lau'+G.day]?'🧺 The line is quiet now':BTN+' · 🧺 Check the laundry line'):'🧺 The laundry line';
       else if(m.kind==='ballot')txt=BTN+' · 🗳 Cast your vote';
       else if(m.kind==='goose')txt=G.flags.goose?BTN+' · 🪿 Honk — your goose friend':((G.inv.item.c26||0)+(G.inv.item.bread||0))>0?BTN+' · 🪿 Offer Honk a snack':BTN+' · 🪿 Honk the goose — approach with care';
+      else if(m.kind==='bdoves')txt=G.flags['bd'+G.day]?'🕊 The ridge is empty — they’ve flown to work':BTN+' · 🕊 Hear the barn doves coo';
       else if(m.kind==='rgwind')txt=G.flags['rw'+G.day]?'🌬 The ridge keeps singing without you':BTN+' · 🌬 Face the ridge wind';
       else if(m.kind==='swsign')txt=G.flags['sg'+G.day]?'🏮 The sign hangs quiet for now':BTN+' · 🏮 Hear the inn sign creak';
       else if(m.kind==='sawdust')txt=G.flags['sd'+G.day]?'🪵 The sawdust’s already scented your morning':BTN+' · 🪵 Breathe the fresh-cut pine';
