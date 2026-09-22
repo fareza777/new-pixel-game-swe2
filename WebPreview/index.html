@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.81</div></div></div>
+    <div class="ver">v4.82</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -718,6 +718,8 @@ function loadMap(id,sx,sy){
     [['pip',7.5,5.6],['hazel',9.5,5.6]].forEach((np,i)=>{const pid=np[0];
       if(!G.objs.some(o=>o.fid==='ck_'+pid))
         G.objs.push({key:pid+'_down0',x:np[1],y:np[2],anchor:'bc',meta:{kind:'npc',id:pid,name:VNAME[pid],portrait:pid+'_portrait'},fid:'ck_'+pid,hx:np[1],hy:np[2],ph:i})});
+  if(id==='inn'&&!G.objs.some(o=>o.fid==='gbk0'))
+    G.objs.push({key:'gpage',x:7.5,y:6.2,anchor:'bc',meta:{kind:'gbk',name:'the Lantern\u2019s guestbook, spine worn soft'},fid:'gbk0',hx:7.5,hy:6.2,ph:0});
   if(id==='inn'&&G.day%28===0&&G.clock/60>=18&&G.clock/60<22){
     if(!G.objs.some(o=>o.fid==='fst0'))
       G.objs.push({key:'feast',x:8.0,y:4.2,anchor:'bc',meta:{kind:'feast',name:'the Founder’s Feast table'},fid:'fst0',hx:8.0,hy:4.2,ph:0,w:48});
@@ -2612,7 +2614,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3911,6 +3913,16 @@ function interact(){
     if(!n){toast('📦 Shipping bin — bring crops or finds here to sell instantly');return}
     G.gold+=total;G.stats.gold+=total;sfx('sfx_coin');swing('basket',o.x,o.y);
     toast('📦 Shipped '+n+' items → +'+total+'g');hudRender();save();return}
+  if(m.kind==='gbk'){
+    const GB=[
+      ['— “Arrived muddy. Left at dawn a better man. The stew helped.” — a peddler, spring','Hazel has written back in the margin: “COME BACK HUNGRY.”'],
+      ['— “Caught nothing in three days. The innkeeper fed me anyway. Fish forgive me.” — an angler','Beneath, in Fen\u2019s hand: “The river owes you one. Try the north bend.”'],
+      ['— “Asked for the cold rooms. There are no cold rooms in Sunpetal.” — a noble lady, summer','And below: “She tipped in pearls. WE DO NOT TAKE PEARLS. (We took the pearls.)”'],
+      ['— “Passed through in a storm. The lantern in the window looked like my mother\u2019s porch light.” — a sailor','Hazel\u2019s note: “That is exactly what it is for.”']];
+    const wk=Math.floor(G.day/7)%GB.length;
+    if(G.flags['gbk'+Math.floor(G.day/7)]){startDlg(o,['📖 The guestbook — a hundred signatures of people who found the light on.','Your own page already dries in the middle.']);return}
+    G.flags['gbk'+Math.floor(G.day/7)]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_success');
+    startDlg(o,['📖 The Lantern\u2019s guestbook, fat with years.',GB[wk][0],GB[wk][1],'You add your own hand: “Grandfather\u2019s farm — still farming.” (+5⚡)']);return}
   if(m.kind==='pstock'){
     if(G.flags['pseld'+G.day]){toast('🧪 That\u2019s the last of today\u2019s batch — next Bloomday');return}
     if(G.gold<15){toast('Not enough gold (15g)');return}
@@ -4841,6 +4853,7 @@ function promptScan(){
       else if(m.kind==='rboat')txt=G.flags['regatta'+G.day]?'⛵ The regatta is done for today':BTN+' · ⛵ Race Pip\u2019s boat downstream';
       else if(m.kind==='fboard')txt=BTN+' · 🎣 Read the catch board';
       else if(m.kind==='vintage')txt=BTN+' · 🍾 A dusty bottle…';
+      else if(m.kind==='gbk')txt=BTN+' · 📖 The guestbook';
       else if(m.kind==='pstock')txt=BTN+' · 🧪 Buy a tonic (15g) — Mira\u2019s blend';
       else if(m.kind==='arack')txt=G.flags.arackUntil?(G.day>=G.flags.arackUntil?BTN+' · 🧀 Collect the aged preserves':BTN+' · 🧀 Still aging… ('+(G.flags.arackUntil-G.day)+'d)'):BTN+' · 🧀 Age a preserve (3 days)';
       else if(m.kind==='jar')txt=G.jarReady&&G.jarReady<=G.day?BTN+' · 🍓 Collect the preserves':(G.jarBusy?BTN+' · 🫙 Still steeping…':BTN+' · 🫙 Jar a fruit or herb');
