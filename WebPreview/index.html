@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.99</div></div></div>
+    <div class="ver">v11.00</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -732,6 +732,22 @@ function loadMap(id,sx,sy){
   // after the epilogue the bloom stays at the gate — a morning touch, every day
   else if(id==='farm'&&G.flags.epiDone&&!G.objs.some(o=>o.fid==='sunbloom')){
     G.objs.push({key:'crop22_5',x:26.5,y:15.5,anchor:'bc',meta:{kind:'sunbloom',name:'the Sunpetal — blooming where you planted it'},fid:'sunbloom',hx:26.5,hy:15.5,ph:0});
+  }
+  // TRUE ENDING — every shrine bloomed + every heart won → Gus's farewell at dawn
+  if(id==='farm'&&G.flags.festival&&G.flags.valleyBloom&&!G.flags.trueEnd
+    &&['bram','sari','vilo','nana','mira','tom','fen','pip','wren','luna','hazel','cora','elle','mart','elm','gus'].every(nid=>G.flags['he5_'+nid])){
+    G.flags.trueEnd=1;G.stats.quests++;
+    G.objs.push({key:'ghost',x:21.5,y:12.5,anchor:'bc',meta:{kind:'npc',id:'gus',name:'Old Gus',portrait:'ghost_portrait'},fid:'gustrue',hx:21.5,hy:12.5,ph:0});
+    setTimeout(()=>{if(G.map!=='farm'||G.state!=='play')return;
+      G.inv.item.crown=(G.inv.item.crown||0)+1;collect('crown');sfx('sfx_magic');
+      startDlg({meta:{id:'gus',name:'Old Gus',portrait:'ghost_portrait'}},[
+        "So this is what the valley looks like when it's finished.",
+        "Every shrine awake. Every heart mended. Every seed my old hands planted — grown taller than I ever stood.",
+        "You didn't just inherit the farm, kid. You inherited the whole valley — and you made it bloom.",
+        "Take this: the Sunpetal Crown. It belonged to the valley's first farmer. It's waited a hundred years for you.",
+        "(👑 TRUE ENDING — the Sunpetal Crown is yours. The valley blooms forever, and so does your story. Thank you for playing.)"
+      ]);
+    },1400);
   }
   // THE SUNPETAL LEGACY — five forgotten shrine beds wait in the wilds (post-festival quest)
   const SBED={meadow:[3.5,11.5],falls:[18.5,20.5],escarp:[3.5,7.5],reedbed:[3.5,7.5],cave5:[10.5,2.5]};
@@ -1895,9 +1911,12 @@ function questList(){
     const n=IDS.filter(id=>f['he5_'+id]).length;if(n<16)L.push('💛 Heart of the Valley: reach 5♥ with every neighbor ('+n+'/16)')}
   if(f.festival&&!f.valleyBloom){const n=['meadow','falls','escarp','reedbed','cave5'].filter(mn=>f['sbed_'+mn]).length;
     L.push('✦ The Sunpetal Legacy: plant seeds at the 5 wild shrines ('+n+'/5)')}
+  if(f.festival&&f.valleyBloom&&!f.trueEnd){const n=['bram','sari','vilo','nana','mira','tom','fen','pip','wren','luna','hazel','cora','elle','mart','elm','gus'].filter(id=>f['he5_'+id]).length;
+    L.push('👑 The Last Petal: every heart won ('+n+'/16) — then meet the golden dawn at your gate')}
   return L}
 function questText(){
   const f=G.flags;
+  if(f.trueEnd)return ["Bloom Eternal","The valley blooms forever — wander, farm, and enjoy every dawn"];
   if(f.festival)return ["The Festival Returns","Sunpetal Valley blooms again — keep farming & enjoy the valley!"];
   if(f.sunpetalBloom)return ["Festival of Light","Show Mayor Bram the blooming Sunpetal!"];
   if(f.sunpetalPlanted)return ["Festival of Light","Water the Sunpetal & let it grow overnight"];
