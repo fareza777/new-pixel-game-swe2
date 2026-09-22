@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.74</div></div></div>
+    <div class="ver">v4.75</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2864,6 +2864,9 @@ function interact(){
     G.sta=Math.min(100+(G.maxsta||0),G.sta+(deep?55:40));sfx('sfx_harvest');
     if(!deep&&G.flags.soakCnt>=10){G.flags.deepVein=1;G.maxsta=(G.maxsta||0)+5;sfx('sfx_success');
       startDlg(o,['♨ The water churns — brighter, warmer than ever before.','Somewhere below, an old mineral vein opens. The spring glows faintly gold.','[Deep Vein awakened: soaks restore +55 energy and add +5 max stamina — forever]']);save();return}
+    if(fullmoon()){
+      G.flags.luckyDay=G.day+1;G.sta=Math.min(100+(G.maxsta||0),G.sta+20);sfx('sfx_wish');
+      toast('♨🌕 Steam rises silver into the full moon — the spring feels bottomless tonight. [Moonlit Blessing: tomorrow is a lucky day]');save();return}
     toast(deep?"♨ The deep vein hums beneath you — every muscle unknots. (+55 energy)":"♨ Ahh… the spring melts the day's aches away. (+40 energy)");return}
   if(m.kind==='dog'){
     if(G.petDay['dog']===G.day){
