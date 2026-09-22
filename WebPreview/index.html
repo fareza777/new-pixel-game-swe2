@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.78</div></div></div>
+    <div class="ver">v4.79</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -439,6 +439,8 @@ function loadMap(id,sx,sy){
   if(id==='village'&&nighth)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='npc'));
   if(!nighth)G.objs=G.objs.filter(o=>!o.nightOnly);
   if(G.day%7!==0&&!(G.weather==='fog'&&G.clock/60<13))G.objs=G.objs.filter(o=>!o.martOnly);
+  if(id==='cellar'&&!G.objs.some(o=>o.fid==='ark0'))
+    G.objs.push({key:'shelf_01',x:5.6,y:1.8,anchor:'bc',meta:{kind:'arack',name:'the aging rack — darkness and patience do the work'},fid:'ark0',hx:5.6,hy:1.8,ph:0});
   if(id==='cellar'&&!G.flags.vintage&&!G.objs.some(o=>o.fid==='vnt0'))
     G.objs.push({key:'cider',x:9.6,y:2.4,anchor:'bc',meta:{kind:'vintage',name:'a dusty bottle behind the preserves'},fid:'vnt0',hx:9.6,hy:2.4,ph:0});
   if(id==='mirahouse'&&G.flags.remedy&&G.day%7===2&&G.forageDay['mirahouse|tonic']!==G.day&&!G.objs.some(o=>o.fid==='ton0'))
@@ -2599,7 +2601,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3898,6 +3900,16 @@ function interact(){
     if(!n){toast('📦 Shipping bin — bring crops or finds here to sell instantly');return}
     G.gold+=total;G.stats.gold+=total;sfx('sfx_coin');swing('basket',o.x,o.y);
     toast('📦 Shipped '+n+' items → +'+total+'g');hudRender();save();return}
+  if(m.kind==='arack'){
+    if(G.flags.arackUntil&&G.day>=G.flags.arackUntil){
+      const it=G.flags.arackItem;G.flags.arackUntil=0;G.inv.item[it]=(G.inv.item[it]||0)+2;collect(it);sfx('sfx_success');
+      toast('🧀 The rack yields TWO jars of '+ITEMS[it].name+' — patience doubles the harvest');hudRender();save();return}
+    if(G.flags.arackUntil){toast('🧀 Still aging — '+(G.flags.arackUntil-G.day)+' days to go');return}
+    const AGING=['jam','custard','chowder','htea','tart','steg','csoup','cpie','cheese','stew','grill','salad','pie','apie','hcake','bread','fsalad','mpud','acornsoup','gjuice','sorbet','htoast','mayo','cider'];
+    const pick=AGING.find(k=>(G.inv.item[k]||0)>0);
+    if(!pick){toast('🧀 Lay a cooked dish or preserve here — the dark does the rest (3 days → doubles)');return}
+    G.inv.item[pick]--;G.flags.arackItem=pick;G.flags.arackUntil=G.day+3;sfx('sfx_cook');
+    toast('🧀 '+ITEMS[pick].name+' settles into the cool dark — ready day '+(G.day+3));hudRender();save();return}
   if(m.kind==='vintage'){
     G.flags.vintage=1;const bi=G.objs.indexOf(o);if(bi>=0)G.objs.splice(bi,1);
     G.inv.item.vintage=(G.inv.item.vintage||0)+1;collect('vintage');sfx('sfx_wish');
@@ -4813,6 +4825,7 @@ function promptScan(){
       else if(m.kind==='rboat')txt=G.flags['regatta'+G.day]?'⛵ The regatta is done for today':BTN+' · ⛵ Race Pip\u2019s boat downstream';
       else if(m.kind==='fboard')txt=BTN+' · 🎣 Read the catch board';
       else if(m.kind==='vintage')txt=BTN+' · 🍾 A dusty bottle…';
+      else if(m.kind==='arack')txt=G.flags.arackUntil?(G.day>=G.flags.arackUntil?BTN+' · 🧀 Collect the aged preserves':BTN+' · 🧀 Still aging… ('+(G.flags.arackUntil-G.day)+'d)'):BTN+' · 🧀 Age a preserve (3 days)';
       else if(m.kind==='jar')txt=G.jarReady&&G.jarReady<=G.day?BTN+' · 🍓 Collect the preserves':(G.jarBusy?BTN+' · 🫙 Still steeping…':BTN+' · 🫙 Jar a fruit or herb');
       else if(m.kind==='cart')txt=BTN+' · 🛒 '+(G.flags.mineB2?'Ride the cart to B2':(G.flags.mineB1?'Ride the cart to B1':'The cart is cold — reach the deep mine first'));
       else if(m.kind==='fund')txt=BTN+' · 🏛 Beautification Fund ('+[0,100,250,500][(G.flags.fundTier||0)+1]||'done'+'g)';
