@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.41</div></div></div>
+    <div class="ver">v4.42</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -4233,6 +4233,13 @@ function render(ts){
     ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(220,-26);ctx.lineTo(220,26);ctx.closePath();ctx.fill();
     ctx.restore();
     ctx.fillStyle='#fff3c8';ctx.beginPath();ctx.arc(bx,by,3*SCALE,0,7);ctx.fill()}
+  // farmhouse porchlight after dusk
+  if(G.map==='farm'&&(G.clock/60>=19||G.clock/60<5)){
+    const px=camX+42*T*SCALE,py=camY+5.6*T*SCALE;
+    const g2=ctx.createRadialGradient(px,py,4,px,py,60*SCALE);
+    g2.addColorStop(0,'rgba(255,190,90,.5)');g2.addColorStop(1,'rgba(255,190,90,0)');
+    ctx.fillStyle=g2;ctx.beginPath();ctx.arc(px,py,60*SCALE,0,7);ctx.fill();
+    ctx.fillStyle='#ffd98a';ctx.beginPath();ctx.arc(px,py,2.5*SCALE,0,7);ctx.fill()}
   // meteor shower on the hill every 9th night
   if(G.map==='hill'&&!G.L.indoor&&G.day%28===24&&(G.clock/60>=20||G.clock/60<4)){
     const cx=(ts*0.08)%(cv.width*1.6)-cv.width*.3;
