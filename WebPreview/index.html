@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.15</div></div></div>
+    <div class="ver">v11.16</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -4009,6 +4009,10 @@ function interact(){
         startDlg(o,['"I brought a kettle, a quilt, and a heart that chose you, love."',
           m.name+' touches the ring. "The chapel bell rang for us — the whole valley heard."',
           '"Find me mornings for a kiss — and most days I\u2019ll have lunch packed for you."']);return}
+      if(G.day>(G.flags.proposeDay||0)&&(G.day-(G.flags.proposeDay||0))%28===0&&!G.flags['anni'+G.day]){
+        G.flags['anni'+G.day]=1;G.inv.item=G.inv.item||{};G.inv.item.bq=(G.inv.item.bq||0)+1;collect('bq');G.hearts[m.id]=10;
+        startDlg(o,['"You remembered — our anniversary. Seasons already, and I still get butterflies."',
+          '"Take this, love — the first bouquet I ever pressed was meant for you. (+1 Moonbloom Bouquet)"']);save();return}
       if(G.spouseDay!==G.day){G.spouseDay=G.day;G.hearts[m.id]=10;
         G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
         const pk=G.day%3===0;
@@ -6711,6 +6715,9 @@ function dayTick(){
     G.goldEgg=G.coopEggs>0&&Math.random()<.06;   // a happy hen lays a golden egg
     {const dry=Object.keys(G.crops.farm||{}).filter(k=>{const c=G.crops.farm[k];return c.crop>0&&!c.watered}).length;
      const bits=[];
+     if(G.spouse&&Math.random()<0.55){let wn=0;
+       for(const k in G.crops.farm||{}){const c=G.crops.farm[k];if(c.crop>0&&!c.watered&&wn<4){c.watered=true;wn++}}
+       if(wn)bits.push('💛 '+(VNAME[G.spouse]||'Your spouse')+' watered '+wn+' beds for you')}
      if(dry>0)bits.push('💧 '+dry+' crop'+(dry>1?'s':'')+' thirsty');
      if(G.flags.rooster)bits.unshift('🐓 The rooster greets the dawn');
      if(G.flags.fjar){G.sta=Math.min(100+(G.maxsta||0),G.sta+4);bits.unshift('🏮 slept softly by firefly light (+4⚡)')}
