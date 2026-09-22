@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.67</div></div></div>
+    <div class="ver">v4.68</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1409,6 +1409,9 @@ function talkTo(o){
           toast('🪵 Deal struck — a cord of oak arrives by evening. Take a bundle each morning')}},
         {label:'Not today',cb:()=>toast('Elm shrugs. “Offer stands till the frost does.”')}]);
     return}
+  if(m.id==='mira'&&G.clock/60>=7&&G.clock/60<9&&!f['rounds'+G.day]&&G.map==='village'){
+    f['rounds'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);
+    lines.unshift('Mira pauses mid-round, basket on her arm. “Stand still — pulse check.”','“Strong. Steady. Eat a vegetable today and we\u2019ll call it a perfect bill of health.” (+6⚡)')}
   if(m.id==='luna'&&G.map==='hill'&&(G.clock/60>=21||G.clock/60<3)&&!f['toast'+G.day]){
     f['toast'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);
     G.hearts.luna=Math.min(10,(G.hearts.luna||0)+1);sfx('sfx_talk');
