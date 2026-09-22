@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.40</div></div></div>
+    <div class="ver">v11.41</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -7145,12 +7145,20 @@ function loop(ts){
         o.anim={frames:['wren_'+['down','left','right','up'][o.d]+'0','wren_'+['down','left','right','up'][o.d]+'1','wren_'+['down','left','right','up'][o.d]+'2'].filter(f=>IMG[f]),fps:5}}
       else o.anim={frames:['wren_down0'],fps:1}}
     if(m.kind==='dog'&&m.wander){o.ph-=dt;
-      if(o.ph<=0){o.ph=1.2+Math.random()*2.5;o.d=Math.floor(Math.random()*5)}
-      if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
-        const nx=o.x+dx*1.4*dt,ny=o.y+dy*1.4*dt;
-        if(nx>22&&nx<31&&ny>11&&ny<17&&Math.hypot(nx-(o.hx||o.x),ny-(o.hy||o.y))<4.5&&!blocked(nx,ny)){o.x=nx;o.y=ny}
-        o.anim={frames:['dog_'+['down','left','right','up'][o.d]+'0','dog_'+['down','left','right','up'][o.d]+'1','dog_'+['down','left','right','up'][o.d]+'2'].filter(f=>IMG[f]),fps:7}}
-      else o.anim={frames:['dog_down0'],fps:1}}
+      const fdc2=Math.hypot(G.hero.x-o.x,G.hero.y-o.y);
+      if(G.petDay['dog']===G.day&&fdc2>2&&fdc2<16){
+        const dx2=(G.hero.x-o.x)/fdc2,dy2=(G.hero.y-o.y)/fdc2;
+        const nx2=o.x+dx2*2.2*dt,ny2=o.y+dy2*2.2*dt;
+        if(!blocked(nx2,ny2)){o.x=nx2;o.y=ny2}
+        const dd2=Math.abs(dx2)>Math.abs(dy2)?(dx2<0?'left':'right'):(dy2<0?'up':'down');
+        o.anim={frames:['dog_'+dd2+'0','dog_'+dd2+'1','dog_'+dd2+'2'].filter(f=>IMG[f]),fps:8}}
+      else{
+        if(o.ph<=0){o.ph=1.2+Math.random()*2.5;o.d=Math.floor(Math.random()*5)}
+        if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
+          const nx=o.x+dx*1.4*dt,ny=o.y+dy*1.4*dt;
+          if(nx>22&&nx<31&&ny>11&&ny<17&&Math.hypot(nx-(o.hx||o.x),ny-(o.hy||o.y))<4.5&&!blocked(nx,ny)){o.x=nx;o.y=ny}
+          o.anim={frames:['dog_'+['down','left','right','up'][o.d]+'0','dog_'+['down','left','right','up'][o.d]+'1','dog_'+['down','left','right','up'][o.d]+'2'].filter(f=>IMG[f]),fps:7}}
+        else o.anim={frames:['dog_down0'],fps:1}}}
     if(m.kind==='goose'&&m.wander){o.ph-=dt;
       if(o.ph<=0){o.ph=1.6+Math.random()*3;o.d=Math.floor(Math.random()*5)}
       if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
