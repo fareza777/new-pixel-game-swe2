@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.06</div></div></div>
+    <div class="ver">v11.07</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3582,8 +3582,13 @@ function toggleBag(v){
     if(G.flags.rex)h+=`<div class="invrow"><span>🐕 Rex</span><span class="ct" style="margin-left:auto">${G.petDay['dog']===G.day?'petted ♥':'sniffing about'}</span></div>`;
     if(G.flags.metWren)h+=`<div class="invrow"><span>🌿 Wren</span><span class="ct" style="margin-left:auto">${(G.hearts.wren||0)}♥ · ${G.flags.wrenDone?'starflowers pressed':'waiting on blooms'}</span></div>`;
     if(G.flags.metLuna)h+=`<div class="invrow"><span>🌙 Luna</span><span class="ct" style="margin-left:auto">${(G.hearts.luna||0)}♥ · ${G.flags.lunaDone?'star-metal found':'charting the sky'}</span></div>`;
-    h+='<div class="invrow" style="color:#e8c96a"><span>📖 Collection — '+Object.keys(G.col).length+' discovered</span></div>';
-    for(const k of Object.keys(G.col))h+=`<div class="invrow" style="opacity:.85"><span style="padding-left:14px">${colName(k)}</span><span class="ct" style="margin-left:auto">×${G.col[k]}</span></div>`;
+    h+='<div class="invsec">COLLECTION — '+Object.keys(G.col).length+' discovered</div>';
+    h+='<div class="itemgrid">';
+    for(const k of Object.keys(G.col)){
+      const isC=k[0]==='c'&&CROPS[+k.slice(1)],cfr=isC?(MAPS.farm.crop_frames[+k.slice(1)]||[]):null;
+      const ik=isC?(cfr.length?cfr[cfr.length-1]:''):((ITEMS[k]||{}).icon||k);
+      h+=`<div class="itemcard"><canvas class="iico" width="40" height="40" data-k="${ik}"></canvas><span class="icname">${colName(k)}</span><span class="icct">x${G.col[k]}</span></div>`}
+    h+='</div>';
     h+='<div class="invsec">VALLEY DEEDS</div>';
     if(Math.random()<0.22){
     const DR=["💭 You dreamt of a sunflower the size of the barn, humming.",
