@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.18</div></div></div>
+    <div class="ver">v11.19</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -701,6 +701,10 @@ function loadMap(id,sx,sy){
       G.objs.push({key:'pip_down0',x:tIn?9.5:12.5,y:tIn?5:10.5,anchor:'bc',meta:{kind:'tod',name:'little Sunny, chasing butterflies'},fid:'kid0',hx:tIn?9.5:12.5,hy:tIn?5:10.5,ph:0});
   }else if(id==='house'&&G.flags.kid&&!G.objs.some(o=>o.fid==='kid0'))
     G.objs.push({key:'basket',x:6.5,y:2.6,anchor:'bc',meta:{kind:'kid',name:'little Sunny, asleep in the bassinet'},fid:'kid0',hx:6.5,hy:2.6,ph:0});
+  if(id==='house'&&G.flags.bl_famroom&&!G.objs.some(o=>o.fid==='fam0'))
+    G.objs.push({key:'rug_01',x:4.4,y:4.6,anchor:'bc',meta:{kind:'deco',name:'a soft play rug, scattered with wooden toys'},fid:'fam0',hx:4.4,hy:4.6,ph:0},
+      {key:'shelf_01',x:3.4,y:2.2,anchor:'bc',meta:{kind:'deco',name:'a toy shelf — tiny carved animals in a row'},fid:'fam1',hx:3.4,hy:2.2,ph:0},
+      {key:'crate_01',x:5.4,y:2.2,anchor:'bc',meta:{kind:'deco',name:'the family toy chest — a hoard of blocks'},fid:'fam2',hx:5.4,hy:2.2,ph:0});
   if(G.spouse&&!G.objs.some(o=>o.fid==='spw0')){
     const spid=G.spouse,spk=(spid==='mira'?'npc5':spid==='fen'?'npc20':spid),hh=G.clock/60;
     const spm={kind:'npc',id:spid,name:VNAME[spid]||spid,portrait:spk+'_portrait',spouse:1};
@@ -3333,7 +3337,8 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_bell',name:'The Great Bell',price:500,ore:3,sub:'needs 3 ore + the clocktower — a bronze voice for the whole valley'},
              {flag:'bl_lite',name:'Pearl Isle Lighthouse',price:600,ore:3,sub:'needs 3 ore — a beacon on Tom\u2019s islet; pearls roll in with the tide'},
              {flag:'bl_gold',name:'Gilded Toolset',price:500,dia:3,sub:'needs Steel + 3 raw diamonds — a 3×3 sweep, chores cost 3 less energy'},
- {flag:'bl_ring',name:'Sunpetal Ring',price:1200,sub:'Elder Tree heartwood, carved over three nights — for the one whose heart you hold (10♥)'}];
+ {flag:'bl_ring',name:'Sunpetal Ring',price:1200,sub:'Elder Tree heartwood, carved over three nights — for the one whose heart you hold (10♥)'},
+ {flag:'bl_famroom',name:'Family Room',price:2500,sub:'A snug room off the kitchen — crib nook, toy shelf, a table set for three (needs a spouse)'}];
 function buyBuild(gd){
   const f=G.flags;
   if(gd.flag==='bl_statue'&&!f.gwatch){toast('Cora: "Find all of the founder\u2019s journal pages first."');return}
@@ -3341,6 +3346,7 @@ function buyBuild(gd){
   if(gd.flag==='bl_steel'&&!f.copper){$('shopmsg').textContent="Cora shakes her head: 'Steel needs copper fittings — get the Copper Toolset from Mart first.'";return}
   if(gd.flag==='bl_bell'&&!f.bl_clock){$('shopmsg').textContent="Cora taps the plan: 'The bell hangs IN the clocktower — build that first.'";return}
   if(gd.flag==='bl_gold'&&!f.bl_steel){$('shopmsg').textContent="Cora turns the sketch over: 'Gilding goes ON steel — bring me the Steel Toolset first.'";return}
+  if(gd.flag==='bl_famroom'&&!G.spouse){$('shopmsg').textContent="Cora winks: 'A family room needs a family — put a ring on someone first.'";return}
   if(gd.ore&&(G.inv.item.ore||0)<gd.ore){$('shopmsg').textContent="Cora needs "+gd.ore+" iron ore for that one.";return}
   if(gd.dia&&(G.inv.item.diamond||0)<gd.dia){$('shopmsg').textContent="Cora whistles: 'Gilded tools need "+gd.dia+" raw diamonds — the Geode Hall, deep in the mine, is your best bet.'";return}
   const bprice=f.journeyman?Math.ceil(gd.price*.9):gd.price;
@@ -4022,7 +4028,7 @@ function interact(){
           '"Take this, love — the first bouquet I ever pressed was meant for you. (+1 Moonbloom Bouquet)"']);save();return}
       if(G.spouseDay!==G.day){G.spouseDay=G.day;G.hearts[m.id]=10;
         G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
-        const pk=G.day%3===0;
+        const pk=G.day%3===0||G.flags.bl_famroom;
         if(pk){G.inv.item=G.inv.item||{};G.inv.item.lunch=(G.inv.item.lunch||0)+1;collect('lunch')}
         startDlg(o,[pk?'"Morning, love — I packed you a lunch. Don\u2019t skip meals out there." (+10⚡ · +Packed Lunch)':'"Morning, love. The farm looks better every day you work it." (+10⚡)']);hudRender();save();return}
       talkTo(o);return}
@@ -5243,12 +5249,17 @@ function interact(){
     toast('💜 One crush and the whole morning smells like Nana’s garden. (+1⚡)');return}
   if(m.kind==='kid'){
     if(G.flags['coo'+G.day]){toast('👶 Little Sunny sleeps, milk-drunk and warm.');return}
-    G.flags['coo'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_success');
-    toast('👶 You lift little Sunny — she grabs your finger and gurgles. (+5⚡)');return}
+    G.flags['coo'+G.day]=1;const kidE=G.flags.bl_famroom?8:5;G.sta=Math.min(100+(G.maxsta||0),G.sta+kidE);sfx('sfx_success');
+    toast('👶 You lift little Sunny — she grabs your finger and gurgles. (+'+kidE+'⚡)');return}
   if(m.kind==='tod'){
+    if(G.day-(G.flags.proposeDay||0)>=42&&!G.flags.firstword){
+      G.flags.firstword=1;
+      startDlg(o,['Sunny stops mid-wobble and looks straight up at you.',
+        '"...Da?" — then louder, arms out wide: "DA-DA!"',
+        'You scoop them up as the word echoes off the farmhouse walls. A sound you will never forget.']);save();return}
     if(G.flags['td'+G.day]){toast('👣 Sunny wobbles off after a dust mote, delighted.');return}
-    G.flags['td'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_success');
-    toast('👣 Sunny toddles into your legs and laughs: “Da! Da!” (+5⚡)');return}
+    G.flags['td'+G.day]=1;const todE=G.flags.bl_famroom?8:5;G.sta=Math.min(100+(G.maxsta||0),G.sta+todE);sfx('sfx_success');
+    toast('👣 Sunny toddles into your legs and laughs: “Da! Da!” (+'+todE+'⚡)');return}
   if(m.kind==='ccrib'){
     if(G.flags['cr'+G.day]){toast('🌽 Luck’s already been pocketed');return}
     G.flags['cr'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+1);sfx('sfx_rustle');
@@ -6722,7 +6733,7 @@ function dayTick(){
     G.goldEgg=G.coopEggs>0&&Math.random()<.06;   // a happy hen lays a golden egg
     {const dry=Object.keys(G.crops.farm||{}).filter(k=>{const c=G.crops.farm[k];return c.crop>0&&!c.watered}).length;
      const bits=[];
-     if(G.spouse&&Math.random()<0.55){let wn=0;
+     if(G.spouse&&Math.random()<(G.flags.bl_famroom?0.85:0.55)){let wn=0;
        for(const k in G.crops.farm||{}){const c=G.crops.farm[k];if(c.crop>0&&!c.watered&&wn<4){c.watered=true;wn++}}
        if(wn)bits.push('💛 '+(VNAME[G.spouse]||'Your spouse')+' watered '+wn+' beds for you')}
      if(dry>0)bits.push('💧 '+dry+' crop'+(dry>1?'s':'')+' thirsty');
