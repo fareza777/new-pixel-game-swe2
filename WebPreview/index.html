@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.09</div></div></div>
+    <div class="ver">v5.10</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -724,6 +724,10 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'bench_01',x:15.3,y:28.8,anchor:'c',meta:{kind:'swing2',name:'Nana’s porch swing'},fid:'swg0',hx:15.3,hy:28.8,ph:0});
   if(id==='village'&&G.clock/60>=17&&G.clock/60<20&&!G.flags['swgN'+G.day]&&!G.objs.some(o=>o.fid==='swg_n'))
     G.objs.push({key:'nana_down0',x:16.4,y:28.6,anchor:'bc',meta:{kind:'npc',id:'nana',name:'Nana',portrait:'nana_portrait'},fid:'swg_n',hx:16.4,hy:28.6,ph:0});
+  if(id==='village'&&G.day%28===10&&G.clock/60>=11&&G.clock/60<15){
+    [[26.5,12.5],[31.5,15.5],[35.5,12.8]].forEach((pt,i)=>{
+      if(!G.objs.some(o=>o.fid==='migr'+i))
+        G.objs.push({key:'butterfly',x:pt[0],y:pt[1],anim:{frames:['butterfly'],fps:6},meta:{kind:'critter',item:'monarch',name:'a migrating monarch',wander:1},fid:'migr'+i,hx:pt[0],hy:pt[1],ph:i*1.3});});}
   if(id==='village'&&G.day%28===14&&G.clock/60>=17&&G.clock/60<22){
     if(!G.objs.some(o=>o.meta&&o.meta.kind==='fbooth')){
       const SEAS_TREAT=[['blossomtea','🌸 Blossom Tea'],['grilledcorn','🌽 Festival Corn'],['pumpkinsoup','🎃 Harvest Soup'],['cocoa','☕ Spiced Cocoa']][season()];
@@ -4344,6 +4348,7 @@ function dayTick(){
       }
     hudRender();
     const WD=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
+    if(G.day%28===10)setTimeout(()=>toast('🦋 MONARCH MIGRATION — orange wings drift over the plaza until midafternoon'),3200);
     if(G.day%28===1&&G.day>1)setTimeout(()=>toast('🎉 FARM ANNIVERSARY — the valley marks another cycle since you arrived. Villagers greet you warmly today (+2♥ each)'),2600);
     if((G.day-1)%28===21)setTimeout(()=>toast('❄️ FIRST FROST — the valley wakes in lace. Frostberries ripen on the hill all season'),2600);
     toast('Day '+G.day+' · '+WD[(G.day-1)%7]+' · '+SEASON_ICON[season()]+' '+SEASON[season()]+(G.weather==='storm'?' — ⛈ a thunderstorm rattles the valley':G.weather==='rain'?' — 🌧 rain waters your crops':G.weather==='wind'?' — 🍃 leaves on the wind':G.weather==='snow'?' — 🌨 soft snow settles over the valley':G.weather==='fog'?' — 🌫 a misty morning over the valley':'')+(((G.day-1)%7===0&&G.day>1)?' — the season turns!':''));
