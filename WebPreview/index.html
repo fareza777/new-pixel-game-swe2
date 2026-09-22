@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.42</div></div></div>
+    <div class="ver">v4.43</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -3509,11 +3509,12 @@ function interact(){
     toast('⛏ You dig up Pip\u2019s buried treasure — '+gold+'g and a '+ITEMS[it].name+'!');
     hudRender();save();return}
   if(m.kind==='wind'){
-    if(G.millReady&&G.millReady<=G.day){G.inv.item.flour=(G.inv.item.flour||0)+2;collect('flour');
-      toast('🌾 The millstones rest — 2 bags of fresh Flour!');sfx('sfx_success');G.millReady=0;G.millBusy=false;hudRender();save();return}
+    if(G.millReady&&G.millReady<=G.day){const bonus=G.flags.millWindy?1:0;
+      G.inv.item.flour=(G.inv.item.flour||0)+2+bonus;collect('flour');G.flags.millWindy=0;
+      toast('🌾 The millstones rest — '+(2+bonus)+' bags of fresh Flour!'+(bonus?' The wind did its share.':''));sfx('sfx_success');G.millReady=0;G.millBusy=false;hudRender();save();return}
     if(G.millBusy){toast('🌾 Still grinding — flour will be ready in the morning');return}
-    if((G.inv.crop[10]||0)>=2){G.inv.crop[10]-=2;G.millBusy=true;G.millReady=G.day+1;
-      sfx('sfx_cook');toast('🌾 2 Wheat into the hopper — the blades pick up speed');hudRender();save()}
+    if((G.inv.crop[10]||0)>=2){G.inv.crop[10]-=2;G.millBusy=true;G.millReady=G.day+1;G.flags.millWindy=G.weather==='wind'?1:0;
+      sfx('sfx_cook');toast('🌾 2 Wheat into the hopper — the blades '+(G.flags.millWindy?'roar in the tailwind — extra flour tonight!':'pick up speed'));hudRender();save()}
     else toast('🌾 The windmill grinds wheat — bring 2 Wheat');
     return}
   if(m.kind==='loom'){
