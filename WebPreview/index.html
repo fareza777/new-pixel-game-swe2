@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.72</div></div></div>
+    <div class="ver">v4.73</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1481,6 +1481,18 @@ function talkTo(o){
   if(m.id==='bram'&&m.walker&&!f['shwalk'+G.day]){
     f['shwalk'+G.day]=1;G.hearts.bram=Math.min(10,(G.hearts.bram||0)+2);G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
     lines.unshift('Bram stands quiet before the torii, hat in hand. “First Monday of the week — an old mayor\u2019s appointment.”','“Your grandfather walked me up here every week. We\u2019d leave an offering and argue about the weather.”','“Sit a moment. The grove listens better when you\u2019re not in a hurry.” (+2♥, +8⚡)')}
+  if(m.id==='bram'&&G.day%7===0&&!G.flags.censusDone&&G.flags.censusDay!==G.day){
+    G.flags.censusDay=G.day;
+    startDlg(o,['Bram taps a fresh ledger page. “Fair Day census — the crown wants a count of every soul in the valley.”','“I can\u2019t be in five porches at once. Greet five neighbors before bed — say you\u2019re collecting for me.”','“Fifty gold for a full page. The valley thanks you in advance, kid.”']);return}
+  if(G.map==='barn'&&G.day%28===25&&G.clock/60>=19&&G.clock/60<23&&!f['slow_'+G.day]&&['vilo','sari','mira','hazel','elle','pip'].includes(m.id)){
+    const SD={vilo:'“A slow one? …Alright, kid. Mind my paint-stained cuffs.” His steps are careful, like brushstrokes.',
+      sari:'“Oh, a dance? Mind the feet, love.” She hums a shopkeeper\u2019s waltz, counting under her breath.',
+      mira:'“One dance. For science — the heart benefits.” She almost smiles.',
+      hazel:'“Come here, dear.” Hazel leads; the lanterns blur gold around you both.',
+      elle:'“Finally! Someone who knows a hem from a hemline.” Elle sweeps you into a turn.',
+      pip:'“A SLOW dance? Ugh, okay — just don\u2019t tell anyone I liked it.” He stands on your boots to keep up.'};
+    startDlg(o,[SD[m.id]||'You dance.', '[The fiddler slows. For one song, the whole barn holds its breath. (+2 ♥)]']);
+    f['slow_'+G.day]=1;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);checkKindred(m.id);sfx('sfx_success');save();return}
   if(m.id==='bram'&&!f.metBram){f.metBram=true}
   if(m.id==='bram'&&(f.sold2||0)>=2&&!f.mq2done){f.mq2done=true}
   if(m.id==='gus'&&f.gusMet&&(G.inv.item.gpick||0)>0&&!f.gusPick){
