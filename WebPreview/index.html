@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.52</div></div></div>
+    <div class="ver">v4.53</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1359,6 +1359,11 @@ function talkTo(o){
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
   // quest side-effects
+  if(m.id==='sari'&&G.day%7===4&&G.clock/60<12&&!f['ssamp'+G.day]){
+    f['ssamp'+G.day]=1;
+    const seeds=['turnip','potato','wheat','corn','pumpkin'];const sd=seeds[G.day%seeds.length];
+    G.inv.seed[sd]=(G.inv.seed[sd]||0)+1;
+    lines.unshift('“Sample day!” Sari flips a seed packet across the counter.','“Midweek special — plant it before sundown, mind. On the house.” (+1 '+sd+' seeds)')}
   if(m.housecall){
     G.inv.item.soup=(G.inv.item.soup||0)+1;collect('soup');
     G.hearts.mira=Math.min(10,(G.hearts.mira||0)+2);G.sta=Math.min(100+(G.maxsta||0),G.sta+15);sfx('sfx_talk');G.flags.miraVisit=0;
