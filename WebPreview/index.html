@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.36</div></div></div>
+    <div class="ver">v5.37</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1000,6 +1000,10 @@ function loadMap(id,sx,sy){
       for(let i=0;i<3;i++){const gx=5+i*4,gy=11.2;
         if(G.forageDay['islet|sglass'+i]!==G.day&&!G.objs.some(o=>o.fid==='sg'+i))
           G.objs.push({key:'rcrystal',x:gx,y:gy,meta:{kind:'forage',item:'sglass',name:'sea glass, smoothed by the storm'},fid:'sg'+i,hx:gx,hy:gy,ph:i})}}
+  if(id==='orchard'&&season()===2&&G.weather==='wind'&&G.clock/60<17)
+    [[8.5,7.5],[14.5,9.5]].forEach((pt,i)=>{
+      if(G.forageDay['orchard|wfa'+i]!==G.day&&!G.objs.some(o=>o.fid==='wfa'+i))
+        G.objs.push({key:'apple',x:pt[0],y:pt[1],anchor:'c',meta:{kind:'forage',item:'apple',name:'a windfall apple, fresh-dropped'},fid:'wfa'+i,hx:pt[0],hy:pt[1],ph:i})});
   if(id==='orchard'&&season()===0)
     for(const o of G.objs)if(o.key==='appletree'&&o.meta&&o.meta.item==='apple'){o.key='cherrytree';o.meta.item='cherry';o.meta.name='Sweet Cherry'}
   if(id==='hill'&&G.day%28===24&&(G.clock/60>=20||G.clock/60<4)&&G.forageDay['hill|comet']!==G.day&&!G.objs.some(o=>o.fid==='cmt0'))
