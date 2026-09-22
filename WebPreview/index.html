@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.25</div></div></div>
+    <div class="ver">v11.26</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3198,6 +3198,9 @@ function shopRender(){
       const r=document.createElement('div');r.className='srow';
       r.innerHTML=`<canvas class="iico" width="30" height="30" data-k="crop22_4"></canvas><span>✦ Sunpetal Seed (legendary)</span><span class="pr">${seedPrice(22)}g</span>`;
       r.onclick=()=>buySeed(22);rows.appendChild(r);}
+    const r3=document.createElement('div');r3.className='srow';
+    r3.innerHTML=`<canvas class="iico" width="30" height="30" data-k="seed"></canvas><span>🌿 Fertilizer <span style="font-size:11px">· primes a bed for golden crops</span> ×${G.inv.item.fert||0}</span><span class="pr">12g</span>`;
+    r3.onclick=()=>buyFert();rows.appendChild(r3);
   }else if(g.tab==='decor'){
     for(const d of DECOR){
       const r=document.createElement('div');r.className='srow';
@@ -3496,6 +3499,12 @@ function buySeed(id){
   else $('shopmsg').textContent="Bought "+CROPS[id]+" Seeds.";
   shopRender();hudRender();save();
 }
+function buyFert(){
+  if(G.gold<12){$('shopmsg').textContent="Not enough gold.";return}
+  G.gold-=12;G.inv.item.fert=(G.inv.item.fert||0)+1;sfx('sfx_coin');stamp();
+  $('shopmsg').textContent="Bought Fertilizer — it feeds the next seed you plant.";
+  shopRender();hudRender();save();
+}
 function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1))}
 const FISH_SELL={fish:1,kingfish:1,goldfish:1,moonfish:1,koi:1,trout:1,sardine:1,carp:1,catfish:1};
 function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0;return (G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])?Math.round(s*1.25):s}
@@ -3537,6 +3546,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              gem:{name:'Old Gem',icon:'gem',sell:60}, goldore:{name:'Gold Vein',icon:'goldrock',sell:40}, crystal:{name:'Star Crystal',icon:'crystal',sell:80},
              soup:{name:'Hearty Soup',icon:'soup',sell:22},lunch:{name:'Packed Lunch',icon:'soup',sell:20,edible:35},
              drawing:{name:'Crayon Drawing',icon:'item_letter',sell:0},
+             fert:{name:'Fertilizer',icon:'seed',sell:6},
              honey:{name:'Wild Honey',icon:'honey',sell:20},
              truffle:{name:'Forest Truffle',icon:'truffle',sell:45},
              candy:{name:'Pip\'s Candy',icon:'berry',sell:5},
@@ -3893,6 +3903,7 @@ function interact(){
         toast("These shrine beds are sacred — only a Sunpetal may grow here.");return}
       if(G.selSeed!==22&&!CROP_SEASON[G.selSeed].includes(season())&&G.map!=='grows'){toast(SEASON_ICON[season()]+' '+CROPS[G.selSeed]+" won't take root in "+SEASON[season()]+' — different seeds thrive each season'+(G.flags.ghouse?' — your greenhouse is always warm':''));return}
       if((G.inv.seed[G.selSeed]||0)>0){if(!spendSta(1))return;c.crop=+G.selSeed;c.stage=1;c.watered=false;G.inv.seed[G.selSeed]--;sfx('sfx_plant');
+        if((G.inv.item.fert||0)>0){G.inv.item.fert--;c.gold=1;toast('🌿 Fertilized — this bed is primed for a golden harvest')}
         swing('seeds',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
         G.flags.plantedCount=(G.flags.plantedCount||0)+1;
         if(G.flags.plantedCount>=3)G.flags.mq1done=true;
@@ -3909,7 +3920,7 @@ function interact(){
       G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+gq;G.stats.crops+=gq;collect('c'+c.crop);gainXP('farm',5);
       if(G.day%14===7&&season()===2&&(G.clock/60>=18||G.clock/60<5)){G.inv.crop[c.crop]++;G.stats.crops++;collect('c'+c.crop);
         sfx('sfx_success');toast('🌕 The Harvest Moon doubles your basket!')}
-      else if(Math.random()<(.10+skLvl(G.xp.farm)*.04+((G.perk&&G.perk.farm==='harvest')?.08:0))){const gid2='g'+c.crop;G.inv.item[gid2]=(G.inv.item[gid2]||0)+1;collect(gid2);
+      else if(Math.random()<(.10+skLvl(G.xp.farm)*.04+(c.gold?.12:0)+((G.perk&&G.perk.farm==='harvest')?.08:0))){const gid2='g'+c.crop;G.inv.item[gid2]=(G.inv.item[gid2]||0)+1;collect(gid2);
         sfx('sfx_success');toast('✨ A GOLDEN '+CROPS[c.crop]+'! It gleams in your basket (2× market price)')}
       G.flags.harvested=(G.flags.harvested||0)+1;
       swing('basket',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
