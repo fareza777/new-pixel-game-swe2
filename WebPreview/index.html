@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.77</div></div></div>
+    <div class="ver">v10.78</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -6812,6 +6812,9 @@ function render(ts){
       for(let i=0;i<md.n;i++){
         const px2=(i*83+at*md.vx)%(AW+50)-25, py2=((i*67+at*md.vy)%(AH+30)-15)+Math.sin(at/9+i)*md.sway*.12;
         ctx.fillStyle=md.c(i);ctx.fillRect(px2,py2,md.sz,md.sz)}}}
+  {const vg=ctx.createRadialGradient(cv.width/2,cv.height*.46,cv.height*.34,cv.width/2,cv.height*.5,cv.height*.95);
+   vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(8,14,10,.18)');
+   ctx.fillStyle=vg;ctx.fillRect(0,0,cv.width,cv.height)}
   if(G.rainbowDay===G.day&&G.clock/60<11.5&&!G.L.indoor){
     const rx=cv.width*.5,ry=cv.height*1.15,rr=cv.height*.9;
     const RC=['rgba(255,90,90,.30)','rgba(255,180,60,.30)','rgba(255,240,90,.30)','rgba(120,220,110,.30)','rgba(90,160,255,.30)','rgba(170,120,255,.30)'];
