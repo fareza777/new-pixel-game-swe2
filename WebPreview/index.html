@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.36</div></div></div>
+    <div class="ver">v4.37</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -228,6 +228,7 @@ const GIFTABLE={ofeather:1,moondew:1,scarf:1,flour:1,bread:1,starore:1,ibar:1,gb
 const LOVES={bram:['stew','chowder'],sari:['c23','tart'],vilo:['rfish','chowder'],nana:['herb','htea'],mira:['posy','tart'],pip:['candy','c23','cherry'],fen:['rfish','stew','crab'],wren:['starflower','orchid','mshroom','lily','snowdrop','chanter'],luna:['crystal','segg','starore','iceshard'],hazel:['chowder','cheese'],cora:['steg','jam'],elle:['wool','posy','lily','sunfl'],mart:['truffle','goldore'],elm:['acorn','chestnut','truffle']};
 const LOVESAY={bram:'"My favorite! You remembered what an old man loves. (+4 ♥)"',sari:'"Strawberries! You sweet, sweet child! (+4 ♥)"',vilo:'"Now THAT is a proper gift, kid. (+4 ♥)"',nana:'"For my teas! You dear thing. (+4 ♥)"',mira:'"It is beautiful — I will treasure it! (+4 ♥)"',pip:'"WHOA. For me?! Best. Day. Ever. (+4 ♥)"',fen:'"Ha! You know the way to a fishermans heart. (+4 ♥)"',wren:'"For my collection — I shall press it tonight! (+4 ♥)"',luna:'"It glimmers like the night sky. I love it. (+4 ♥)"',hazel:'"Ooh, my favorite! Youre an angel. (+4 ♥)"',cora:'"Sturdy AND pretty — just how I like it. (+4 ♥)"',elle:'"Such fine material — you have a tailors eye! (+4 ♥)"',mart:'"A rare find! You drive a hard bargain, friend. (+4 ♥)"',elm:'"For the workbench — good oak, this. You know your timber. (+4 ♥)"'};
 const DOTD=['soup','stew','tart','bread','hcake','chowder','salad','pie'];
+const SICKV=['sari','vilo','mira','pip','fen','wren','hazel','cora','elle','elm','mart','nana'];
 const RECIPES=[
       {id:'soup',need:{mushroom:1,berry:1}},
       {id:'jam',need:{berry:2}},
@@ -1323,6 +1324,12 @@ function talkTo(o){
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
   // quest side-effects
+  const svk=SICKV[G.day%SICKV.length];
+  if(m.id===svk&&G.day%7===2&&!f['sick'+G.day]&&m.id!=='nana'){
+    if((G.inv.item.herb||0)>0){G.inv.item.herb--;f['sick'+G.day]=1;G.gold+=15;
+      G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+2);sfx('sfx_success');G.stats.quests++;
+      lines.unshift(m.name+' sniffs miserably, then brightens at the bundle of wild herbs.','“Nana\u2019s remedy in a leaf — I can already breathe better. You\u2019re a saint of this valley.” (+15g, +2 ♥)')}
+    else lines.unshift(m.name+' sniffles and waves a weak hand. “Caught something awful — Nana says wild herbs would fix me right up.”')}
   if(m.id==='bram'&&m.walker&&!f['shwalk'+G.day]){
     f['shwalk'+G.day]=1;G.hearts.bram=Math.min(10,(G.hearts.bram||0)+2);G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
     lines.unshift('Bram stands quiet before the torii, hat in hand. “First Monday of the week — an old mayor\u2019s appointment.”','“Your grandfather walked me up here every week. We\u2019d leave an offering and argue about the weather.”','“Sit a moment. The grove listens better when you\u2019re not in a hurry.” (+2♥, +8⚡)')}
