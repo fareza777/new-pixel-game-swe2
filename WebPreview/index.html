@@ -163,6 +163,9 @@
   #baglist::-webkit-scrollbar,#shoprows::-webkit-scrollbar{width:8px}
   #baglist::-webkit-scrollbar-thumb,#shoprows::-webkit-scrollbar-thumb{background:#6a4a25;border-radius:4px}
   #baglist::-webkit-scrollbar-track,#shoprows::-webkit-scrollbar-track{background:#180f06;border-radius:4px}
+  /* overlay pop-in */
+  .ovl .panel{animation:panelpop .18s ease-out}
+  @keyframes panelpop{from{transform:scale(.93) translateY(10px);opacity:0}}
   .btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
   #btnA{right:22px;bottom:32px;width:72px;height:72px;background:radial-gradient(circle at 35% 30%,#e07050,#a03c20)}
   #btnBag{right:106px;bottom:84px;width:52px;height:52px;background:radial-gradient(circle at 35% 30%,#5090d0,#204080);font-size:19px}
@@ -220,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.04</div></div></div>
+    <div class="ver">v11.05</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3065,12 +3068,14 @@ function shopRender(){
     for(const id in G.inv.crop){if(G.inv.crop[id]<=0)continue;any=true;
       const cfr=(MAPS.farm.crop_frames[id]||[]);
       const r=document.createElement('div');r.className='srow';
-      r.innerHTML=(cfr.length?`<canvas class="iico" width="30" height="30" data-k="${cfr[cfr.length-1]}"></canvas>`:'')+`<span>${CROPS[id]||'Crop'} ×${G.inv.crop[id]}</span><span class="pr">sell ${CROP_PRICE[id]}g</span>`;
-      r.onclick=()=>sellCrop(+id);rows.appendChild(r);}
+      r.innerHTML=(cfr.length?`<canvas class="iico" width="30" height="30" data-k="${cfr[cfr.length-1]}"></canvas>`:'')+`<span>${CROPS[id]||'Crop'} ×${G.inv.crop[id]}</span><span class="pr">sell ${cropSellPrice(id)}g</span><span class="pr" style="background:#4a3a14">all</span>`;
+      r.onclick=()=>sellCrop(+id);
+      r.querySelectorAll('.pr')[1].onclick=e=>{e.stopPropagation();sellCropAll(+id)};rows.appendChild(r);}
     for(const id in G.inv.item){if((G.inv.item[id]||0)<=0||!ITEMS[id]||!ITEMS[id].sell)continue;any=true;
       const r=document.createElement('div');r.className='srow';
-      r.innerHTML=(ITEMS[id].icon?`<canvas class="iico" width="30" height="30" data-k="${ITEMS[id].icon}"></canvas>`:'')+`<span>${ITEMS[id].name} ×${G.inv.item[id]}</span><span class="pr">sell ${ITEMS[id].sell}g</span>`;
-      r.onclick=()=>sellItem(id);rows.appendChild(r);}
+      r.innerHTML=(ITEMS[id].icon?`<canvas class="iico" width="30" height="30" data-k="${ITEMS[id].icon}"></canvas>`:'')+`<span>${ITEMS[id].name} ×${G.inv.item[id]}</span><span class="pr">sell ${ITEMS[id].sell}g</span><span class="pr" style="background:#4a3a14">all</span>`;
+      r.onclick=()=>sellItem(id);
+      r.querySelectorAll('.pr')[1].onclick=e=>{e.stopPropagation();sellItemAll(id)};rows.appendChild(r);}
     if(!any)rows.innerHTML='<div style="padding:10px;color:#998">Your bag has nothing to sell yet.</div>';
   }
   rows.querySelectorAll('canvas.iico').forEach(c=>drawIco(c,c.dataset.k,30));
@@ -3208,17 +3213,21 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_kiln',name:'Pottery Kiln',price:250,ore:1,sub:'needs 1 ore — river clay becomes glazed vases overnight'},
              {flag:'bl_tree',name:'The Treehouse',price:400,ore:2,sub:'needs 2 ore — a hideout in the old oak; Pip will absolutely claim it'},
              {flag:'bl_bell',name:'The Great Bell',price:500,ore:3,sub:'needs 3 ore + the clocktower — a bronze voice for the whole valley'},
-             {flag:'bl_lite',name:'Pearl Isle Lighthouse',price:600,ore:3,sub:'needs 3 ore — a beacon on Tom\u2019s islet; pearls roll in with the tide'}];
+             {flag:'bl_lite',name:'Pearl Isle Lighthouse',price:600,ore:3,sub:'needs 3 ore — a beacon on Tom\u2019s islet; pearls roll in with the tide'},
+             {flag:'bl_gold',name:'Gilded Toolset',price:500,dia:3,sub:'needs Steel + 3 raw diamonds — a 3×3 sweep, chores cost 3 less energy'}];
 function buyBuild(gd){
   const f=G.flags;
   if(gd.flag==='bl_statue'&&!f.gwatch){toast('Cora: "Find all of the founder\u2019s journal pages first."');return}
   if(f[gd.flag]){$('shopmsg').textContent="Already built on your farm.";return}
   if(gd.flag==='bl_steel'&&!f.copper){$('shopmsg').textContent="Cora shakes her head: 'Steel needs copper fittings — get the Copper Toolset from Mart first.'";return}
   if(gd.flag==='bl_bell'&&!f.bl_clock){$('shopmsg').textContent="Cora taps the plan: 'The bell hangs IN the clocktower — build that first.'";return}
+  if(gd.flag==='bl_gold'&&!f.bl_steel){$('shopmsg').textContent="Cora turns the sketch over: 'Gilding goes ON steel — bring me the Steel Toolset first.'";return}
   if(gd.ore&&(G.inv.item.ore||0)<gd.ore){$('shopmsg').textContent="Cora needs "+gd.ore+" iron ore for that one.";return}
+  if(gd.dia&&(G.inv.item.diamond||0)<gd.dia){$('shopmsg').textContent="Cora whistles: 'Gilded tools need "+gd.dia+" raw diamonds — the Geode Hall, deep in the mine, is your best bet.'";return}
   const bprice=f.journeyman?Math.ceil(gd.price*.9):gd.price;
   if(G.gold<bprice){$('shopmsg').textContent="Not enough gold.";return}
   if(gd.ore)G.inv.item.ore-=gd.ore;
+  if(gd.dia)G.inv.item.diamond-=gd.dia;
   G.gold-=bprice;f[gd.flag]=true;sfx('sfx_success');
   $('shopmsg').textContent="Cora nods: '"+gd.name+" — it'll be standing on your farm by morning.'";shopRender();hudRender();save()}
 function buyMart(gd){
@@ -3344,18 +3353,32 @@ function buySeed(id){
   else $('shopmsg').textContent="Bought "+CROPS[id]+" Seeds.";
   shopRender();hudRender();save();
 }
+function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm)))}
 function sellCrop(id){
   if(!G.inv.crop[id])return;
-  const pr=Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm)));
+  const pr=cropSellPrice(id);
   G.inv.crop[id]--;G.gold+=pr;sfx('sfx_coin');
   const f=G.flags;f.sold2=(f.sold2||0)+1;
   $('shopmsg').textContent="Sold a "+(CROPS[id]||'crop')+" for "+pr+"g.";
+  shopRender();hudRender();save();
+}
+function sellCropAll(id){
+  const n=G.inv.crop[id]||0;if(!n)return;
+  const pr=cropSellPrice(id);
+  G.gold+=pr*n;G.flags.sold2=(G.flags.sold2||0)+n;G.inv.crop[id]=0;sfx('sfx_coin');
+  $('shopmsg').textContent="Sold "+n+" "+(CROPS[id]||'crops')+" for "+(pr*n)+"g!";
   shopRender();hudRender();save();
 }
 function sellItem(id){
   if(!G.inv.item[id]||!ITEMS[id])return;
   G.inv.item[id]--;G.gold+=ITEMS[id].sell;sfx('sfx_coin');
   $('shopmsg').textContent="Sold "+ITEMS[id].name+" for "+ITEMS[id].sell+"g.";
+  shopRender();hudRender();save();
+}
+function sellItemAll(id){
+  const n=G.inv.item[id]||0;if(!n||!ITEMS[id])return;
+  G.gold+=ITEMS[id].sell*n;G.inv.item[id]=0;sfx('sfx_coin');
+  $('shopmsg').textContent="Sold "+n+" "+ITEMS[id].name+" for "+(ITEMS[id].sell*n)+"g!";
   shopRender();hudRender();save();
 }
 /* ------------------------------ bag -------------------------------------- */
@@ -3621,10 +3644,11 @@ function aoeCells(cx,cy,tier){
   const C=[[cx,cy]];
   if(tier>=1)C.push([cx-1,cy],[cx+1,cy]);
   if(tier>=2)C.push([cx,cy-1],[cx,cy+1]);
+  if(tier>=3)C.push([cx-1,cy-1],[cx+1,cy-1],[cx-1,cy+1],[cx+1,cy+1]);
   return C;
 }
 function spendSta(n){
-  n=G.flags.bl_steel?Math.max(1,n-2):(G.flags.copper?Math.max(1,n-1):n);
+  n=G.flags.bl_gold?Math.max(1,n-3):G.flags.bl_steel?Math.max(1,n-2):(G.flags.copper?Math.max(1,n-1):n);
   if(G.flags.sharpDay===G.day)n=Math.max(1,n-1);
   if(G.sta<=0){faint();return false}
   if(G.sta<n){toast('😮‍💨 Too tired — eat a crop from your BAG or sleep in your bed');return false}
@@ -3691,7 +3715,7 @@ function interact(){
     toast('🌱 Pear sapling planted — she\u2019ll be a full tree by morning');save();return}
   if(best.kind==='till'){
     if(G.tool==='hoe'){if(!spendSta(4))return;
-      const tier=G.flags.bl_steel?2:G.flags.copper?1:0,zone=G.L.tillable||[];let n=0;
+      const tier=G.flags.bl_gold?3:G.flags.bl_steel?2:G.flags.copper?1:0,zone=G.L.tillable||[];let n=0;
       if(!G.crops[G.map])G.crops[G.map]={};
       for(const[tx,ty]of aoeCells(best.cx,best.cy,tier)){
         const tk=tx+','+ty;
@@ -3701,7 +3725,7 @@ function interact(){
         G.crops[G.map][tk]={crop:0,stage:0,watered:false,soil:true};n++}
       sfx('sfx_plant');
       swing('hoe',best.cx+.5,best.cy+.5);
-      toast('🪓 Tilled'+(n>1?' '+n+' tiles — your '+(tier===2?'Steel':'Copper')+' tools cover more ground':'')+'! Equip 🌱 Seeds and press A to plant')}
+      toast('🪓 Tilled'+(n>1?' '+n+' tiles — your '+(tier===3?'Gilded':tier===2?'Steel':'Copper')+' tools cover more ground':'')+'! Equip 🌱 Seeds and press A to plant')}
     else toast(TOOL_EMOJI.hoe+' Equip the Hoe to till this soil — tap TOOL');
     return}
   if(best.kind==='bloom'){toast('The Sunpetal blooms — tell Mayor Bram!');return}
@@ -3741,11 +3765,11 @@ function interact(){
       if(G.tool!=='can'){toast(TOOL_EMOJI.can+' Equip the Watering Can to water — tap TOOL');return}
       if(!G.flags.goldCan&&!spendSta(2))return;
       c.watered=true;c.care=(c.care||0)+1;G.flags.watered=true;sfx('sfx_water');
-      const tier=G.flags.bl_steel?2:G.flags.copper?1:0;let extra=0;
+      const tier=G.flags.bl_gold?3:G.flags.bl_steel?2:G.flags.copper?1:0;let extra=0;
       if(tier>0)for(const[tx,ty]of aoeCells(best.cx,best.cy,tier)){const oc=(G.crops[G.map]||{})[tx+','+ty];
         if(oc&&oc.crop>0&&!oc.watered){oc.watered=true;oc.care=(oc.care||0)+1;extra++}}
       swing('can',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
-      toast('💧 Watered'+(extra?' +'+extra+' more — '+(tier===2?'Steel':'Copper')+' reach':'')+'! It grows overnight — sleep in your bed at home');return}
+      toast('💧 Watered'+(extra?' +'+extra+' more — '+(tier===3?'Gilded':tier===2?'Steel':'Copper')+' reach':'')+'! It grows overnight — sleep in your bed at home');return}
     return}
   // objects
   const o=best.o,m=best.m;
