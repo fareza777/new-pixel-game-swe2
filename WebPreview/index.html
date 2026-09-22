@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.44</div></div></div>
+    <div class="ver">v11.45</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -459,7 +459,7 @@ function save(){
   if(G.state==='intro'||G.state==='title')return;
   const s={v:1,map:G.map,x:G.hero.x,y:G.hero.y,dir:G.hero.dir,gold:G.gold,day:G.day,clock:G.clock,
     inv:G.inv,selSeed:G.selSeed,tool:G.tool,flags:G.flags,letters:G.letters,mailbox:G.mailbox||[],col:G.col,crops:G.crops,tutStep:G.tutStep,forageDay:G.forageDay,bugDay:G.bugDay,nextWeather:G.nextWeather,furBusy:G.furBusy,furReady:G.furReady,furYield:G.furYield,jarBusy:G.jarBusy,jarReady:G.jarReady,jarYield:G.jarYield,millBusy:G.millBusy,millReady:G.millReady,smBusy:G.smBusy,smReady:G.smReady,smSeed:G.smSeed,stats:G.stats,xp:G.xp,
-    sta:G.sta,weather:G.weather,bessieDay:G.bessieDay||0,calf:G.calf?1:0,hearts:G.hearts,talkDay:G.talkDay,petDay:G.petDay,coopEggs:G.coopEggs,milkCans:G.milkCans||0,dogFind:G.dogFind||false,reqDay:G.reqDay,maxsta:G.maxsta||0,blessedFor:G.blessedFor,outfit:G.outfit||0,duckEggs:G.duckEggs||0,woolBalls:G.woolBalls||0,goatMilk:G.goatMilk||0,diary:G.diary||[],daySnap:G.daySnap||null,spouse:G.spouse||null,spouseDay:G.spouseDay||0,perk:G.perk||{}};
+    sta:G.sta,weather:G.weather,bessieDay:G.bessieDay||0,calf:G.calf?1:0,hearts:G.hearts,talkDay:G.talkDay,petDay:G.petDay,coopEggs:G.coopEggs,milkCans:G.milkCans||0,dogFind:G.dogFind||false,reqDay:G.reqDay,maxsta:G.maxsta||0,blessedFor:G.blessedFor,outfit:G.outfit||0,duckEggs:G.duckEggs||0,woolBalls:G.woolBalls||0,goatMilk:G.goatMilk||0,diary:G.diary||[],daySnap:G.daySnap||null,spouse:G.spouse||null,spouseDay:G.spouseDay||0,perk:G.perk||{},bond:G.bond||{}};
   try{localStorage.setItem('spv_save',JSON.stringify(s))}catch(e){}
 }
 function hasSave(){try{return !!localStorage.getItem('spv_save')}catch(e){return false}}
@@ -469,7 +469,7 @@ function loadSave(){
     G.inv=s.inv;G.selSeed=s.selSeed;G.tool=s.tool||'hoe';G.flags=s.flags;G.letters=s.letters||[];G.mailbox=s.mailbox||[];G.col=s.col||{};G.crops=s.crops;G.stats=s.stats||{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0};G.xp=s.xp||{farm:0,fish:0,forage:0};G.tutStep=s.tutStep;
     G.forageDay=s.forageDay||{};G.bugDay=s.bugDay||{};G.jarBusy=s.jarBusy||false;G.furBusy=s.furBusy||false;G.furReady=s.furReady||0;G.furYield=s.furYield||null;G.nextWeather=s.nextWeather||null;G.jarReady=s.jarReady||0;G.jarYield=s.jarYield||null;G.millBusy=s.millBusy||false;G.millReady=s.millReady||0;G.smBusy=s.smBusy||false;G.smReady=s.smReady||0;G.smSeed=s.smSeed||0;
     G.sta=(s.sta!==undefined?s.sta:100);G.maxsta=s.maxsta||0;G.weather=s.weather||'sun';G.hearts=s.hearts||{};G.talkDay=s.talkDay||{};
-    G.bessieDay=s.bessieDay||0;G.calf=!!s.calf;G.petDay=s.petDay||{};G.coopEggs=s.coopEggs||0;G.milkCans=s.milkCans||0;G.dogFind=s.dogFind||false;G.reqDay=s.reqDay||0;G.blessedFor=s.blessedFor||0;G.outfit=s.outfit||0;G.duckEggs=s.duckEggs||0;G.woolBalls=s.woolBalls||0;G.goatMilk=s.goatMilk||0;G.diary=s.diary||[];G.daySnap=s.daySnap||null;G.spouse=s.spouse||null;G.spouseDay=s.spouseDay||0;G.perk=s.perk||{};
+    G.bessieDay=s.bessieDay||0;G.calf=!!s.calf;G.petDay=s.petDay||{};G.coopEggs=s.coopEggs||0;G.milkCans=s.milkCans||0;G.dogFind=s.dogFind||false;G.reqDay=s.reqDay||0;G.blessedFor=s.blessedFor||0;G.outfit=s.outfit||0;G.duckEggs=s.duckEggs||0;G.woolBalls=s.woolBalls||0;G.goatMilk=s.goatMilk||0;G.diary=s.diary||[];G.daySnap=s.daySnap||null;G.spouse=s.spouse||null;G.spouseDay=s.spouseDay||0;G.perk=s.perk||{};G.bond=s.bond||{};
     return true}catch(e){return false}
 }
 function openSettings(){$('setov').style.display='flex';
@@ -1999,9 +1999,9 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'sheep_down0',x:11.5,y:6.5,anchor:'c',meta:{kind:'foldc',name:'Molly, waiting to be folded for the night'},fid:'fdc0',hx:11.5,hy:6.5,ph:0});
   if(id==='barn'&&G.flags.poppy)G.objs.push({key:'sheep_down0',x:12.6,y:5.2,meta:{kind:'goat',name:'Poppy',wander:1},fid:'poppy',hx:12.6,hy:5.2,ph:4});
   if((id==='farm'&&!G.flags.bl_barn)||id==='barn')for(let i=0;i<(G.goatMilk||0);i++)
-    G.objs.push({key:'milk',x:(id==='barn'?6.6+i*.9:45.4+i*.9),y:(id==='barn'?6.4:16.2),meta:{kind:'forage',item:'gmilk',name:'Goat Milk'},fid:'gmilk'+i,hx:45.4,hy:16.2,ph:0});
+    G.objs.push({key:'milk',x:(id==='barn'?6.6+i*.9:45.4+i*.9),y:(id==='barn'?6.4:16.2),meta:{kind:'forage',item:(G.bond&&G.bond.goat>=5)?'rgmilk':'gmilk',name:(G.bond&&G.bond.goat>=5)?'Golden Goat Milk':'Goat Milk'},fid:'gmilk'+i,hx:45.4,hy:16.2,ph:0});
   if(id==='barn')for(let i=0;i<(G.woolBalls||0);i++)
-    G.objs.push({key:'wool',x:9.4+i*1.1,y:7.6,meta:{kind:'forage',item:'wool',name:'Soft Wool'},fid:'wool'+i,hx:9.4,hy:7.6,ph:0});
+    G.objs.push({key:'wool',x:9.4+i*1.1,y:7.6,meta:{kind:'forage',item:(G.bond&&G.bond.sheep>=5)?'fwool':'wool',name:(G.bond&&G.bond.sheep>=5)?'Fine Wool':'Soft Wool'},fid:'wool'+i,hx:9.4,hy:7.6,ph:0});
   if(id==='barn'&&G.day%28===25&&G.clock/60>=19&&G.clock/60<23){
     if(!G.objs.some(o=>o.fid==='dfl0'))
       G.objs.push({key:'rug_01',x:8.0,y:6.0,anchor:'c',meta:{kind:'dance',name:'the dance floor'},fid:'dfl0',hx:8.0,hy:6.0,ph:0});
@@ -2017,11 +2017,11 @@ function loadMap(id,sx,sy){
   if(id==='barn'&&G.calf&&!G.objs.some(o=>o.fid==='calf1'))
     G.objs.push({key:'calf',x:8.4,y:5.6,meta:{kind:'calf',name:'Maple the calf'},fid:'calf1',hx:8.4,hy:5.6,ph:0});
   if((id==='farm'&&!G.flags.bl_barn)||id==='barn')for(let i=0;i<(G.milkCans||0);i++)
-    G.objs.push({key:'milk',x:(id==='barn'?4.6+i*.9:43.4+i*.9),y:(id==='barn'?6.4:16.2),meta:{kind:'forage',item:'milk',name:'Fresh Milk'},fid:'milk'+i,hx:43.4,hy:16.2,ph:0});
+    G.objs.push({key:'milk',x:(id==='barn'?4.6+i*.9:43.4+i*.9),y:(id==='barn'?6.4:16.2),meta:{kind:'forage',item:(G.bond&&G.bond.cow>=5)?'rmilk':'milk',name:(G.bond&&G.bond.cow>=5)?'Rich Milk':'Fresh Milk'},fid:'milk'+i,hx:43.4,hy:16.2,ph:0});
   if(id==='farm')for(let i=0;i<(G.duckEggs||0);i++)
     G.objs.push({key:'duckegg',x:55.4+i*1.7,y:17.4,meta:{kind:'forage',item:'duckegg',name:'Duck Egg'},fid:'degg'+i,hx:55.4,hy:17.4,ph:0});
   if(id==='farm')for(let i=0;i<G.coopEggs;i++)
-    G.objs.push({key:'egg',x:50+i*.9,y:10.4,meta:{kind:'forage',item:'egg',name:'Fresh Egg'},fid:'egg'+i,hx:50,hy:10.4,ph:0});
+    G.objs.push({key:'egg',x:50+i*.9,y:10.4,meta:{kind:'forage',item:(G.bond&&G.bond.chicken>=5)?'segg':'egg',name:(G.bond&&G.bond.chicken>=5)?'Silver Egg':'Fresh Egg'},fid:'egg'+i,hx:50,hy:10.4,ph:0});
   if(id==='farm'&&G.goldEgg)G.objs.push({key:'goldegg',x:50+G.coopEggs*.9,y:10.4,meta:{kind:'forage',item:'goldegg',name:'a Golden Egg!'},fid:'gegg0',hx:50,hy:10.4,ph:0});
   if(!G.crops[id]){G.crops[id]={}; (M.tilled||[]).forEach(c=>G.crops[id][c]={crop:0,stage:0,watered:false,soil:true});}
   G.hero.x=sx; G.hero.y=sy;
@@ -3601,7 +3601,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
   mistfish:{name:'Mistfish',icon:'fish3',sell:45,edible:14},
          butterfly:{name:'Sunnypetal Butterfly',icon:'butterfly',sell:12}, cricket:{name:'Meadow Cricket',icon:'cricket',sell:10}, firefly:{name:'Lantern Firefly',icon:'firefly',sell:15}, beetle:{name:'Cave Beetle',icon:'beetle',sell:18},
          tonic:{name:'Herbal Tonic',icon:'soup',sell:15}, charm:{name:'Lucky Charm',icon:'clover',sell:40}, crown:{name:'Sunpetal Crown',icon:'crown',sell:500}, goldstar:{name:'Golden Crop',icon:'goldstar',sell:50},
-         milk:{name:'Fresh Milk',icon:'milk',sell:20}, cheese:{name:'Farm Cheese',icon:'cheese',sell:45},gmilk:{name:'Goat Milk',icon:'milk',sell:30},gcheese:{name:'Goat Cheese',icon:'cheese',sell:70},
+         milk:{name:'Fresh Milk',icon:'milk',sell:20},rmilk:{name:'Rich Milk',icon:'milk',sell:42}, cheese:{name:'Farm Cheese',icon:'cheese',sell:45},gmilk:{name:'Goat Milk',icon:'milk',sell:30},rgmilk:{name:'Golden Goat Milk',icon:'milk',sell:60},gcheese:{name:'Goat Cheese',icon:'cheese',sell:70},fwool:{name:'Fine Wool',icon:'wool',sell:70},
          grill:{name:'Grilled Fish',icon:'fish2',sell:40}, salad:{name:'Garden Salad',icon:'herb_01',sell:30},
              jam:{name:'Berry Jam',icon:'jam',sell:20}, pie:{name:'Pumpkin Pie',icon:'pie',sell:65}, hcake:{name:'Honey Cake',icon:'honey',sell:55}, fsalad:{name:'Forest Lunch',icon:'salad',sell:45},
              starflower:{name:'Starflower',icon:'starflower',sell:15}, bq:{name:'Moonbloom Bouquet',icon:'bq',sell:40}, cider:{name:'Apple Cider',icon:'cider',sell:30}, goldapple:{name:'Golden Apple',icon:'gaple',sell:60}, apie:{name:'Apple Pie',icon:'apie',sell:55},
@@ -4139,6 +4139,8 @@ function interact(){
       G.inv.item.egg=(G.inv.item.egg||0)+1;collect('egg');
       startDlg(o,['This hen is puffed up and humming — a broody day.','You stroke her wings. Underneath, still warm: a fresh egg.','She settles back down, deeply pleased with herself. (+1 egg now, and she’ll lay again tomorrow)']);return}
     G.petDay[G.map+'|'+o.fid]=G.day;o.heart=60;sfx('sfx_talk');
+    if(!isDuck){G.bond=G.bond||{};G.bond.chicken=Math.min(10,(G.bond.chicken||0)+1);
+      if(G.bond.chicken===5){toast('🐔 Your hens adore you now — SILVER eggs from here on!');return}}
     toast(String(o.fid||'').indexOf('duck')===0?'🦆 The duck quacks contentedly — she may leave a duck egg by the pond':'🐔 The hen clucks happily — she may lay an egg tomorrow');return}
   if(m.kind==='pig'){
     if(G.petDay['pig']!==G.day){G.petDay['pig']=G.day;sfx('sfx_talk');
@@ -4218,15 +4220,18 @@ function interact(){
   if(m.kind==='goat'){
     if(G.petDay['goat']===G.day){o.heart=60;return}
     G.petDay['goat']=G.day;o.heart=60;sfx('sfx_talk');
-    toast('🐐 Poppy stamps once, pleased — goat milk by morning');return}
+    G.bond=G.bond||{};G.bond.goat=Math.min(10,(G.bond.goat||0)+1);
+    toast(G.bond.goat===5?'🐐 Poppy adores you now — GOLDEN goat milk from here on!':'🐐 Poppy stamps once, pleased — goat milk by morning');return}
   if(m.kind==='sheep'){
     if(G.petDay['sheep']===G.day){o.heart=60;return}
     G.petDay['sheep']=G.day;o.heart=60;sfx('sfx_talk');
-    toast('🐑 Molly bleats happily — she may drop wool by morning');return}
+    G.bond=G.bond||{};G.bond.sheep=Math.min(10,(G.bond.sheep||0)+1);
+    toast(G.bond.sheep===5?'🐑 Molly adores you now — FINE wool from here on!':'🐑 Molly bleats happily — she may drop wool by morning');return}
   if(m.kind==='cow'){
     if(G.petDay['cow']===G.day){o.heart=60;return}
     G.petDay['cow']=G.day;o.heart=60;sfx('sfx_talk');
-    toast('🐄 Bessie moos softly — she may give milk tomorrow morning');return}
+    G.bond=G.bond||{};G.bond.cow=Math.min(10,(G.bond.cow||0)+1);
+    toast(G.bond.cow===5?'🐄 Bessie adores you now — RICH milk from here on!':'🐄 Bessie moos softly — she may give milk tomorrow morning');return}
   if(m.kind==='gala'){
     G.flags['gala_'+G.day]=1;
     toast('🖼 “'+['River at Dawn','The Farmer,Smiling','Sunpetal,Gold'][o.fid.charCodeAt(3)%3]+'” — the valley looks gentle through his eyes');
