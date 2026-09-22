@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.96</div></div></div>
+    <div class="ver">v4.97</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -564,6 +564,7 @@ function loadMap(id,sx,sy){
     const dd={key:d.spr,x:d.x,y:d.y,meta:{kind:'deco',name:d.name},fid:d.id,hx:d.x,hy:d.y,ph:0};
     if(d.id==='fdec_barrel'){dd.meta.kind='barrel';dd.meta.name='the rain barrel'}
     if(d.id==='fdec_picnic'){dd.meta.kind='picnic';dd.meta.name='your picnic blanket'}
+    if(d.id==='fdec_ham'){dd.meta.kind='hamm';dd.meta.name='the porch hammock'}
     G.objs.push(dd)}
   if(id==='river'&&G.flags.rarch&&!G.objs.some(o=>o.fid==='rarch0'))
     G.objs.push({key:'cairn',x:4.5,y:9.5,anchor:'bc',meta:{kind:'deco',name:'the stone arch — Fen\u2019s father\u2019s work, finished'},fid:'rarch0',hx:4.5,hy:9.5,ph:0});
@@ -2210,6 +2211,7 @@ const FARMDECOR=[{id:'fdec_bench',name:'Garden Bench',price:70,spr:'bench_01',x:
                  {id:'fdec_barrel',name:'Rain Barrel',price:45,spr:'barrel_01',x:34.4,y:10.6,sub:'catch the rain'},
                  {id:'fdec_sign',name:'Farm Sign',price:30,spr:'sign_01',x:27.8,y:15.5,sub:'name your farm'},
                  {id:'fdec_pot',name:'Big Flower Pot',price:35,spr:'pot10',x:26.2,y:6.4,sub:'blooms by the door'},
+                 {id:'fdec_ham',name:'Porch Hammock',price:110,spr:'bench_01',x:22.5,y:21.5,sub:'strung between the porch posts — naps at noon'},
                  {id:'fdec_sprink',name:'Sprinkler',price:300,spr:'sprinkler',x:16.5,y:13.5,sub:'waters nearby beds every morning'},
                  {id:'ghouse_kit',name:'Greenhouse kit',price:400,spr:'ghouse',kind2:'gh',sub:'a glass house on your farm — any crop, any season'},
                  {id:'bessie_cow',name:'Bessie the Cow',price:250,spr:'cow_down0',kind2:'cow',sub:'pet her daily — fresh milk every morning'},
@@ -2669,7 +2671,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3978,6 +3980,11 @@ function interact(){
     if(G.flags['hcd'+G.day]){toast('🕯 It burns low and steady through the night');return}
     G.flags['hcd'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_wish');
     startDlg(o,['You light the old candle beside his photograph — its flame is oddly steady.','In the wavering light the photo seems to smile a little wider.','Tomorrow the whole valley feasts in his name. Tonight, the farm remembers him quietly.','(+10⚡ — Founder\u2019s Feast tomorrow at the inn, 18:00)']);save();return}
+  if(m.kind==='hamm'){
+    if(G.clock/60<12||G.clock/60>=17){toast('😴 Not yet — the hammock calls at midday');return}
+    if(G.flags['ham'+G.day]){toast('😴 One nap a day keeps the bugs away');return}
+    G.flags['ham'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+12);sfx('sfx_success');
+    startDlg(o,['You fold yourself into the hammock — it knows your shape already.','Chickens mutter. Bees pass. Somewhere a screen door slaps.','You wake twenty minutes later, sun-warm and new. (+12⚡)']);save();return}
   if(m.kind==='fring'){
     G.flags['fring'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+7);sfx('sfx_wish');swing('seeds',o.x,o.y);
     startDlg(o,['You step inside the ring — the fog seems to bow politely.','Nana swears a ring like this once a year is good luck; twice is asking for trouble.','For a heartbeat the whole forest glitters. (+7⚡)']);return}
@@ -4950,6 +4957,7 @@ function promptScan(){
       else if(m.kind==='gbk')txt=BTN+' · 📖 The guestbook';
       else if(m.kind==='hcandle')txt=BTN+' · 🕯 Light the heirloom candle';
       else if(m.kind==='fring')txt=BTN+' · 🍄 Step inside the fairy ring';
+      else if(m.kind==='hamm')txt=(G.clock/60>=12&&G.clock/60<17)?(G.flags['ham'+G.day]?'😴 The hammock sways empty':BTN+' · 😴 Nap in the hammock'):'😴 The hammock — afternoons only';
       else if(m.kind==='echo')txt=G.flags['echo'+G.day]?'💎 The seam sleeps':BTN+' · 💎 Tap the crystal seam';
       else if(m.kind==='whisper')txt=BTN+' · 🌕 Kneel at the whispering pond';
       else if(m.kind==='club')txt=G.flags['club'+Math.floor(G.day/7)]?'🌳 The clubhouse — Pip\u2019s kingdom':BTN+' · 🌳 Pip\u2019s clubhouse';
