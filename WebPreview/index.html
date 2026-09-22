@@ -128,6 +128,18 @@
     flex:none;box-shadow:0 2px 4px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,215,110,.12)}
   .sel-seed .ct,.sel-eat .ct,.sel-wear .ct{background:#1a1208;border:1px solid #5a4525;border-radius:9px;
     padding:1px 8px;font-size:11px;white-space:nowrap}
+  /* item card grids */
+  .itemgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;padding:2px}
+  .itemcard{display:flex;flex-direction:column;align-items:center;gap:4px;background:linear-gradient(#241708,#180f06);
+    border:2px solid #4a3520;border-radius:11px;padding:9px 4px 7px;cursor:pointer;text-align:center;position:relative;
+    box-shadow:inset 0 1px 0 rgba(255,215,110,.08)}
+  .itemcard .iico{width:40px;height:40px}
+  .itemcard .icname{font-size:11px;color:#ffe9c4;line-height:1.25}
+  .itemcard .icct{font-size:10px;color:#cbb;background:#1a1208;border:1px solid #5a4525;border-radius:9px;padding:1px 8px}
+  .itemcard .icsub{font-size:9px;color:#998;line-height:1.2}
+  .itemcard:hover{background:#2a1d0d}
+  .itemcard.on{border-color:#ffd76e;box-shadow:0 0 12px rgba(255,215,110,.5),inset 0 1px 0 rgba(255,215,110,.25)}
+  .itemcard.on::after{content:'\25CF';position:absolute;top:5px;right:7px;color:#8fd070;font-size:9px}
   /* segmented tabs */
   .tabrow{gap:4px}
   .tab{flex:1;text-align:center;padding:6px 2px;background:#180f06;border:1px solid #5a4525;border-radius:7px;
@@ -200,7 +212,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.01</div></div></div>
+    <div class="ver">v11.02</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -3430,17 +3442,19 @@ function toggleBag(v){
     h+='<div class="invrow"><span>Grandfather\'s letter — "The farm is yours now. Make it bloom."</span></div>';
   }else if(BAGTAB==='seeds'){
     h+='<div class="invsec">SEEDS — tap to equip</div>';
-    let any=false;
+    let any=false;h+='<div class="itemgrid">';
     for(const id in G.inv.seed)if(G.inv.seed[id]>0){any=true;
       const c2=(MAPS.farm.crop_frames[id]||[]);
-      h+=`<div class="invrow sel-seed${+id===+G.selSeed?' on':''}" data-seed="${id}"><canvas class="iico" width="32" height="32" data-k="${c2[0]||''}"></canvas><span>${CROPS[id]} Seeds</span><span class="ct" style="margin-left:auto">x${G.inv.seed[id]}</span></div>`}
+      h+=`<div class="itemcard sel-seed${+id===+G.selSeed?' on':''}" data-seed="${id}"><canvas class="iico" width="40" height="40" data-k="${c2[0]||''}"></canvas><span class="icname">${CROPS[id]} Seeds</span><span class="icct">x${G.inv.seed[id]}</span>${+id===+G.selSeed?'<span class="icsub" style="color:#8fd070">equipped</span>':''}</div>`}
+    h+='</div>';
     if(!any)h+='<div class="invrow"><span style="color:#998">— none — buy seeds at Sari\'s stall</span></div>';
   }else if(BAGTAB==='crops'){
     h+='<div class="invsec">CROPS — sell at the market stall</div>';
-    let any=false;
+    let any=false;h+='<div class="itemgrid">';
     for(const id in G.inv.crop)if(G.inv.crop[id]>0){any=true;
       const c2=(MAPS.farm.crop_frames[id]||[]);
-      h+=`<div class="invrow sel-eat" data-eat="${id}"><canvas class="iico" width="32" height="32" data-k="${c2[c2.length-1]||''}"></canvas><span>${CROPS[id]}</span><span class="ct" style="margin-left:auto">x${G.inv.crop[id]} · eat +18⚡</span></div>`}
+      h+=`<div class="itemcard sel-eat" data-eat="${id}"><canvas class="iico" width="40" height="40" data-k="${c2[c2.length-1]||''}"></canvas><span class="icname">${CROPS[id]}</span><span class="icct">x${G.inv.crop[id]}</span><span class="icsub">eat +18⚡ · sell ${CROP_PRICE[id]||'?'}g</span></div>`}
+    h+='</div>';
     if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
     h+='<div class="invsec" style="color:#998;font-size:10px">tap a crop to eat it (+18⚡) · give crops to villagers for ♥</div>';
   }else if(BAGTAB==='cal'){
@@ -3528,9 +3542,11 @@ function toggleBag(v){
     h+='<div class="invsec">FORAGED FINDS — tap to eat, or sell at the stall</div>';
     let any=false;
     const EAT={mushroom:10,herb:14,egg:10,fish:8,truffle:30,berry:8,soup:35,honey:15,candy:30,apple:12,jam:20,stew:28,rfish:16,shell:2,feather:2,icefish:18,eel:20,cocoa:30,chestnut:4,roastnut:16,duckegg:12,custard:30,chowder:38,htea:25,tart:36,steg:40,segg:20,tonic:30,grill:26,salad:24,milk:12,cheese:40,pie:45,hcake:40,fsalad:35,cider:15,apie:42,bread:30};
+    h+='<div class="itemgrid">';
     for(const id in G.inv.item)if(G.inv.item[id]>0&&ITEMS[id]){any=true;
-      if(id==='scarf'){h+=`<div class="invrow sel-wear" data-wear="1"><canvas class="iico" width="32" height="32" data-k="scarf"></canvas><span>Woolen Scarf</span><span class="ct" style="margin-left:auto">x${G.inv.item[id]} · ${G.flags.scarfOn?'✓ worn — tap to take off':'tap to wear — keeps you cozy'}</span></div>`;continue}
-      h+=`<div class="invrow sel-eat" data-eati="${id}"><canvas class="iico" width="32" height="32" data-k="${ITEMS[id].icon}"></canvas><span>${ITEMS[id].name}</span><span class="ct" style="margin-left:auto">x${G.inv.item[id]}${ITEMS[id].sell?' · '+ITEMS[id].sell+'g':''}${EAT[id]?' · eat +'+EAT[id]+'⚡':''}</span></div>`}
+      if(id==='scarf'){h+=`<div class="itemcard sel-wear" data-wear="1"><canvas class="iico" width="40" height="40" data-k="scarf"></canvas><span class="icname">Woolen Scarf</span><span class="icct">x${G.inv.item[id]}</span><span class="icsub" style="color:#8fd070">${G.flags.scarfOn?'✓ worn — tap to take off':'tap to wear'}</span></div>`;continue}
+      h+=`<div class="itemcard sel-eat" data-eati="${id}"><canvas class="iico" width="40" height="40" data-k="${ITEMS[id].icon}"></canvas><span class="icname">${ITEMS[id].name}</span><span class="icct">x${G.inv.item[id]}</span><span class="icsub">${ITEMS[id].sell?'sell '+ITEMS[id].sell+'g':''}${ITEMS[id].sell&&EAT[id]?' · ':''}${EAT[id]?'eat +'+EAT[id]+'⚡':''}</span></div>`}
+    h+='</div>';
     if(!any)h+='<div class="invrow"><span style="color:#998">— none — try Sunpetal Forest east of the village</span></div>';
   }
   $('baglist').innerHTML=h;
