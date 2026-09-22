@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.71</div></div></div>
+    <div class="ver">v4.72</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -545,6 +545,8 @@ function loadMap(id,sx,sy){
     if(d.id==='fdec_barrel'){dd.meta.kind='barrel';dd.meta.name='the rain barrel'}
     if(d.id==='fdec_picnic'){dd.meta.kind='picnic';dd.meta.name='your picnic blanket'}
     G.objs.push(dd)}
+  if(id==='river'&&G.flags.rarch&&!G.objs.some(o=>o.fid==='rarch0'))
+    G.objs.push({key:'cairn',x:4.5,y:9.5,anchor:'bc',meta:{kind:'deco',name:'the stone arch — Fen\u2019s father\u2019s work, finished'},fid:'rarch0',hx:4.5,hy:9.5,ph:0});
   if(id==='river'&&season()!==3)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='penguin'));
   if(id==='farm'&&(G.weather==='rain'||G.weather==='storm')&&G.clock/60>=18&&G.clock/60<22){
     [[28.5,20.5],[33.5,22.5],[30.5,23.5]].forEach((pt,i)=>{
@@ -1414,6 +1416,9 @@ function talkTo(o){
           toast('🌸 Elle ties it on your door herself — it will bloom differently every season')}},
         {label:'Maybe later',cb:()=>toast('Elle drapes the wreath over her arm. “It\u2019ll wait — beauty does.”')}]);
     return}
+  if(m.id==='fen'&&!G.flags.rarch&&(G.inv.item.rstone||0)>=12){
+    G.inv.item.rstone-=12;G.flags.rarch=1;G.hearts.fen=Math.min(10,(G.hearts.fen||0)+3);G.stats.quests++;sfx('sfx_success');
+    startDlg(o,['Fen turns the twelfth stone over in his palm, then stills.','“My father started an arch at the river mouth — never finished it. These… these are his kind of stones.”','He works all afternoon. By dusk an arch stands over the bank path, crooked and perfect.','“He\u2019d have liked that you gathered them.” (+3 ♥ — the stone arch now stands at the river)']);save();return}
   if(m.id==='fen'&&(G.inv.item.fish||0)+(G.inv.item.rfish||0)>0&&!f['tale'+G.day]){
     f['tale'+G.day]=1;
     const TALE=['“Pfeh — that\u2019s nothing. Once I hooked a carp the size of a rowboat. We shared lunch. He paid.”',
