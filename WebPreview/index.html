@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.38</div></div></div>
+    <div class="ver">v5.39</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2070,6 +2070,9 @@ function talkTo(o){
       startDlg(o,['I pressed this between the herbarium pages all winter — a mountain posy, perfectly flat.','“Hang it where the morning light hits. Pressed flowers keep the sun inside.”','(A framed posy now hangs in your farmhouse — admire it once a day)']);return}
     G.inv.item.posy=(G.inv.item.posy||0)+1;collect('posy');
     startDlg(o,['A fresh pressing for you — the first color of the season, kept forever. (+1 Posy)']);return}
+  if(m.id==='cora'&&G.map==='carpentry'&&G.day%7===2&&!f['app'+G.day]){
+    f['app'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+4);G.gold+=10;G.hearts.cora=(G.hearts.cora||0)+1;sfx('sfx_success');
+    startDlg(o,['🔨 “Good timing — the Beam & Board order came in heavy.”','You haul pine planks to the yard while Cora points and nods approvingly.','She tosses you a coin. “Same time next week, apprentice.” (+4⚡ +10g +1♥)']);return}
   if(m.id==='cora'&&G.day%28===5&&!f['cinsp'+Math.floor(G.day/28)]){
     f['cinsp'+Math.floor(G.day/28)]=1;
     const nB=BUILDS.filter(b=>G.flags[b.flag]).length;
