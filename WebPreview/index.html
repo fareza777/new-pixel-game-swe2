@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.66</div></div></div>
+    <div class="ver">v4.67</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -476,6 +476,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'lite',x:sp[0],y:sp[1],anchor:'bc',meta:{kind:'forage',item:'llant',name:'a lantern, lit and humming — Hazel\u2019s'},fid:'lla0',hx:sp[0],hy:sp[1],ph:0});}
   if(id==='farm'&&G.flags.cordUntil&&G.day<=G.flags.cordUntil){
     G.objs.push({key:'planks',x:40.8,y:6.4,anchor:'bc',meta:{kind:'cord',name:'a cord of split firewood — Elm\u2019s delivery'},fid:'crd0',hx:40.8,hy:6.4,ph:0});}
+  if(id==='farm'&&G.flags.bl_trellis&&!G.objs.some(o=>o.fid==='trel0'))
+    G.objs.push({key:'flower_b',x:43.6,y:4.6,anchor:'bc',meta:{kind:'trellis',name:'a trellis of morning glories'},fid:'trel0',hx:43.6,hy:4.6,ph:0});
   if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'birdh',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
   if(id==='farm'&&!G.objs.some(o=>o.fid==='wbox')){
     const wkey=['deco_spr','deco_sum','deco_aut','deco_win'][season()];
@@ -2179,6 +2181,8 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_wagon',name:'Farm Wagon',price:60,sub:'a proper wagon by the lane'},
              {flag:'bl_pasture',name:'Pasture Fence',price:350,sub:'a fenced paddock south of the coop — the mare grazes out all day'},
              {flag:'bl_hay',name:'Hay Bale',price:25,sub:'golden bale for the coop corner'},
+             {flag:'bl_petbed',name:'Pet Bed',price:80,sub:'a cushion by the farmhouse hearth — your pets curl up there at night'},
+             {flag:'bl_trellis',name:'Morning Glory Trellis',price:60,sub:'climbing blooms beside your door — they greet spring dawns'},
              {flag:'bl_stable',name:'Horse Stable',price:700,sub:'a snug stable by the gate — room for a riding horse'},
              {flag:'bl_seedmk',name:'Seed Maker',price:300,sub:'feed it a crop — two seed packets by morning'},
              {flag:'bl_statue',name:'Founder Statue',price:500,sub:'only after you find every journal page'},
@@ -2538,7 +2542,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -2891,6 +2895,12 @@ function interact(){
       o.heart=60;toast('🦊 A wild fox — it might trust you if you offer a berry');return}
     G.petDay['fox']=G.day;o.follow=true;o.heart=60;sfx('sfx_talk');
     toast('🦊 The fox yips — it will pad along beside you today');return}
+  if(m.kind==='trellis'){
+    const morn=G.clock/60<10,good=season()===0||season()===1;
+    if(morn&&good&&!G.flags['trel'+G.day]){G.flags['trel'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+4);sfx('sfx_talk');
+      toast('🌸 Morning glories open only for the early risers (+4⚡)')}
+    else startDlg(o,[season()===2?'🌸 The vines curl gold — waiting out autumn':'🌸 '+(morn?'The blooms nod in the dawn air':'The blooms have closed for the day')+(good?'':' — they sleep until spring')]);
+    return}
   if(m.kind==='mic'){
     if(G.flags['mic'+G.day]){toast('🎤 The mic rests — you already sang your verse');return}
     G.flags['mic'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_talk');
@@ -4652,6 +4662,7 @@ function promptScan(){
       else if(m.kind==='petnap')txt=BTN+' · 💤 Morning cuddle';
       else if(m.kind==='supper')txt=BTN+' · 🕯 Eat supper';
       else if(m.kind==='mic')txt=BTN+' · 🎤 Take the mic';
+      else if(m.kind==='trellis')txt=BTN+' · 🌸 Smell the morning glories';
       else if(m.kind==='rstone')txt=BTN+' · 🪨 Take the river stone';
       else if(m.kind==='gpick')txt=BTN+' · ⛏ Pull the old pickaxe free';
       else if(m.kind==='awish')txt=BTN+' · ✨ Wish on the aurora';
