@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.40</div></div></div>
+    <div class="ver">v4.41</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2026,6 +2026,7 @@ const MART_GOODS=[...FARMDECOR.map(d=>({kind:'fdec',...d})),
                  {kind:'hen',id:'hen2',name:'Brown Hen',price:150,sub:'joins your coop — pet her daily for eggs'},
                  {kind:'horse',id:'horse1',name:'Chestnut Mare',price:900,sub:'needs a stable — saddle up and gallop'},
                  {kind:'psap',name:'Pear Sapling',price:200,sub:'plant it on bare earth — pears every autumn day'},
+    {kind:'mbox',name:'Mystery Crate',price:50,sub:'sealed, humming faintly — Mart swears the contents beat the price'},
     {kind:'pcard',id:'pc_spring',name:'Postcard · Spring',price:25,sub:'cherry snow over the orchard'},
                  {kind:'pcard',id:'pc_summer',name:'Postcard · Summer',price:25,sub:'fireflies over the pond'},
                  {kind:'pcard',id:'pc_autumn',name:'Postcard · Autumn',price:25,sub:'the bridge in a rain of leaves'},
@@ -2111,6 +2112,14 @@ function buyBuild(gd){
   $('shopmsg').textContent="Cora nods: '"+gd.name+" — it'll be standing on your farm by morning.'";shopRender();hudRender();save()}
 function buyMart(gd){
   if(G.shop&&G.shop.tab==='night'&&G.flags.nvip)gd={...gd,price:Math.ceil(gd.price*.9)};
+  if(gd.kind==='mbox'){
+    if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
+    G.gold-=gd.price;sfx('sfx_buy');
+    const pool=['starore','prism','goldore','iceshard','goldegg','clover','chanter'];
+    const win=pool[Math.floor(Math.random()*pool.length)];
+    G.inv.item[win]=(G.inv.item[win]||0)+1;collect(win);
+    $('shopmsg').textContent="The crate pops open with a sigh — a "+ITEMS[win].name+"! Mart winks: 'Told you. Worth more than fifty any day.'";
+    shopRender();hudRender();save();return}
   if(gd.kind==='psap'){
     if(G.flags.ptree){$('shopmsg').textContent="Mart chuckles: 'One pear tree is plenty for a farm your size.'";return}
     if(G.gold<gd.price){$('shopmsg').textContent="Not enough gold.";return}
