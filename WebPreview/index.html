@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.43</div></div></div>
+    <div class="ver">v4.44</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -465,6 +465,10 @@ function loadMap(id,sx,sy){
     G.solid.add('60,7');G.solid.add('60,8');G.solid.add('61,7');G.solid.add('61,8')}
   if(id==='farm'&&G.flags.bl_owlbox)G.objs.push({key:'owlbox',x:28.5,y:14.5,anchor:'bc',meta:{kind:'deco',name:'an owl nesting box — soft hoots inside'},fid:'bl_owlbox',hx:28.5,hy:14.5,ph:0});
   if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'deco',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
+  if(id==='farm'&&!G.objs.some(o=>o.fid==='wbox')){
+    const wkey=['deco_spr','deco_sum','deco_aut','deco_win'][season()];
+    const wname=['box of crocuses','box of marigolds','box of asters','box of frost ferns'][season()];
+    G.objs.push({key:wkey,x:44.6,y:4.9,meta:{kind:'deco',name:'the window box — '+wname},fid:'wbox',hx:44.6,hy:4.9,ph:0})}
   if(id==='farm'&&G.flags.bl_birdh&&G.forageDay['farm|feather']!==G.day&&G.clock/60<9&&Math.random()<.5)
     G.objs.push({key:'feather',x:34.5,y:16.5,anchor:'c',meta:{kind:'forage',item:'feather',name:'a songbird feather'},fid:'fth0',hx:34.5,hy:16.5,ph:0});
   if(id==='farm'&&((G.day-1)%28)+1===21&&G.clock/60>=17&&G.clock/60<20){
