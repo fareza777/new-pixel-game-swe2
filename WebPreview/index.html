@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.62</div></div></div>
+    <div class="ver">v4.63</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2618,7 +2618,9 @@ function interact(){
       if(!spendSta(2))return;
       const gq=c.giant?3:1;if(c.giant){G.stats.giants=(G.stats.giants||0)+1;c.giant=false}
       G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+gq;G.stats.crops+=gq;collect('c'+c.crop);gainXP('farm',5);
-      if(Math.random()<.08){G.inv.item.goldstar=(G.inv.item.goldstar||0)+1;collect('goldstar');
+      if(G.day%14===7&&season()===2&&(G.clock/60>=18||G.clock/60<5)){G.inv.crop[c.crop]++;G.stats.crops++;collect('c'+c.crop);
+        sfx('sfx_success');toast('🌕 The Harvest Moon doubles your basket!')}
+      else if(Math.random()<.08){G.inv.item.goldstar=(G.inv.item.goldstar||0)+1;collect('goldstar');
         sfx('sfx_success');toast('✨ A Golden Crop! It shines in your basket (+50g if sold)')}
       G.flags.harvested=(G.flags.harvested||0)+1;
       swing('basket',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
