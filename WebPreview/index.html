@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.85</div></div></div>
+    <div class="ver">v10.86</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -425,6 +425,17 @@ function bakeLayer(id){
       if(r<0.075){g.fillStyle=r<0.037?'rgba(44,94,36,.13)':'rgba(88,124,50,.10)';
         g.fillRect(x*S3,y*S3,S3,S3)}
     }
+    // texture speckle: pebbles/wear on path & dirt, grain on sand
+    for(const lay of ['path','dirt','sand']){const t=M.tiles[lay];if(!t)continue;
+      const isSand=lay==='sand';
+      for(const k in t){if(!/^-?\d+,-?\d+$/.test(k))continue;
+        const[x,y]=k.split(',').map(Number);
+        for(let i=0;i<3;i++){
+          const h=((x*40503+y*2654435761+i*97)>>>0);
+          const px=(h>>>8)%(S3-6),py=(h>>>19)%(S3-6),sz=2+(h>>>27)%3;
+          g.fillStyle=isSand?'rgba(140,110,60,.22)':'rgba(90,62,40,.24)';
+          g.fillRect(x*S3+px,y*S3+py,sz,sz);}
+      }}
     // ledge shadow: darken the ground just below a rock band's south edge
     const R={rockyslope:1,heathstone:1,cliffedge:1};
     for(const k in M.tiles.ground){const v=M.tiles.ground[k];
