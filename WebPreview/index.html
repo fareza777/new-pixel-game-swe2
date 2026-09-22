@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.23</div></div></div>
+    <div class="ver">v4.24</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -788,6 +788,11 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'furnace',x:46.5,y:10.4,meta:{kind:'furn',name:'the smelting furnace'},fid:'furn0'});G.solid.add('46,10')}
   if(id==='farm'&&G.flags.bl_kiln){
     G.objs.push({key:'furnace',x:44.5,y:8.4,meta:{kind:'kiln',name:'the pottery kiln'},fid:'kiln0'});G.solid.add('44,8')}
+  if(id==='farm'&&G.flags.bl_tree){
+    G.objs.push({key:'tree15',x:8.5,y:17.5,anchor:'bc',meta:{kind:'deco',name:'the old oak — someone hammered a lookout into her arms'},fid:'ttr0'});
+    G.objs.push({key:'ladder',x:8.5,y:18.6,meta:{kind:'treeh',name:'the treehouse ladder'},fid:'ttr1'});}
+  if(id==='farm'&&G.flags.bl_tree&&G.day%7===6&&G.clock/60>=14&&G.clock/60<17&&!G.objs.some(o=>o.fid==='ttr_p'))
+    G.objs.push({key:'pip_down0',x:9.6,y:17.8,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'ttr_p',hx:9.6,hy:17.8,ph:0});
   if(id==='farm'&&G.flags.scare&&!G.objs.some(o=>o.fid==='scare0')){
     G.objs.push({key:'scare',x:16.5,y:8.6,anchor:'bc',meta:{kind:'deco',name:'the scarecrow'},fid:'scare0'})}
   if(id==='farm'&&G.flags.ghouse){
@@ -1520,6 +1525,9 @@ function talkTo(o){
     lines.unshift("Here — a leftover sandwich from the basket. Picnics taste better shared! (+15⚡)")}
   if(m.id==='vilo'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel's lemonade + river breeze — this is the life, kid.")}
+  if(m.id==='pip'&&o.fid==='ttr_p'&&!f['treepip'+G.day]){
+    f['treepip'+G.day]=1;G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);
+    lines.unshift('“You built a HEADQUARTERS!” Pip is halfway up the ladder already.','“Rule one: no grown-ups. Rule two — okay, you\u2019re allowed. You built it.” (+1 ♥)')}
   if(m.id==='pip'&&G.day%7===0&&G.clock/60>=13&&G.clock/60<17&&!f['marb'+G.day]){
     f['marb'+G.day]=1;sfx('sfx_talk');
     startDlg(o,["*Pip shakes a sock of marbles* — Sunday game! 10g in the pot, winner takes all.","My blue swirl against your pick. Ready?"],
@@ -2011,7 +2019,8 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_vane',name:'Weather Vane',price:140,sub:'reads tomorrow’s weather from the wind'},
              {flag:'bl_compost',name:'Compost Bin',price:110,sub:'kitchen scraps in — rich fertilizer out by morning'},
              {flag:'bl_dewc',name:'Dew Collector',price:90,sub:'a silvered dish — a cup of spring water every dawn'},
-             {flag:'bl_kiln',name:'Pottery Kiln',price:250,ore:1,sub:'needs 1 ore — river clay becomes glazed vases overnight'}];
+             {flag:'bl_kiln',name:'Pottery Kiln',price:250,ore:1,sub:'needs 1 ore — river clay becomes glazed vases overnight'},
+             {flag:'bl_tree',name:'The Treehouse',price:400,ore:2,sub:'needs 2 ore — a hideout in the old oak; Pip will absolutely claim it'}];
 function buyBuild(gd){
   const f=G.flags;
   if(gd.flag==='bl_statue'&&!f.gwatch){toast('Cora: "Find all of the founder\u2019s journal pages first."');return}
@@ -2346,7 +2355,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3452,6 +3461,15 @@ function interact(){
     G.furYield=FURNMAP[pk];G.furBusy=true;G.furReady=G.day+1;
     sfx('sfx_cook');swing('basket',o.x,o.y);
     toast('🔥 '+ITEMS[pk].name+' feeds the fire — smelted by morning');hudRender();save();return}
+  if(m.kind==='treeh'){
+    sfx('sfx_walk');
+    if(G.flags['tth'+G.day]){startDlg(o,['🌳 You poke your head up — the same green valley, the same good view.']);return}
+    G.flags['tth'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
+    const VIEW=G.weather==='rain'?'Rain threads the whole valley silver — you can see your whole farm from here, every bed you\u2019ve hoed.':
+      G.weather==='snow'||season()===3?'The valley sleeps under white — smoke curls from the chimneys of every house that welcomed you in.':
+      G.clock/60>=17?'Golden hour pours over Sunpetal — the windmill turns, the pond catches fire with light.':
+      'From up here the valley is a quilt — your patch is the warmest square. (+8⚡)';
+    startDlg(o,['🌳 You climb into the little wooden hideout.','Pip has already carved his initials beside the window.',VIEW]);return}
   if(m.kind==='kiln'){
     if(G.flags.kilnReady&&G.flags.kilnReady<=G.day){
       G.inv.item.vase=(G.inv.item.vase||0)+1;collect('vase');
@@ -4388,6 +4406,7 @@ function promptScan(){
       else if(m.kind==='boatfish')txt=G.tool==='rod'?BTN+' · 🚣 Row out & fish the deep':TOOL_EMOJI.rod+' Equip Fishing Rod (tap TOOL)';
       else if(m.kind==='furn')txt=G.furReady&&G.furReady<=G.day?BTN+' · ⚒ Collect the smelted bar':(G.furBusy?BTN+' · 🔥 Still smelting…':BTN+' · 🔥 Smelt an ore');
       else if(m.kind==='kiln')txt=G.flags.kilnReady&&G.flags.kilnReady<=G.day?BTN+' · 🏺 Collect the vase':(G.flags.kilnBusy?BTN+' · 🏺 Still firing…':BTN+' · 🏺 Fire 2 river clay');
+      else if(m.kind==='treeh')txt=G.flags['tth'+G.day]?'🌳 The treehouse — your view, any time':BTN+' · 🌳 Climb the treehouse';
       else if(m.kind==='jar')txt=G.jarReady&&G.jarReady<=G.day?BTN+' · 🍓 Collect the preserves':(G.jarBusy?BTN+' · 🫙 Still steeping…':BTN+' · 🫙 Jar a fruit or herb');
       else if(m.kind==='cart')txt=BTN+' · 🛒 '+(G.flags.mineB2?'Ride the cart to B2':(G.flags.mineB1?'Ride the cart to B1':'The cart is cold — reach the deep mine first'));
       else if(m.kind==='fund')txt=BTN+' · 🏛 Beautification Fund ('+[0,100,250,500][(G.flags.fundTier||0)+1]||'done'+'g)';
