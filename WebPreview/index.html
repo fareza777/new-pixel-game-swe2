@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.46</div></div></div>
+    <div class="ver">v11.47</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -4099,6 +4099,13 @@ function interact(){
             '💍 You\u2019re engaged to '+m.name+'!']);save()}},
         {label:'…not yet',cb:()=>{}}]);return}
     if(m.id===G.spouse){
+      if(G.day%7===3&&G.flags.wedDone&&!G.flags['err'+G.day]){
+        const ERR={bram:'herb',sari:'fish',vilo:'mushroom',nana:'berry',mira:'posy',pip:'apple',fen:'shell',wren:'chestnut',luna:'firefly',hazel:'milk',cora:'acorn',elle:'wool',mart:'truffle',tom:'rfish',elm:'chestnut'}[m.id]||'berry';
+        if((G.inv.item[ERR]||0)>0){G.inv.item[ERR]--;G.hearts[m.id]=10;G.flags['err'+G.day]=1;G.gold+=15;sfx('sfx_success');
+          startDlg(o,['"You brought a '+ITEMS[ERR].name+' — just what I needed today, love. You always know."',
+            '"Here — a little pocket money for the errand." (+15g · weekly errand for '+m.name+')']);save();return}
+        if(!G.flags['errAsk'+G.day]){G.flags['errAsk'+G.day]=1;
+          startDlg(o,['"Could you fetch me a '+ITEMS[ERR].name+' today, love? I\u2019d owe you one."']);return}}
       const hasGift2=G.tool==='basket'&&((G.inv.item.bq||0)>0||Object.keys(G.inv.crop).some(k=>G.inv.crop[k]>0)||Object.keys(G.inv.item).some(k=>G.inv.item[k]>0&&GIFTABLE[k]));
       if(hasGift2&&G.talkDay['gift_'+m.id]!==G.day){G.shop={tab:'gift',m:m};G.state='shop';uiBusy();shopRender();return}
       if(!G.flags.wedDone){G.flags.wedDone=1;sendMail('Mayor Bram','The whole village toasted you both at the Lantern last night. May your farm always smell of morning. — Bram');
