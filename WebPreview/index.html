@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.44</div></div></div>
+    <div class="ver">v4.45</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -623,6 +623,11 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'flatstone',x:9.5,y:11.5,meta:{kind:'skip',name:'a flat skipping stone'},fid:'skip0',hx:9.5,hy:11.5,ph:0});
   if(id==='river'&&G.day%7===0&&G.clock/60>=14&&G.clock/60<18&&!G.objs.some(o=>o.fid==='skc_p'))
     G.objs.push({key:'pip_down0',x:8.5,y:11.5,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'skc_p',hx:8.5,hy:11.5,ph:0});
+  if(id==='river'&&G.day%7===6&&G.weather==='wind'&&G.clock/60>=13&&G.clock/60<17){
+    if(!G.objs.some(o=>o.fid==='reg_p'))
+      G.objs.push({key:'pip_down0',x:9.5,y:3.4,anchor:'bc',meta:{kind:'npc',id:'pip',name:'Pip',portrait:'pip_portrait'},fid:'reg_p',hx:9.5,hy:3.4,ph:0});
+    if(!G.objs.some(o=>o.fid==='reg_b'))
+      G.objs.push({key:'pboat',x:9.5,y:4.5,meta:{kind:'rboat',name:'two paper boats, ready to race'},fid:'reg_b',hx:9.5,hy:4.5,ph:0});}
   if(id==='river'&&!G.objs.some(o=>o.fid==='goldpan'))
     G.objs.push({key:'goldore',x:6.5,y:12.5,meta:{kind:'goldpan',name:'a glittering gravel bar'},fid:'goldpan',hx:6.5,hy:12.5,ph:0});
   if(id==='river')for(const p of [[7.5,13.8],[17.5,10.5]]){
@@ -2446,7 +2451,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3558,6 +3563,14 @@ function interact(){
     G.furYield=FURNMAP[pk];G.furBusy=true;G.furReady=G.day+1;
     sfx('sfx_cook');swing('basket',o.x,o.y);
     toast('🔥 '+ITEMS[pk].name+' feeds the fire — smelted by morning');hudRender();save();return}
+  if(m.kind==='rboat'){
+    if(G.flags['regatta'+G.day]){toast('⛵ Pip waves you off — one regatta a day, official rules');return}
+    G.flags['regatta'+G.day]=1;sfx('sfx_wish');
+    const win=Math.random()<.5;
+    if(win){G.gold+=20;G.hearts.pip=Math.min(10,(G.hearts.pip||0)+1);G.stats.quests++;
+      startDlg(o,['⛵ Pip counts down — THREE, TWO, GO!','Your boat catches the fast current and sails under the bridge first!','“NO WAY! Best three out of — okay, you win. For today.” (+20g, +1 ♥)']);}
+    else{G.sta=Math.min(100+(G.maxsta||0),G.sta+6);
+      startDlg(o,['⛵ Pip counts down — THREE, TWO, GO!','His boat bobs through the rapids just ahead of yours.','“The S.S. Pip remains undefeated! Same time next windy day?” (+6⚡)'])}return}
   if(m.kind==='tincan'){
     if(G.flags['tin'+G.day]){toast('🥫 The string hums faintly — Pip will be back on the line tomorrow');return}
     G.flags['tin'+G.day]=1;sfx('sfx_talk');
@@ -4548,6 +4561,7 @@ function promptScan(){
       else if(m.kind==='bell')txt=G.flags['bell'+G.day]?'🔔 The Great Bell hums faintly':BTN+' · 🔔 Ring the Great Bell';
       else if(m.kind==='lite')txt=G.flags['lite'+G.day]?'🗼 The lighthouse turns, faithful':BTN+' · 🗼 Walk the lighthouse deck';
       else if(m.kind==='tincan')txt=G.flags['tin'+G.day]?'🥫 The line\u2019s quiet till tomorrow':BTN+' · 🥫 Call Pip on the tin-can';
+      else if(m.kind==='rboat')txt=G.flags['regatta'+G.day]?'⛵ The regatta is done for today':BTN+' · ⛵ Race Pip\u2019s boat downstream';
       else if(m.kind==='jar')txt=G.jarReady&&G.jarReady<=G.day?BTN+' · 🍓 Collect the preserves':(G.jarBusy?BTN+' · 🫙 Still steeping…':BTN+' · 🫙 Jar a fruit or herb');
       else if(m.kind==='cart')txt=BTN+' · 🛒 '+(G.flags.mineB2?'Ride the cart to B2':(G.flags.mineB1?'Ride the cart to B1':'The cart is cold — reach the deep mine first'));
       else if(m.kind==='fund')txt=BTN+' · 🏛 Beautification Fund ('+[0,100,250,500][(G.flags.fundTier||0)+1]||'done'+'g)';
