@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.37</div></div></div>
+    <div class="ver">v5.38</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -480,6 +480,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'vportrait',x:7.5,y:3.2,anchor:'c',meta:{kind:'deco',name:'your framed portrait by Vilo & Cora'},fid:'vportrait',hx:7.5,hy:3.2,ph:0});
   if(id==='house'&&G.flags.fjar&&!G.objs.some(o=>o.fid==='fjar0'))
     G.objs.push({key:'fjar',x:4.6,y:3.2,anchor:'c',meta:{kind:'deco',name:'a firefly lantern, softly glowing'},fid:'fjar0',hx:4.6,hy:3.2,ph:0});
+  if(id==='house'&&G.flags.deco_herb&&G.forageDay['house|hpot']!==G.day&&!G.objs.some(o=>o.fid==='hpot'))
+    G.objs.push({key:'herb_01',x:4.6,y:2.0,anchor:'c',meta:{kind:'forage',item:'herb',name:'a sprig ready for snipping'},fid:'hpot',hx:4.6,hy:2.0,ph:0});
   if(id==='house')for(const d of DECOR)if(G.flags[d.id]){
     G.objs.push({key:d.spr,x:d.x,y:d.y,meta:{kind:'deco'},fid:'deco_'+d.id,hx:d.x,hy:d.y,ph:0});
     if(d.spr==='lamp01')G.objs[G.objs.length-1].meta.light=true;}
@@ -2297,7 +2299,8 @@ function shopRender(){
 const DECOR=[{id:'deco_plant',name:'Potted Plant',price:60,spr:'plantpot',x:2.8,y:4.6,sub:'greens up a corner'},
              {id:'deco_lamp',name:'Reading Lamp',price:80,spr:'lamp01',x:12.2,y:4.6,sub:'warm evening light'},
              {id:'deco_rug',name:'Round Rug',price:50,spr:'rug_b',x:7.5,y:8.2,sub:'cozy floor rug'},
-             {id:'deco_shelf',name:'Wall Shelf',price:90,spr:'shelf_01',x:12.6,y:2.9,sub:'for your keepsakes'}];
+             {id:'deco_shelf',name:'Wall Shelf',price:90,spr:'shelf_01',x:12.6,y:2.9,sub:'for your keepsakes'},
+             {id:'deco_herb',name:'Windowsill Herbs',price:45,spr:'pot10',x:4.6,y:2.4,sub:'snip a fresh herb each morning'}];
 const CORD=[{id:'cord_shelf',name:'Oak Bookshelf',price:130,spr:'shelf_01',x:5.5,y:2.4,sub:'carved for the wall beside your bed'},
             {id:'cord_dress',name:'Cedar Dresser',price:160,spr:'crate_03',x:14.5,y:5.5,sub:'smells of the forest'},
             {id:'cord_box',name:'Window Planter',price:90,spr:'pot15',x:5.5,y:8.6,sub:'for herbs in the sun'}];
