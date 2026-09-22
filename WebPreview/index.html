@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.80</div></div></div>
+    <div class="ver">v10.81</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -416,6 +416,15 @@ function bakeLayer(id){
     const t=M.tiles[lay];if(!t)continue;
     for(const k in t)if(wtkey.test(t[k]))wt[k]=t[k];
   }
+  // tonal variation: scattered darker/olive blotches so grass isn't one flat green
+  if(!M.indoor&&M.tiles.ground){const S3=T*SCALE;
+    for(let y=0;y<M.H;y++)for(let x=0;x<M.W;x++){
+      const k=x+','+y,v=M.tiles.ground[k];
+      if(!v||v[0]!=='g'||wt[k])continue;
+      const r=((x*40503+y*2654435761)>>>0>>>16)/65536;
+      if(r<0.075){g.fillStyle=r<0.037?'rgba(44,94,36,.13)':'rgba(88,124,50,.10)';
+        g.fillRect(x*S3,y*S3,S3,S3)}
+    }}
   const depthQ=[];
   if(Object.keys(wt).length){
     const S=T*SCALE;
