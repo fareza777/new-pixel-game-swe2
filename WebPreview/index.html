@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.74</div></div></div>
+    <div class="ver">v5.75</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -512,6 +512,8 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_silo){G.objs.push({key:'silo',x:60.5,y:9.0,meta:{kind:'deco',name:'Feed Silo'},fid:'bl_silo',hx:60.5,hy:9,ph:0});
     G.solid.add('60,7');G.solid.add('60,8');G.solid.add('61,7');G.solid.add('61,8')}
   if(id==='farm'&&G.flags.bl_owlbox)G.objs.push({key:'owlbox',x:28.5,y:14.5,anchor:'bc',meta:{kind:'deco',name:'an owl nesting box — soft hoots inside'},fid:'bl_owlbox',hx:28.5,hy:14.5,ph:0});
+  if(id==='farm'&&G.flags.bl_owlbox&&G.weather!=='rain'&&G.weather!=='storm'&&G.clock/60>=21&&G.clock/60<24&&!G.objs.some(o=>o.fid==='ohnt0'))
+    G.objs.push({key:'barnowl',x:36.5,y:8.5,anchor:'bc',meta:{kind:'owlhunt',name:'the barn owl, quartering the dark'},fid:'ohnt0',hx:36.5,hy:8.5,ph:0});
   if(id==='farm'&&G.flags.bl_owlbox&&G.forageDay['farm|pel0']!==G.day&&G.clock/60<14&&!G.objs.some(o=>o.fid==='pel0'))
     G.objs.push({key:'peb',x:29.5,y:15.5,anchor:'c',meta:{kind:'forage',item:'pellet',name:'an owl pellet — tidy, mysterious, faintly warm'},fid:'pel0',hx:29.5,hy:15.5,ph:0});
   if(id==='village'&&G.day%7===3&&G.clock/60>=18&&G.clock/60<23&&!G.flags['llant'+G.day]&&!G.inv.item.llant){
@@ -2872,7 +2874,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight','wash','libr','bath','wgoose','dbell','swing2','hollow','wstone','scnote','icelant','swindow','brub','pframe','stkite','sdswap','njr','murm','ttale','fawn','batf','gauge','lick','fsign','baitbx','frostfl','clouds','ferret','cidbar','qbee','incat','hshoe','kettle','sough','choir','dchorus','csip','skips','nook','fstar','rowboat','gosl','potluck','skylark','chick','snail','flyover','tally','earlyloaf','omist','sunspot','cbeam','rook','rswing','leaprun','glowcap','vbell'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight','wash','libr','bath','wgoose','dbell','swing2','hollow','wstone','scnote','icelant','swindow','brub','pframe','stkite','sdswap','njr','murm','ttale','fawn','batf','gauge','lick','fsign','baitbx','frostfl','clouds','ferret','cidbar','qbee','incat','hshoe','kettle','sough','choir','dchorus','csip','skips','nook','fstar','rowboat','gosl','potluck','skylark','chick','snail','flyover','tally','earlyloaf','omist','sunspot','cbeam','rook','rswing','leaprun','glowcap','vbell','owlhunt'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3580,6 +3582,10 @@ function interact(){
       else startDlg(o,['🐦 Three small heads peek out, chirping a bright good-morning.','(+5⚡ — the dawn chorus follows you all morning)'])}
     else startDlg(o,[morn?'🐦 Quiet inside — the wrens are out hunting breakfast.':'🐦 The wrens are busy elsewhere — check back at sunrise in spring or summer.']);
     return}
+  if(m.kind==='owlhunt'){
+    if(G.flags['oh'+G.day]){toast('🦉 The night’s hunt is done');return}
+    G.flags['oh'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+2);sfx('sfx_bird');
+    toast('🦉 A white shape drops — silent, certain — and lifts again carrying the dark. (+2⚡)');return}
   if(m.kind==='vbell'){
     if(G.flags['vb'+G.day]){toast('🔔 It’s rung its one ring for you');return}
     G.flags['vb'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+2);sfx('sfx_bell');
@@ -5392,6 +5398,7 @@ function promptScan(){
       else if(m.kind==='btn')txt=BTN+' · 🪡 Pocket the brass button';
       else if(m.kind==='rcut')txt=BTN+' · 🎀 Cut the dedication ribbon';
       else if(m.kind==='cairn')txt=BTN+' · 🗿 Touch the waymark';
+      else if(m.kind==='owlhunt')txt=G.flags['oh'+G.day]?'🦉 She’s gone back to her box, fed and smug':BTN+' · 🦉 Watch the owl hunt';
       else if(m.kind==='vbell')txt=G.flags['vb'+G.day]?'🔔 The bell hums, spent':BTN+' · 🔔 Ring the Sunday bell';
       else if(m.kind==='glowcap')txt=G.flags['gl'+G.day]?'🍄 The glow dims a little, as if shy':BTN+' · 🍄 Watch the glowcaps breathe';
       else if(m.kind==='leaprun')txt=G.flags['lp'+G.day]?'🐟 The run has thinned to stragglers':BTN+' · 🐟 Count the leaping fish';
