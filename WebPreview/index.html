@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.97</div></div></div>
+    <div class="ver">v10.98</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -3522,6 +3522,12 @@ function pickAction(){
   }
   return best;
 }
+function aoeCells(cx,cy,tier){
+  const C=[[cx,cy]];
+  if(tier>=1)C.push([cx-1,cy],[cx+1,cy]);
+  if(tier>=2)C.push([cx,cy-1],[cx,cy+1]);
+  return C;
+}
 function spendSta(n){
   n=G.flags.bl_steel?Math.max(1,n-2):(G.flags.copper?Math.max(1,n-1):n);
   if(G.flags.sharpDay===G.day)n=Math.max(1,n-1);
@@ -3589,9 +3595,18 @@ function interact(){
     loadMap('farm',G.hero.x,G.hero.y,true);
     toast('🌱 Pear sapling planted — she\u2019ll be a full tree by morning');save();return}
   if(best.kind==='till'){
-    if(G.tool==='hoe'){if(!spendSta(4))return;G.crops[G.map][best.k]={crop:0,stage:0,watered:false,soil:true};sfx('sfx_plant');
+    if(G.tool==='hoe'){if(!spendSta(4))return;
+      const tier=G.flags.bl_steel?2:G.flags.copper?1:0,zone=G.L.tillable||[];let n=0;
+      if(!G.crops[G.map])G.crops[G.map]={};
+      for(const[tx,ty]of aoeCells(best.cx,best.cy,tier)){
+        const tk=tx+','+ty;
+        if(G.crops[G.map][tk])continue;
+        if(zone.length&&!zone.some(r=>tx>=r[0]&&tx<=r[2]&&ty>=r[1]&&ty<=r[3]))continue;
+        if(G.objs.some(o=>Math.abs(o.x-(tx+.5))<1&&Math.abs(o.y-(ty+.5))<1))continue;
+        G.crops[G.map][tk]={crop:0,stage:0,watered:false,soil:true};n++}
+      sfx('sfx_plant');
       swing('hoe',best.cx+.5,best.cy+.5);
-      toast('🪓 Tilled! Now equip 🌱 Seeds (tap TOOL) and press A to plant')}
+      toast('🪓 Tilled'+(n>1?' '+n+' tiles — your '+(tier===2?'Steel':'Copper')+' tools cover more ground':'')+'! Equip 🌱 Seeds and press A to plant')}
     else toast(TOOL_EMOJI.hoe+' Equip the Hoe to till this soil — tap TOOL');
     return}
   if(best.kind==='bloom'){toast('The Sunpetal blooms — tell Mayor Bram!');return}
@@ -3631,8 +3646,11 @@ function interact(){
       if(G.tool!=='can'){toast(TOOL_EMOJI.can+' Equip the Watering Can to water — tap TOOL');return}
       if(!G.flags.goldCan&&!spendSta(2))return;
       c.watered=true;c.care=(c.care||0)+1;G.flags.watered=true;sfx('sfx_water');
+      const tier=G.flags.bl_steel?2:G.flags.copper?1:0;let extra=0;
+      if(tier>0)for(const[tx,ty]of aoeCells(best.cx,best.cy,tier)){const oc=(G.crops[G.map]||{})[tx+','+ty];
+        if(oc&&oc.crop>0&&!oc.watered){oc.watered=true;oc.care=(oc.care||0)+1;extra++}}
       swing('can',Math.floor(G.hero.x)+.5,Math.floor(G.hero.y)+.5);
-      toast('💧 Watered! It grows overnight — sleep in your bed at home');return}
+      toast('💧 Watered'+(extra?' +'+extra+' more — '+(tier===2?'Steel':'Copper')+' reach':'')+'! It grows overnight — sleep in your bed at home');return}
     return}
   // objects
   const o=best.o,m=best.m;
