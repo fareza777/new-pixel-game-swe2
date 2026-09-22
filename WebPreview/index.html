@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.31</div></div></div>
+    <div class="ver">v4.32</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -227,6 +227,7 @@ const GIFTABLE={ofeather:1,moondew:1,scarf:1,flour:1,bread:1,starore:1,ibar:1,gb
   crab:1,csoup:1,cherry:1,cpie:1,iceshard:1,jam:1,tart:1,steg:1,chowder:1,custard:1,htea:1,stew:1,soup:1,cheese:1,mayo:1,segg:1,shell:1,pearl:1,clover:1,firefly:1,butterfly:1,starflower:1,goldore:1,grill:1,apie:1,cider:1,goldapple:1,salad:1,goldfish:1,kingfish:1,eel:1,cocoa:1,lily:1,sketch:1,cider:1,goldapple:1,salad:1};
 const LOVES={bram:['stew','chowder'],sari:['c23','tart'],vilo:['rfish','chowder'],nana:['herb','htea'],mira:['posy','tart'],pip:['candy','c23','cherry'],fen:['rfish','stew','crab'],wren:['starflower','orchid','mshroom','lily','snowdrop','chanter'],luna:['crystal','segg','starore','iceshard'],hazel:['chowder','cheese'],cora:['steg','jam'],elle:['wool','posy','lily','sunfl'],mart:['truffle','goldore'],elm:['acorn','chestnut','truffle']};
 const LOVESAY={bram:'"My favorite! You remembered what an old man loves. (+4 ♥)"',sari:'"Strawberries! You sweet, sweet child! (+4 ♥)"',vilo:'"Now THAT is a proper gift, kid. (+4 ♥)"',nana:'"For my teas! You dear thing. (+4 ♥)"',mira:'"It is beautiful — I will treasure it! (+4 ♥)"',pip:'"WHOA. For me?! Best. Day. Ever. (+4 ♥)"',fen:'"Ha! You know the way to a fishermans heart. (+4 ♥)"',wren:'"For my collection — I shall press it tonight! (+4 ♥)"',luna:'"It glimmers like the night sky. I love it. (+4 ♥)"',hazel:'"Ooh, my favorite! Youre an angel. (+4 ♥)"',cora:'"Sturdy AND pretty — just how I like it. (+4 ♥)"',elle:'"Such fine material — you have a tailors eye! (+4 ♥)"',mart:'"A rare find! You drive a hard bargain, friend. (+4 ♥)"',elm:'"For the workbench — good oak, this. You know your timber. (+4 ♥)"'};
+const DOTD=['soup','stew','tart','bread','hcake','chowder','salad','pie'];
 const RECIPES=[
       {id:'soup',need:{mushroom:1,berry:1}},
       {id:'jam',need:{berry:2}},
@@ -1573,6 +1574,13 @@ function talkTo(o){
     lines.unshift("Windday is the BEST! Help me get her higher — grab the line!")}
   if(m.id==='pip'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel let me have TWO sandwiches. Don't tell Mom!")}
+  if(m.id==='hazel'&&G.map==='inn'&&!f['dotd'+G.day]){
+    const dd=DOTD[G.day%DOTD.length];
+    if((G.inv.item[dd]||0)>0){f['dotd'+G.day]=1;G.inv.item[dd]--;
+      const pay=Math.round((ITEMS[dd].sell||20)*1.5)+20;G.gold+=pay;
+      G.hearts.hazel=Math.min(10,(G.hearts.hazel||0)+1);sfx('sfx_coin');G.stats.quests++;
+      lines.unshift('“That smell—” Hazel snatches the plate, samples it with a chef\u2019s nod.','“Today\u2019s special, straight from my board. Customers will fight for it. (+'+pay+'g, +1 ♥)”')}
+    else lines.unshift('Hazel taps the chalkboard: “Special today is '+ITEMS[dd].name+'. Bring me one and I\u2019ll pay over the counter price.”')}
   if(m.id==='hazel'&&(G.weather==='rain'||G.weather==='storm'))
     lines.unshift("Rain on the window, fire in the hearth — I've got cocoa on the stove today, dear.")
   if(m.id==='hazel'&&G.map==='inn'&&G.day%7===5&&G.clock/60>=18&&G.clock/60<22&&G.flags.songbook&&!f['sung'+G.day]){
