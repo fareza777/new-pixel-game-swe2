@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.37</div></div></div>
+    <div class="ver">v4.38</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -673,6 +673,11 @@ function loadMap(id,sx,sy){
       if(!G.objs.some(o=>o.fid==='gal_v'))G.objs.push({key:'vilo_down0',x:9,y:5.5,anchor:'bc',meta:{kind:'npc',id:'vilo',name:'Vilo',portrait:'vilo_portrait'},fid:'gal_v',hx:9,hy:5.5,ph:0});
       for(let i=0;i<3;i++)if(!G.objs.some(o=>o.fid==='gal'+i))
         G.objs.push({key:'easel',x:7+i*1.6,y:3.4,meta:{kind:'gala',name:"Vilo's painting"},fid:'gal'+i})}}
+  if(id==='inn'&&G.day%7===4&&G.clock/60>=19&&G.clock/60<21){
+    const BC=[['mira',8.6,5.4],['elle',10.4,5.4],['nana',9.4,7.2]];
+    BC.forEach(([pid,px2,py2],i)=>{if(!G.objs.some(o=>o.fid==='bc_'+pid))
+      G.objs.push({key:pid+'_down0',x:px2,y:py2,anchor:'bc',
+        meta:{kind:'npc',id:pid,name:VNAME[pid],portrait:pid+'_portrait',bclub:1},fid:'bc_'+pid,hx:px2,hy:py2,ph:i})})}
   if(id==='inn'&&G.day%7===5){const hd=G.clock/60;
     if(hd>=17&&hd<22){const INN={bram:[4.5,7.6],sari:[13.5,7.6],vilo:[13.5,9.2]};
       for(const k in INN){G.objs.push({key:k+'_down0',x:INN[k][0],y:INN[k][1],anchor:'bc',anim:{frames:[k+'_down0',k+'_down1',k+'_down2',k+'_down1'],fps:6},meta:{kind:'npc',id:k,name:{bram:'Mayor Bram',sari:'Sari',vilo:'Vilo'}[k],portrait:k+'_portrait'},fid:'inn_'+k})}}}
@@ -1324,6 +1329,11 @@ function talkTo(o){
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
   // quest side-effects
+  if(m.bclub&&!f['bclub'+G.day]){
+    f['bclub'+G.day]=1;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_talk');
+    const BOOKS=['the Widow of Silverleaf','Tides of the Old Coast','the Orchard Murders','Songs for a Rainy Field','the Clockmaker\u2019s Daughter'];
+    const bk=BOOKS[G.day%BOOKS.length];
+    lines.unshift('“'+m.name+' is deep in '+bk+' — tonight\u2019s book circle pick.”','“Sit, sit — Hazel brought mint tea and nobody agrees on the ending. Again.” (+1 ♥, +6⚡)')}
   const svk=SICKV[G.day%SICKV.length];
   if(m.id===svk&&G.day%7===2&&!f['sick'+G.day]&&m.id!=='nana'){
     if((G.inv.item.herb||0)>0){G.inv.item.herb--;f['sick'+G.day]=1;G.gold+=15;
