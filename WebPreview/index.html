@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.11</div></div></div>
+    <div class="ver">v5.12</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2843,6 +2843,25 @@ function interact(){
     toast('⛲ You toss a coin — tomorrow may shine brighter');hudRender();save();return}
   if(m.kind==='sign'){sfx('sfx_talk');toast('🪧 '+m.text);return}
   if(m.kind==='mail'){
+    if(G.day%7===0&&!G.flags['gaz'+Math.floor(G.day/7)]){
+      G.flags['gaz'+Math.floor(G.day/7)]=1;sfx('sfx_talk');
+      const GZ=[['THE SUNPETAL GAZETTE — Week '+Math.floor(G.day/7),
+        'LOCAL FARMER’S FIELDS THRIVE: “Never seen rows so straight,” says eyewitness goose.',
+        'WEATHER: '+({sun:'Clear skies all week. Picnics advised.',rain:'Rain expected — the frogs have already begun.',storm:'Storm cells inbound; secure your chickens.',wind:'A breezy week — laundry lines fully employed.',fog:'Morning mist; walk, don’t gallop.',snow:'Snow settles in. Snow fort protocols apply.'})[G.nextWeather||'sun'],
+        'PUZZLE CORNER: How many lanterns has Hazel actually lost? (Answer: '+((G.day%5)+1)+')'],
+        ['THE SUNPETAL GAZETTE — Week '+Math.floor(G.day/7),
+        'OPINION: “The new farmer waves at everyone. Suspiciously wholesome.” — anon.',
+        'SPORTS: Pip remains undefeated in competitive puddle-jumping.',
+        'CLASSIFIEDS: Lost — one marble, gold. Reward: eternal gratitude.'],
+        ['THE SUNPETAL GAZETTE — Week '+Math.floor(G.day/7),
+        'MIRA’S COLUMN: “Stamina is a garden, not a cup. Water it daily.”',
+        'FEN REPORTS: “The river’s running kind this week — the big ones are biting.”',
+        'OBITUARY FOR THE WEEKEND: gone too soon, but there’s another next week.'],
+        ['THE SUNPETAL GAZETTE — Week '+Math.floor(G.day/7),
+        'CORNER MARKET: Mart’s cart wheel fixed; wobble down 60%.',
+        'HISTORY: This week in valley history — the first Sunpetal bloomed.',
+        'LUNA’S SKYWATCH: “The stars are especially talkative lately.”']];
+      startDlg({meta:{id:'mail',name:'Mailbox',portrait:'crate_01'}},GZ[Math.floor(G.day/7)%4]);if(G.letters.length){return}}
     if(!G.letters.length){sfx('sfx_talk');toast('📬 Nothing in the mail today');return}
     const pages=G.letters.splice(0).map(l=>'📬  '+l.f+', Day '+l.day+':\n\n"'+l.t+'"');
     sfx('sfx_talk');startDlg({meta:{id:'mail',name:'Mailbox',portrait:'crate_01'}},pages);return}
