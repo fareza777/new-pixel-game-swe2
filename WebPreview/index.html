@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.59</div></div></div>
+    <div class="ver">v10.60</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -434,6 +434,15 @@ function bakeLayer(id){
       if(!isW(x,y+1))bank(x,y+1,'n');
       if(!isW(x-1,y))bank(x-1,y,'e');
       if(!isW(x+1,y))bank(x+1,y,'w');
+      // inner elbows: round the corner where a land cell notches into water
+      const elbow=(ox,oy,cx,cy)=>{
+        const ax=px+(ox<0?0:S-5),ay=py+(oy<0?0:S-5);
+        g.fillStyle=rim;g.beginPath();
+        g.ellipse(ax+ (ox<0?3:2), ay+(oy<0?3:2),5,5,0,0,7);g.fill()};
+      if(isW(x+1,y)&&isW(x,y+1)&&!isW(x+1,y+1))elbow(1,1);
+      if(isW(x-1,y)&&isW(x,y+1)&&!isW(x-1,y+1))elbow(-1,1);
+      if(isW(x+1,y)&&isW(x,y-1)&&!isW(x+1,y-1))elbow(1,-1);
+      if(isW(x-1,y)&&isW(x,y-1)&&!isW(x-1,y-1))elbow(-1,-1);
       // depth shading: darker toward open water (elliptical blobs read organic)
       let n=0;
       if(isW(x,y-1))n++;if(isW(x,y+1))n++;if(isW(x-1,y))n++;if(isW(x+1,y))n++;
@@ -470,6 +479,7 @@ function bakeLayer(id){
       if(!M.tiles[lay])continue;
       for(const k in M.tiles[lay]){
         const[x,y]=k.split(',').map(Number),px=x*S,py=y*S,h=((x*19349663)^(y*83492791))>>>0,r=h%100;
+        g.fillStyle='rgba(150,120,80,.10)';g.fillRect(px,py,S,S); // mute saturated orange dirt
         if(r<16){g.fillStyle='rgba(255,250,235,.18)';g.fillRect(px+2+(h>>4)%11,py+3+(h>>6)%9,2,2)} // light gravel
         else if(r<24){g.fillStyle='rgba(60,45,32,.22)';g.fillRect(px+3+(h>>3)%10,py+5+(h>>5)%8,2,2)} // dark speck
         if(r%9===0){g.fillStyle='rgba(255,255,255,.10)';g.fillRect(px+(h>>9)%14,py+(h>>11)%14,1,1)} // glint
