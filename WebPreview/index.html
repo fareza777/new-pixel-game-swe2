@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.38</div></div></div>
+    <div class="ver">v11.39</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -457,7 +457,7 @@ function sfx(name){if(!SET.sfx||!AUDIO[name])return;const a=new Audio(AUDIO[name
 function save(){
   if(G.state==='intro'||G.state==='title')return;
   const s={v:1,map:G.map,x:G.hero.x,y:G.hero.y,dir:G.hero.dir,gold:G.gold,day:G.day,clock:G.clock,
-    inv:G.inv,selSeed:G.selSeed,tool:G.tool,flags:G.flags,letters:G.letters,col:G.col,crops:G.crops,tutStep:G.tutStep,forageDay:G.forageDay,bugDay:G.bugDay,nextWeather:G.nextWeather,furBusy:G.furBusy,furReady:G.furReady,furYield:G.furYield,jarBusy:G.jarBusy,jarReady:G.jarReady,jarYield:G.jarYield,millBusy:G.millBusy,millReady:G.millReady,smBusy:G.smBusy,smReady:G.smReady,smSeed:G.smSeed,stats:G.stats,xp:G.xp,
+    inv:G.inv,selSeed:G.selSeed,tool:G.tool,flags:G.flags,letters:G.letters,mailbox:G.mailbox||[],col:G.col,crops:G.crops,tutStep:G.tutStep,forageDay:G.forageDay,bugDay:G.bugDay,nextWeather:G.nextWeather,furBusy:G.furBusy,furReady:G.furReady,furYield:G.furYield,jarBusy:G.jarBusy,jarReady:G.jarReady,jarYield:G.jarYield,millBusy:G.millBusy,millReady:G.millReady,smBusy:G.smBusy,smReady:G.smReady,smSeed:G.smSeed,stats:G.stats,xp:G.xp,
     sta:G.sta,weather:G.weather,bessieDay:G.bessieDay||0,calf:G.calf?1:0,hearts:G.hearts,talkDay:G.talkDay,petDay:G.petDay,coopEggs:G.coopEggs,milkCans:G.milkCans||0,dogFind:G.dogFind||false,reqDay:G.reqDay,maxsta:G.maxsta||0,blessedFor:G.blessedFor,outfit:G.outfit||0,duckEggs:G.duckEggs||0,woolBalls:G.woolBalls||0,goatMilk:G.goatMilk||0,diary:G.diary||[],daySnap:G.daySnap||null,spouse:G.spouse||null,spouseDay:G.spouseDay||0,perk:G.perk||{}};
   try{localStorage.setItem('spv_save',JSON.stringify(s))}catch(e){}
 }
@@ -465,7 +465,7 @@ function hasSave(){try{return !!localStorage.getItem('spv_save')}catch(e){return
 function loadSave(){
   try{const s=JSON.parse(localStorage.getItem('spv_save'));if(!s)return false;
     loadMap(s.map,s.x,s.y);G.hero.dir=s.dir||'DOWN';G.gold=s.gold;G.day=s.day;G.clock=s.clock;
-    G.inv=s.inv;G.selSeed=s.selSeed;G.tool=s.tool||'hoe';G.flags=s.flags;G.letters=s.letters||[];G.col=s.col||{};G.crops=s.crops;G.stats=s.stats||{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0};G.xp=s.xp||{farm:0,fish:0,forage:0};G.tutStep=s.tutStep;
+    G.inv=s.inv;G.selSeed=s.selSeed;G.tool=s.tool||'hoe';G.flags=s.flags;G.letters=s.letters||[];G.mailbox=s.mailbox||[];G.col=s.col||{};G.crops=s.crops;G.stats=s.stats||{crops:0,fish:0,gold:0,forage:0,gifts:0,quests:0};G.xp=s.xp||{farm:0,fish:0,forage:0};G.tutStep=s.tutStep;
     G.forageDay=s.forageDay||{};G.bugDay=s.bugDay||{};G.jarBusy=s.jarBusy||false;G.furBusy=s.furBusy||false;G.furReady=s.furReady||0;G.furYield=s.furYield||null;G.nextWeather=s.nextWeather||null;G.jarReady=s.jarReady||0;G.jarYield=s.jarYield||null;G.millBusy=s.millBusy||false;G.millReady=s.millReady||0;G.smBusy=s.smBusy||false;G.smReady=s.smReady||0;G.smSeed=s.smSeed||0;
     G.sta=(s.sta!==undefined?s.sta:100);G.maxsta=s.maxsta||0;G.weather=s.weather||'sun';G.hearts=s.hearts||{};G.talkDay=s.talkDay||{};
     G.bessieDay=s.bessieDay||0;G.calf=!!s.calf;G.petDay=s.petDay||{};G.coopEggs=s.coopEggs||0;G.milkCans=s.milkCans||0;G.dogFind=s.dogFind||false;G.reqDay=s.reqDay||0;G.blessedFor=s.blessedFor||0;G.outfit=s.outfit||0;G.duckEggs=s.duckEggs||0;G.woolBalls=s.woolBalls||0;G.goatMilk=s.goatMilk||0;G.diary=s.diary||[];G.daySnap=s.daySnap||null;G.spouse=s.spouse||null;G.spouseDay=s.spouseDay||0;G.perk=s.perk||{};
@@ -4016,6 +4016,7 @@ function interact(){
         'LUNA’S SKYWATCH: “The stars are especially talkative lately.”']];
       startDlg({meta:{id:'mail',name:'Mailbox',portrait:'crate_01'}},GZ[Math.floor(G.day/7)%4]);if(G.letters.length){return}}
     if(!G.letters.length){sfx('sfx_talk');toast('📬 Nothing in the mail today');return}
+    G.mailbox=(G.mailbox||[]).concat(G.letters);if(G.mailbox.length>40)G.mailbox=G.mailbox.slice(-40);
     const pages=G.letters.splice(0).map(l=>'📬  '+l.f+', Day '+l.day+':\n\n"'+l.t+'"');
     sfx('sfx_talk');startDlg({meta:{id:'mail',name:'Mailbox',portrait:'crate_01'}},pages);return}
   if(m.kind==='shoplot'){
@@ -6074,10 +6075,17 @@ function interact(){
         {label:'✒ Plain reply',cb:()=>{G.flags.ppSent=1;G.flags.ppRead=0;G.flags.ppWait=G.day+5;toast('You keep it short — facts, weather, a line about the farm. Sealed.');save()}}]);
     return}
   if(m.kind==='desk'){
-    if(G.flags['wrote'+G.day]){toast('✒ The ink is dry — one letter a day is plenty');return}
-    const to=G.lastTalkId&&VNAME[G.lastTalkId]?G.lastTalkId:'nana';
-    G.flags['wrote'+G.day]=1;G.flags.letterTo=to;sfx('sfx_talk');
-    toast('✒ You pen a warm letter to '+(VNAME[to]||to)+' — it goes out with the morning post');return}
+    const ch=[];
+    if(!G.flags['wrote'+G.day])ch.push({label:'✒ Write a letter',cb:()=>{
+      const to=G.lastTalkId&&VNAME[G.lastTalkId]?G.lastTalkId:'nana';
+      G.flags['wrote'+G.day]=1;G.flags.letterTo=to;sfx('sfx_talk');
+      toast('✒ You pen a warm letter to '+(VNAME[to]||to)+' — it goes out with the morning post');save()}});
+    if(G.mailbox&&G.mailbox.length)ch.push({label:'📬 Keepsake letters ('+G.mailbox.length+')',cb:()=>{
+      const pg=G.mailbox.slice(-12).map(l=>'📬  '+l.f+', Day '+l.day+':\n\n"'+l.t+'"');
+      startDlg({meta:{name:'The keepsake drawer',portrait:'mail_portrait',id:null}},pg);save()}});
+    if(!ch.length){toast('✒ The desk is tidy — nothing to write, nothing saved yet');return}
+    if(ch.length===1){ch[0].cb();return}
+    startDlg({meta:{name:'The writing desk',portrait:'mail_portrait',id:null}},['Ink, paper, and a drawer of kept letters.'],null,ch);return}
   if(m.kind==='chime'){
     if(G.weather==='wind'){if(!G.flags['chm'+G.day]){G.flags['chm'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+4);G.flags.lucky=1;sfx('sfx_success');
       toast('🎐 The chimes ring wild — the wind likes you today (+4⚡, lucky)')}
