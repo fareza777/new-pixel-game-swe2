@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.54</div></div></div>
+    <div class="ver">v4.55</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -468,6 +468,8 @@ function loadMap(id,sx,sy){
   if(id==='village'&&G.day%7===3&&G.clock/60>=18&&G.clock/60<23&&!G.flags['llant'+G.day]&&!G.inv.item.llant){
     const spots=[[14.5,9.5],[46.5,9.5],[28.5,20.5],[10.5,17.5]];const sp=spots[G.day%spots.length];
     G.objs.push({key:'lite',x:sp[0],y:sp[1],anchor:'bc',meta:{kind:'forage',item:'llant',name:'a lantern, lit and humming — Hazel\u2019s'},fid:'lla0',hx:sp[0],hy:sp[1],ph:0});}
+  if(id==='farm'&&G.flags.cordUntil&&G.day<=G.flags.cordUntil){
+    G.objs.push({key:'planks',x:40.8,y:6.4,anchor:'bc',meta:{kind:'cord',name:'a cord of split firewood — Elm\u2019s delivery'},fid:'crd0',hx:40.8,hy:6.4,ph:0});}
   if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'birdh',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
   if(id==='farm'&&!G.objs.some(o=>o.fid==='wbox')){
     const wkey=['deco_spr','deco_sum','deco_aut','deco_win'][season()];
@@ -1366,6 +1368,16 @@ function talkTo(o){
     f['llr'+G.day]=1;G.inv.item.llant--;G.gold+=20;
     G.hearts.hazel=Math.min(10,(G.hearts.hazel||0)+2);
     lines.unshift('“My lantern! I set it down two songs ago and the wind must\u2019ve walked off with it.”','“Twenty gold and my thanks — you\u2019ve saved the evening chorus. (+20g, +2 ♥)”')}
+  if(m.id==='elm'&&G.day%7===0&&G.clock/60<11&&!f['cordw'+G.day]){
+    f['cordw'+G.day]=1;
+    startDlg(o,['Elm sets down his saw. “Storm season\u2019s coming — I can haul a cord of split oak to your door, keeps the hearth fed a week.”','“Forty gold, delivered by dusk. Deal?”'],
+      null,[
+        {label:'🪵 Order cordwood (40g)',cb:()=>{
+          if(G.gold<40){toast('“Come back when your purse isn\u2019t moths,” Elm grunts');return}
+          G.gold-=40;G.flags.cordUntil=G.day+7;sfx('sfx_coin');
+          toast('🪵 Deal struck — a cord of oak arrives by evening. Take a bundle each morning')}},
+        {label:'Not today',cb:()=>toast('Elm shrugs. “Offer stands till the frost does.”')}]);
+    return}
   if(m.id==='sari'&&G.day%7===4&&G.clock/60<12&&!f['ssamp'+G.day]){
     f['ssamp'+G.day]=1;
     const seeds=['turnip','potato','wheat','corn','pumpkin'];const sd=seeds[G.day%seeds.length];
@@ -2483,7 +2495,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3110,6 +3122,10 @@ function interact(){
       toast('🏅 EXPLORER! Every cairn in the valley touched — the trail marks you as one of its own. (+6 max energy)')}
     else toast('🗿 Waymark '+(cn+1)+' of 4 — a weathered stone pointing somewhere old');
     save();return}
+  if(m.kind==='cord'){
+    if(G.flags['cord'+G.day]){toast('🪵 Today\u2019s bundle is already on the hearth');return}
+    G.flags['cord'+G.day]=1;G.inv.item.firewood=(G.inv.item.firewood||0)+1;sfx('sfx_tool');
+    toast('🪵 +1 firewood bundle — '+(G.flags.cordUntil-G.day)+' day'+(G.flags.cordUntil-G.day===1?'':'s')+' of delivery left');save();return}
   if(m.kind==='birdh'){
     const morn=G.clock/60>=5&&G.clock/60<9,okseason=season()===0||season()===1;
     if(morn&&okseason&&!G.flags['bh'+G.day]){G.flags['bh'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_success');
@@ -4557,6 +4573,7 @@ function promptScan(){
       else if(m.kind==='cairn')txt=BTN+' · 🗿 Touch the waymark';
       else if(m.kind==='dchorus')txt=BTN+' · 🐦 Listen to the dawn chorus';
       else if(m.kind==='birdh')txt=BTN+' · 🐦 Check the birdhouse';
+      else if(m.kind==='cord')txt=BTN+' · 🪵 Take firewood from the cord';
       else if(m.kind==='rstone')txt=BTN+' · 🪨 Take the river stone';
       else if(m.kind==='gpick')txt=BTN+' · ⛏ Pull the old pickaxe free';
       else if(m.kind==='awish')txt=BTN+' · ✨ Wish on the aurora';
