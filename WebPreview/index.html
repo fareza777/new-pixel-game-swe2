@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.27</div></div></div>
+    <div class="ver">v11.28</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -371,7 +371,8 @@ const DEEDS=[
   ['explorer','🗺 Explorer','visit 30 corners of the valley',()=>Object.keys(G.visited||{}).length>=30],
   ['magnate','💰 Magnate','hold 10,000 gold',()=>G.gold>=10000],
   ['spelunker','💎 Spelunker','reach the Geode Hall',()=>!!(G.visited&&G.visited.cave5)],
-  ['crowned','👑 Bloom Eternal','win the Sunpetal Crown',()=>!!G.flags.trueEnd]];
+  ['crowned','👑 Bloom Eternal','win the Sunpetal Crown',()=>!!G.flags.trueEnd],
+  ['helper','🧺 Little Farmer','watch Sunny start helping on the farm',()=>!!G.flags.sunhelp]];
 function evalDeeds(){for(const d of DEEDS){if(!G.flags['deed_'+d[0]]&&d[3]()){G.flags['deed_'+d[0]]=1;toast('🏅 Deed earned: '+d[0].replace(/_/g,' ')+' — '+d[1])}}}
 const BDAY={pip:4,bram:6,sari:10,vilo:14,nana:19,mira:23,fen:26,wren:17,luna:25,hazel:8,mart:12,cora:18,elle:22};
 const VNAME={luna:'Luna',shrine:'Forest Shrine',elder:'Elder Tree',bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',fen:'Fen',pip:'Pip',mart:'Mart',wren:'Wren',hazel:'Hazel',cora:'Cora',elle:'Elle',elm:'Elm'};
@@ -709,10 +710,13 @@ function loadMap(id,sx,sy){
   if(G.flags.kidwalk&&G.flags.kidDay&&G.day>G.flags.kidDay&&(G.day-G.flags.kidDay)%56===0&&!G.flags['kday'+G.day]){
     G.flags['kday'+G.day]=1;sendMail('Nana','Sunny\'s birthday today — I baked a tiny sunpetal cake. Come eat! — Nana');
     setTimeout(()=>toast('🎂 It\'s Sunny\'s birthday — your little farmer waits at home with something for you!'),2800)}
+  if(G.flags.kidwalk&&!G.flags.sunhelp&&G.day-(G.flags.kidDay||0)>=112){G.flags.sunhelp=1;
+    sendMail('Nana','Sunny carried half a basket all the way to my door today — a proper farmer-in-training! — Nana');
+    setTimeout(()=>toast('🧺 Sunny\'s growing fast — they\'ll start helping around the farm now!'),2600)}
   if(G.flags.kidwalk){
     const kh=G.clock/60,kIn=id==='house'&&kh<9,kF=id==='farm'&&kh>=9&&kh<19;
     if((kIn||kF)&&!G.objs.some(o=>o.fid==='kid0'))
-      G.objs.push({key:'pip_down0',x:kIn?(G.flags.bl_sunroom?3.6:9.5):12.5,y:kIn?(G.flags.bl_sunroom?3.4:5):10.5,anchor:'bc',meta:{kind:'kidwalk',name:'Sunny, out exploring'},fid:'kid0',hx:kIn?(G.flags.bl_sunroom?3.6:9.5):12.5,hy:kIn?(G.flags.bl_sunroom?3.4:5):10.5,ph:0,wander:1});}
+      G.objs.push({key:'pip_down0',x:kIn?(G.flags.bl_sunroom?3.6:9.5):12.5,y:kIn?(G.flags.bl_sunroom?3.4:5):10.5,anchor:'bc',meta:{kind:'kidwalk',name:'Sunny, '+(G.flags.sunhelp?'helping out':'out exploring')},fid:'kid0',hx:kIn?(G.flags.bl_sunroom?3.6:9.5):12.5,hy:kIn?(G.flags.bl_sunroom?3.4:5):10.5,ph:0,wander:1});}
   else if(G.flags.toddler){
     const hh2=G.clock/60,tIn=id==='house'&&hh2<10,tF=id==='farm'&&hh2>=10&&hh2<17;
     if((tIn||tF)&&!G.objs.some(o=>o.fid==='kid0'))
@@ -6818,6 +6822,9 @@ function dayTick(){
      if(G.milkCans>0)bits.push('🥛 milk waiting');
      if(G.flags.truffleReady)bits.push('🐷 truffle in the pen');
      if(G.dogFind)bits.push('🐕 Rex dug something up');
+     if(G.flags.sunhelp&&Math.random()<.55){const SH=[['berry',1],['mushroom',1],['herb',1],['rstone',1],['acorn',1],['feather',1]];
+       const sh=SH[Math.floor(Math.random()*SH.length)];G.inv.item[sh[0]]=(G.inv.item[sh[0]]||0)+sh[1];
+       bits.push('🧺 Sunny left a '+(ITEMS[sh[0]].name)+' in the door basket')}
      if(bits.length)setTimeout(()=>toast('🌅 Morning chores: '+bits.join(' · ')),1700);
     if(G.goldEgg)setTimeout(()=>toast('✨ One hen left something glittering at the coop…'),1850)}
     for(const mid in G.crops)for(const k in G.crops[mid]){const c=G.crops[mid][k];
