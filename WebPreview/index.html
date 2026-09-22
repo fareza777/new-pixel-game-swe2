@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.83</div></div></div>
+    <div class="ver">v4.84</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1974,6 +1974,11 @@ function talkTo(o){
     G.flags.festphoto=1;G.inv.item.festphoto=(G.inv.item.festphoto||0)+1;collect('festphoto');
     G.hearts.vilo=Math.min(10,(G.hearts.vilo||0)+2);sfx('sfx_success');
     startDlg(o,['Vilo waves you under the tripod cloth. “Festival Eve portrait — the whole valley in one frame, like your grandfather used to do.”','“Hold still… Pip, get your thumb off the lens… THERE.”','[Festival Portrait — hang it in the farmhouse. Everyone squinted at the same moon.]']);save();return}
+  if(m.id==='tom'&&G.day%7===6&&G.clock/60>=19&&G.clock/60<22&&G.map==='river'&&(G.hearts.tom||0)>=3&&!f['charter'+G.day]){
+    f['charter'+G.day]=1;sfx('sfx_success');
+    G.inv.item.moonfish=(G.inv.item.moonfish||0)+1;collect('moonfish');
+    G.hearts.tom=Math.min(10,(G.hearts.tom||0)+1);G.sta=Math.min(100+(G.maxsta||0),G.sta+10);
+    startDlg(o,['Tom pats the bench beside him. “Moon\u2019s up. Water\u2019s black glass. Get in — the deep channel\u2019s biting.”','You drift where the current forgets the shore. He talks of years: floods, droughts, the winter the river froze solid enough to walk.','A silver flicker — a MOONFISH, landed by lantern light.','“Keep it. My brother fished this spot before me, and his father before that. Now it\u2019s ours.” (+10⚡, +1♥)']);save();return}
   if(G.day%28===14&&G.clock/60>=17&&G.clock/60<22&&G.map==='village'&&!G.flags['fline'+G.day+m.id]){
     G.flags['fline'+G.day+m.id]=1;
     const FL={bram:"A festival mid-season — your grandfather loved these most of all.",sari:"Sold out of ribbons by noon. Festivals are good for the soul AND the till.",nana:"I made extra tea. Go on, take a cup — the night is young.",vilo:"Even the river hums on festival nights, kid.",pip:"Booth treats are FREE tonight. I checked. Twice.",mira:"Eat, drink, be merry — doctor's orders for once.",fen:"Even fish jump for festival nights, or so I tell the tourists.",wren:"Everyone under the lamplight makes such a lovely sketch.",luna:"Festivals are the valley's own constellations — lights below mirroring above.",hazel:"Save room! There's a treat with your name on it at the booths.",cora:"I strung every lantern on this street. Every single one.",elle:"I dressed for the season — tell me the scarf doesn't match the lanterns.",mart:"Fine festival! I do love a town that knows how to gather.",tom:"Smells like my mother's festival stew. Don't tell her I said that."};
