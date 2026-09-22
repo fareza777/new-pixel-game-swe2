@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.72</div></div></div>
+    <div class="ver">v5.73</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -996,6 +996,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'ghost',x:10.5,y:5.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'gus',name:'Old Gus',portrait:'ghost_portrait'},fid:'gus0',hx:10.5,hy:5.5,ph:0});
   if(id==='hill'&&G.flags.gwatch&&G.flags.bl_statue&&!G.flags.metGran&&(G.clock/60>=18||G.clock/60<5)&&!G.objs.some(o=>o.meta&&o.meta.id==='gran'))
     G.objs.push({key:'ghost',x:13.5,y:9.5,anchor:'bc',anim:{frames:['ghost'],fps:2},meta:{kind:'npc',id:'gran',name:'Grandfather',portrait:'ghost_portrait'},fid:'gran0',hx:13.5,hy:9.5,ph:0});
+  if(id==='hill'&&G.forageDay['hill|dft0']!==G.day&&G.clock/60>=11&&G.clock/60<15&&!G.objs.some(o=>o.fid==='dft0'))
+    G.objs.push({key:'feather',x:16.5,y:10.5,anchor:'c',meta:{kind:'forage',item:'feather',name:'a songbird feather, still warm from the sky'},fid:'dft0',hx:16.5,hy:10.5,ph:0});
   if(id==='hill'&&season()===0&&G.clock/60>=7&&G.clock/60<11&&!G.objs.some(o=>o.fid==='skl0'))
     G.objs.push({key:'grass',x:9.5,y:11.5,anchor:'c',meta:{kind:'skylark',name:'a skylark nest tucked in the grass — three speckled eggs'},fid:'skl0',hx:9.5,hy:11.5,ph:0});
   if(id==='hill'&&season()===0&&G.clock/60>=5&&G.clock/60<7&&!G.objs.some(o=>o.fid==='dch0'))
