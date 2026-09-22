@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.98</div></div></div>
+    <div class="ver">v4.99</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -560,6 +560,8 @@ function loadMap(id,sx,sy){
     const grazed=G.flags.bl_pasture&&G.clock/60>=7&&G.clock/60<17;
     G.objs.push({key:'horse_down0',x:grazed?46.5:45.5,y:grazed?20.5:14.5,meta:{kind:'horse',name:'Chestnut Mare'},fid:'horse1',hx:grazed?46.5:45.5,hy:grazed?20.5:14.5,ph:0});}
   if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
+  if(id==='farm'&&G.clock/60>=18&&G.clock/60<22&&!G.objs.some(o=>o.fid==='plnt'))
+    G.objs.push({key:'lamp',x:24.8,y:9.4,anchor:'c',meta:{kind:'plight',name:'the porch lantern, waiting to be lit'},fid:'plnt',hx:24.8,hy:9.4,ph:0});
   if(id==='farm')for(const d of FARMDECOR)if(G.flags[d.id]){
     const dd={key:d.spr,x:d.x,y:d.y,meta:{kind:'deco',name:d.name},fid:d.id,hx:d.x,hy:d.y,ph:0};
     if(d.id==='fdec_barrel'){dd.meta.kind='barrel';dd.meta.name='the rain barrel'}
@@ -2674,7 +2676,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo','fring','hamm','ring','plight'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3983,6 +3985,10 @@ function interact(){
     if(G.flags['hcd'+G.day]){toast('🕯 It burns low and steady through the night');return}
     G.flags['hcd'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_wish');
     startDlg(o,['You light the old candle beside his photograph — its flame is oddly steady.','In the wavering light the photo seems to smile a little wider.','Tomorrow the whole valley feasts in his name. Tonight, the farm remembers him quietly.','(+10⚡ — Founder\u2019s Feast tomorrow at the inn, 18:00)']);save();return}
+  if(m.kind==='plight'){
+    if(G.flags['pl'+G.day]){toast('🏮 It burns steady till midnight');return}
+    G.flags['pl'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+4);sfx('sfx_success');
+    startDlg(o,['A spark, a breath — the wick takes.','Grandfather lit this every dusk so the valley could find his door.','Now it finds yours. (+4⚡)']);return}
   if(m.kind==='ring'){
     if(G.clock/60<6||G.clock/60>=8){toast('🗿 The circle speaks at dawn — 6 to 8');return}
     if(G.flags['ring'+G.day]){toast('🗿 The stones have said their piece today');return}
@@ -4965,6 +4971,7 @@ function promptScan(){
       else if(m.kind==='gbk')txt=BTN+' · 📖 The guestbook';
       else if(m.kind==='hcandle')txt=BTN+' · 🕯 Light the heirloom candle';
       else if(m.kind==='fring')txt=BTN+' · 🍄 Step inside the fairy ring';
+      else if(m.kind==='plight')txt=G.flags['pl'+G.day]?'🏮 The porch lantern glows':BTN+' · 🏮 Light the porch lantern';
       else if(m.kind==='ring')txt=(G.clock/60>=6&&G.clock/60<8)?(G.flags['ring'+G.day]?'🗿 The stones rest':BTN+' · 🗿 Stand in the circle at dawn'):'🗿 The stone circle — dawn only';
       else if(m.kind==='hamm')txt=(G.clock/60>=12&&G.clock/60<17)?(G.flags['ham'+G.day]?'😴 The hammock sways empty':BTN+' · 😴 Nap in the hammock'):'😴 The hammock — afternoons only';
       else if(m.kind==='echo')txt=G.flags['echo'+G.day]?'💎 The seam sleeps':BTN+' · 💎 Tap the crystal seam';
