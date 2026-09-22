@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.48</div></div></div>
+    <div class="ver">v4.49</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -477,6 +477,10 @@ function loadMap(id,sx,sy){
     pals.forEach(([pid,ky,px2,py2])=>{if(G.flags[pid]&&pid!=='sprout'||pid==='sprout'&&G.petDay['sprout']){
       if(!G.objs.some(o=>o.fid==='par_'+pid))
         G.objs.push({key:ky,x:px2,y:py2,anchor:'bc',meta:{kind:'parade',name:'the pet parade'},fid:'par_'+pid,hx:px2,hy:py2,ph:0})}})}
+  if(id==='farm'&&G.flags.miraVisit===G.day&&!G.flags['mvc'+G.day]&&!G.objs.some(o=>o.fid==='mv_m')){
+    G.flags['mvc'+G.day]=1;
+    G.objs.push({key:'npc5_down0',x:42,y:7.2,anchor:'bc',meta:{kind:'npc',id:'mira',name:'Mira',portrait:'npc5_portrait',housecall:1},fid:'mv_m',hx:42,hy:7.2,ph:0});
+    toast('🩺 Mira is waiting on your doorstep — thermos in hand')}
   if(id==='farm'&&!G.objs.some(o=>o.fid==='fwb0'))
     G.objs.push({key:'sign_01',x:27.8,y:18.2,anchor:'bc',meta:{kind:'fboard',name:"Fen's catch board"},fid:'fwb0',hx:27.8,hy:18.2,ph:0});
   if(id==='farm'&&!G.objs.some(o=>o.fid==='boat0'))
@@ -1355,6 +1359,10 @@ function talkTo(o){
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);checkKindred(m.id);
     lines.push('♥ '+((G.hearts[m.id]||0))+'/10 — '+((G.hearts[m.id]||0)>=8?'dear friend':(G.hearts[m.id]||0)>=4?'good friend':'getting closer'))}
   // quest side-effects
+  if(m.housecall){
+    G.inv.item.soup=(G.inv.item.soup||0)+1;collect('soup');
+    G.hearts.mira=Math.min(10,(G.hearts.mira||0)+2);G.sta=Math.min(100+(G.maxsta||0),G.sta+15);sfx('sfx_talk');G.flags.miraVisit=0;
+    lines.unshift('“You gave me a scare yesterday.” Mira presses a warm thermos into your hands.','“Nana\u2019s soup — drink it before the fields. No arguments. (+1 ♥… +2, actually. Don\u2019t tell the ledger)” (+15⚡, +1 Hearty Soup)')}
   if(m.caller&&!f['pvT'+m.id+G.day]){
     f['pvT'+m.id+G.day]=1;G.inv.item.lemonade=(G.inv.item.lemonade||0)+1;collect('lemonade');
     G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);sfx('sfx_talk');
@@ -2476,7 +2484,7 @@ function spendSta(n){
 function faint(){
   if(G.state!=='play')return;
   if(G.flags.fainted===G.day){G.sta=5;return}
-  G.flags.fainted=G.day;
+  G.flags.fainted=G.day;G.flags.miraVisit=G.day+1;
   const fee=G.flags.medkit?0:Math.min(G.gold,15);G.gold-=fee;
   G.sta=G.flags.medkit?55:35;G.clock=Math.min(G.clock+240,23*60);
   hudRender();
