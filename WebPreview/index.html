@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.14</div></div></div>
+    <div class="ver">v5.15</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -2953,6 +2953,10 @@ function interact(){
       G.flags['crumb'+G.day]=1;G.inv.item.bread--;G.duckEggs=(G.duckEggs||0)+1;sfx('sfx_eat');
       toast('🦆 You scatter crumbs — the ducks churn the pond happily (a duck egg tomorrow!)');o.heart=60;return}
     if(G.petDay[G.map+'|'+o.fid]===G.day){o.heart=60;return}
+    if(!isDuck&&G.flags.broodyHen===G.day&&!G.flags['brood'+G.day]){
+      G.flags['brood'+G.day]=1;G.petDay[G.map+'|'+o.fid]=G.day;o.heart=60;sfx('sfx_success');
+      G.inv.item.egg=(G.inv.item.egg||0)+1;collect('egg');
+      startDlg(o,['This hen is puffed up and humming — a broody day.','You stroke her wings. Underneath, still warm: a fresh egg.','She settles back down, deeply pleased with herself. (+1 egg now, and she’ll lay again tomorrow)']);return}
     G.petDay[G.map+'|'+o.fid]=G.day;o.heart=60;sfx('sfx_talk');
     toast(String(o.fid||'').indexOf('duck')===0?'🦆 The duck quacks contentedly — she may leave a duck egg by the pond':'🐔 The hen clucks happily — she may lay an egg tomorrow');return}
   if(m.kind==='pig'){
@@ -4384,6 +4388,7 @@ function dayTick(){
       }
     hudRender();
     const WD=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
+    if(G.day%7===5)G.flags.broodyHen=G.day;
     if(G.day%28===10)setTimeout(()=>toast('🦋 MONARCH MIGRATION — orange wings drift over the plaza until midafternoon'),3200);
     if(G.day%28===1&&G.day>1)setTimeout(()=>toast('🎉 FARM ANNIVERSARY — the valley marks another cycle since you arrived. Villagers greet you warmly today (+2♥ each)'),2600);
     if((G.day-1)%28===21)setTimeout(()=>toast('❄️ FIRST FROST — the valley wakes in lace. Frostberries ripen on the hill all season'),2600);
