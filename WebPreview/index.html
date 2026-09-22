@@ -128,7 +128,7 @@
       <div class="tab" id="bsd" onclick="bagTab('seeds')">SEEDS</div>
       <div class="tab" id="bcp" onclick="bagTab('crops')">CROPS</div>
       <div class="tab" id="bfr" onclick="bagTab('forage')">FINDS</div>
-      <div class="tab" id="bst" onclick="bagTab('stats')">STATS</div></div>
+      <div class="tab" id="bst" onclick="bagTab('stats')">STATS</div><div class="tab" id="bmp" onclick="bagTab('map')">MAP</div></div>
     <div id="baglist" style="overflow-y:auto"></div></div></div>
 
 <div id="shop" class="ovl"><div class="xbtn" onclick="closeShop()">✕</div>
@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v7.75</div></div></div>
+    <div class="ver">v7.76</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -440,6 +440,7 @@ function bakeLayer(id){
 }
 function loadMap(id,sx,sy){
   G.map=id; const M=MAPS[id]; G.L=M;
+  G.visited=G.visited||{};G.visited[id]=1;
   // per-area soundtrack
   const tune={village:'music_village',bramhouse:'music_village',nanahouse:'music_village',
               forest:'music_forest',river:'music_forest',falls:'music_forest',meadow:'music_day',marsh:'music_forest',crater:'music_cave',ruins:'music_forest',grotto:'music_cave',summit:'music_title',cove:'music_river',owlwood:'music_forest',tors:'music_day',chapel:'music_forest',tarn:'music_forest',allot:'music_day',warren:'music_river',strand:'music_river',escarp:'music_title',fen:'music_river',cave5:'music_cave',clocktower:'music_title',beacon:'music_title',race:'music_river',millroom:'music_house',turnpike:'music_day',cave:'music_cave',islet:'music_forest',cave3:'music_cave',cave4:'music_cave',vilohouse:'music_village',mirahouse:'music_village',grows:'music_day',inn:'music_village',carpentry:'music_village',tailor:'music_village',barn:'music_day'}[id]||'music_day';
@@ -3138,7 +3139,7 @@ function swing(tool,tx,ty){
   else if(tool==='basket')mk(8,'#ffd76e',2);}
 let BAGTAB='tools';
 function bagTab(t){BAGTAB=t;
-  for(const[id,k]of[['bts','tools'],['bsd','seeds'],['bcp','crops'],['bfr','forage'],['bst','stats']])
+  for(const[id,k]of[['bts','tools'],['bsd','seeds'],['bcp','crops'],['bfr','forage'],['bst','stats'],['bmp','map']])
     $(id).classList.toggle('on',k===t);
   toggleBag(true)}
 function drawIco(c,key,size){const s=IMG[key];if(!s)return;
@@ -3179,6 +3180,15 @@ function toggleBag(v){
       h+=`<div class="invrow sel-eat" data-eat="${id}"><canvas class="iico" width="32" height="32" data-k="${c2[c2.length-1]||''}"></canvas><span>${CROPS[id]}</span><span class="ct" style="margin-left:auto">x${G.inv.crop[id]} · eat +18⚡</span></div>`}
     if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
     h+='<div class="invsec" style="color:#998;font-size:10px">tap a crop to eat it (+18⚡) · give crops to villagers for ♥</div>';
+  }else if(BAGTAB==='map'){
+    const MN={farm:'🏡 Your Farm',house:'🛏 Farmhouse',loft:'🕯 The Loft',cellar:'🍾 The Cellar',barn:'🐄 The Barn',grows:'🌱 Greenhouse',millroom:'🌾 The Mill',village:'🏘 Sunpetal Village',bramhouse:'🏠 Bram\'s House',nanahouse:'🏠 Nana\'s Cottage',vilohouse:'🏠 Vilo\'s Studio',mirahouse:'🏠 Mira\'s House',inn:'🏮 Lantern Inn',carpentry:'🪚 Carpentry',tailor:'🧵 Tailor Shop',cabin:'🪵 Elm\'s Cabin',wrenhut:'🌿 Wren\'s Herbarium',clocktower:'🕰 Clocktower',forest:'🌲 Elderwood Forest',owlwood:'🦉 Owlwood Hollow',cave:'⛏ The Mine',cave2:'⛏ Mine B1',cave3:'⛏ Mine B2',cave4:'⛏ Mine B3',cave5:'💎 Geode Hall',river:'🌊 The Riverside',falls:'💦 Silverleaf Falls',grotto:'🌈 Falls Grotto',islet:'🦆 Pearl Isle',meadow:'🌼 Wildflower Meadow',tarn:'🪷 Mirror Tarn',marsh:'🌾 Reedmarsh',fen:'🐦 Fenfoot Reach',cove:'🏖 Driftwood Cove',strand:'🦭 The Strand',hill:'⛰ Sunpetal Hill',beacon:'🔥 The Beacon',crater:'☄ Starfall Crater',summit:'❄ The Summit',tors:'🪨 The Tors',escarp:'🌄 The Escarpment',ruins:'🏛 The Ruins',chapel:'⛪ Chapel Glade',allot:'🥕 Loamfoot Allotments',warren:'🐇 The Warrens',race:'💧 The Old Race',turnpike:'🛣 The Turnpike'};
+    const ORDER=['farm','house','loft','cellar','barn','grows','millroom','village','bramhouse','nanahouse','vilohouse','mirahouse','inn','carpentry','tailor','cabin','wrenhut','clocktower','allot','turnpike','forest','owlwood','river','islet','falls','grotto','meadow','tarn','race','marsh','fen','cove','strand','hill','beacon','crater','summit','tors','escarp','ruins','chapel','cave','cave2','cave3','cave4','cave5'];
+    h+='<div class="invsec">🗺 VALLEY MAP — tap to travel</div>';
+    for(const id of ORDER){
+      if(!G.visited||!G.visited[id])continue;
+      const cur=id===G.map;
+      h+=`<div class="invrow${cur?' on':''} mapgo" data-map="${id}" style="cursor:pointer${cur?';outline:2px solid #c89b5a':''}"><span>${MN[id]||id}</span><span class="ct" style="margin-left:auto">${cur?'📍 here':'➜ go'}</span></div>`}
+    h+='<div class="invsec" style="color:#998;font-size:10px">new areas appear here as you discover them</div>';
   }else if(BAGTAB==='stats'){
     const st=G.stats||{},hearts=Object.values(G.hearts||{}).reduce((a,b)=>a+b,0);
     const WD2=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
@@ -3261,6 +3271,10 @@ function toggleBag(v){
   document.querySelectorAll('#baglist [data-wear]').forEach(r=>onTap(r,()=>{
     G.flags.scarfOn=!G.flags.scarfOn;sfx('sfx_talk');
     toast(G.flags.scarfOn?'🧣 You wrap the scarf snug around your neck':'🧣 Scarf folded away');toggleBag(true);hudRender()}));
+  document.querySelectorAll('#baglist .mapgo').forEach(r=>onTap(r,()=>{
+    const id=r.dataset.map;if(!id||id===G.map)return;
+    const sp=MAPS[id].spawn||{x:5,y:5};
+    toggleBag(false);sfx('sfx_chime');loadMap(id,sp.x,sp.y);toast('🗺 '+id.charAt(0).toUpperCase()+id.slice(1))}));
   document.querySelectorAll('#baglist [data-eati]').forEach(r=>onTap(r,()=>{
     const id=r.dataset.eati;if((G.inv.item[id]||0)>0){G.inv.item[id]--;G.sta=Math.min(G.maxsta||100,G.sta+(EAT2[id]||8)+(G.flags.cookbook?2:0));
       sfx('sfx_harvest');toast('🍴 Ate '+ITEMS[id].name+' — +'+(EAT2[id]+(G.flags.cookbook?2:0)||8)+'⚡');toggleBag(true);hudRender()}}));
