@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.51</div></div></div>
+    <div class="ver">v4.52</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -465,7 +465,7 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_silo){G.objs.push({key:'silo',x:60.5,y:9.0,meta:{kind:'deco',name:'Feed Silo'},fid:'bl_silo',hx:60.5,hy:9,ph:0});
     G.solid.add('60,7');G.solid.add('60,8');G.solid.add('61,7');G.solid.add('61,8')}
   if(id==='farm'&&G.flags.bl_owlbox)G.objs.push({key:'owlbox',x:28.5,y:14.5,anchor:'bc',meta:{kind:'deco',name:'an owl nesting box — soft hoots inside'},fid:'bl_owlbox',hx:28.5,hy:14.5,ph:0});
-  if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'deco',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
+  if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'birdh',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
   if(id==='farm'&&!G.objs.some(o=>o.fid==='wbox')){
     const wkey=['deco_spr','deco_sum','deco_aut','deco_win'][season()];
     const wname=['box of crocuses','box of marigolds','box of asters','box of frost ferns'][season()];
@@ -2471,7 +2471,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3098,6 +3098,14 @@ function interact(){
       toast('🏅 EXPLORER! Every cairn in the valley touched — the trail marks you as one of its own. (+6 max energy)')}
     else toast('🗿 Waymark '+(cn+1)+' of 4 — a weathered stone pointing somewhere old');
     save();return}
+  if(m.kind==='birdh'){
+    const morn=G.clock/60>=5&&G.clock/60<9,okseason=season()===0||season()===1;
+    if(morn&&okseason&&!G.flags['bh'+G.day]){G.flags['bh'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_success');
+      if(Math.random()<.3){G.inv.item.feather=(G.inv.item.feather||0)+1;
+        startDlg(o,['🐦 A wren flits out as you peek in — and leaves a gift behind.','(+1 Songbird Feather, +5⚡ — the dawn chorus follows you all morning)'])}
+      else startDlg(o,['🐦 Three small heads peek out, chirping a bright good-morning.','(+5⚡ — the dawn chorus follows you all morning)'])}
+    else startDlg(o,[morn?'🐦 Quiet inside — the wrens are out hunting breakfast.':'🐦 The wrens are busy elsewhere — check back at sunrise in spring or summer.']);
+    return}
   if(m.kind==='dchorus'){
     if(G.flags['dch'+G.day]){toast('🐦 The chorus has flown on — come back at first light');return}
     G.flags['dch'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_talk');swing('seeds',o.x,o.y);
@@ -4536,6 +4544,7 @@ function promptScan(){
       else if(m.kind==='rcut')txt=BTN+' · 🎀 Cut the dedication ribbon';
       else if(m.kind==='cairn')txt=BTN+' · 🗿 Touch the waymark';
       else if(m.kind==='dchorus')txt=BTN+' · 🐦 Listen to the dawn chorus';
+      else if(m.kind==='birdh')txt=BTN+' · 🐦 Check the birdhouse';
       else if(m.kind==='rstone')txt=BTN+' · 🪨 Take the river stone';
       else if(m.kind==='gpick')txt=BTN+' · ⛏ Pull the old pickaxe free';
       else if(m.kind==='awish')txt=BTN+' · ✨ Wish on the aurora';
