@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.17</div></div></div>
+    <div class="ver">v11.18</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -7106,6 +7106,10 @@ function render(ts){
       ctx.ellipse(camX+o.x*T*SCALE,camY+o.y*T*SCALE+T*SCALE*.06,Math.min(dw*.42,T*SCALE*.62),Math.min(dw*.13,T*SCALE*.2),0,0,7);ctx.fill()}
     ctx.drawImage(ATLAS,s.sx,s.sy,s.w,s.h,px,py,dw,dh);
     if(o.hero&&G.flags.scarfOn){ctx.fillStyle='#c23c3c';ctx.fillRect(px+dw*.22,py+dh*.40,dw*.56,Math.max(2,SCALE*1.8));ctx.fillRect(px+dw*.62,py+dh*.40+Math.max(2,SCALE*1.8),dw*.13,Math.max(3,SCALE*3))}
+    if(o.hero&&G.flags.trueEnd){const cw=dw*.5,cx2=px+dw*.25,cy2=py+dh*.02;
+      ctx.fillStyle='#ffd64f';ctx.fillRect(cx2,cy2+cw*.24,cw,cw*.3);
+      for(let i=0;i<3;i++)ctx.fillRect(cx2+i*(cw/3)+cw*.02,cy2,cw*.2,cw*.26);
+      ctx.fillStyle='#e0403a';ctx.fillRect(cx2+cw*.4,cy2+cw*.32,cw*.2,cw*.18)}
     if(o.heart>0){o.heart--;ctx.font='bold 12px monospace';ctx.fillStyle='#f66';ctx.fillText('<3',px+dw/2-4,py-4)}
   }
   // target-cell marker: pulsing dashed outline on the cell A will act on
