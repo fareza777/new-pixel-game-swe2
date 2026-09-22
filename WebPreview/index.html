@@ -14,6 +14,10 @@
     font-size:12px;max-width:44vw;text-align:right;color:#ffe9c4;pointer-events:auto;cursor:pointer}
   @media (max-width:460px){ #quest{top:70px;max-width:46vw} }
   #quest b{color:#ffd76e;display:block;font-size:13px}
+  #areabanner{position:absolute;top:104px;left:50%;transform:translateX(-50%);z-index:26;
+    font-family:inherit;font-size:15px;color:#ffe9b0;text-shadow:0 2px 0 #3a2a10,0 0 12px #000;
+    letter-spacing:2px;opacity:0;transition:opacity .5s;pointer-events:none;white-space:nowrap}
+  #areabanner small{display:block;text-align:center;font-size:9px;color:#cfe0b8;letter-spacing:4px;margin-top:2px}
   #toast{top:150px;left:50%;transform:translateX(-50%);background:rgba(30,60,30,.88);border:2px solid #9fd0ff;
     color:#eafbe0;padding:8px 16px;border-radius:10px;font-size:13px;display:none;z-index:6;max-width:82vw;text-align:center;
     box-shadow:0 6px 18px #000c;line-height:1.4}
@@ -116,6 +120,7 @@
 <div id="hud" class="hud"></div>
 <div id="quest" class="hud"></div>
 <div id="toast" class="hud"></div>
+<div id="areabanner"></div>
 <div id="prompt"></div>
 <div id="dlg"><div class="inner"><canvas id="dport" width="64" height="64"></canvas>
   <div style="flex:1"><div id="dname"></div><div id="dtext"></div></div></div>
@@ -156,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v7.79</div></div></div>
+    <div class="ver">v7.80</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -438,9 +443,13 @@ function bakeLayer(id){
   }
   LAYERCV[id]=c;
 }
+const AREANAMES={farm:'THE FARM|home',house:'THE FARMHOUSE|Grandfather’s house',loft:'THE LOFT|under the eaves',cellar:'THE CELLAR|cool dark & preserves',barn:'THE BARN|warm hay & lowing',grows:'THE GREENHOUSE|glass warmth',millroom:'THE MILL|wheat dust & gears',village:'SUNPETAL VILLAGE|the heart of it',bramhouse:'BRAM’S HOUSE|the mayor’s den',nanahouse:'NANA’S COTTAGE|herbs & honey',vilohouse:'VILO’S STUDIO|paint & patience',mirahouse:'MIRA’S HOUSE|the quiet surgery',inn:'LANTERN INN|Hazel’s hearth',innroom:'INN UPSTAIRS|rooms for travelers',carpentry:'CARPENTRY|Cora’s sawdust kingdom',tailor:'TAILOR SHOP|Elle’s threads',cabin:'ELM’S CABIN|woodsmoke & whittling',wrenhut:'THE HERBARIUM|Wren’s pressed flowers',clocktower:'THE CLOCKTOWER|the valley heartbeat',allot:'LOAMFOOT ALLOTMENTS|everyone’s second garden',turnpike:'THE TURNPIKE|the old coach road',forest:'ELDERWOOD FOREST|the green dark',owlwood:'OWLWOOD HOLLOW|the watching wood',cave:'THE MINE|daylight dies here',cave2:'MINE B1|deeper',cave3:'MINE B2|the deep',cave4:'MINE B3|the deeper still',cave5:'THE GEODE HALL|the mountain’s secret',river:'THE RIVERSIDE|Silverleaf water',falls:'SILVERLEAF FALLS|water in thunder',grotto:'FALLS GROTTO|behind the veil',islet:'PEARL ISLE|the river’s island',meadow:'WILDFLOWER MEADOW|the bee’s kingdom',tarn:'MIRROR TARN|still as glass',race:'THE OLD RACE|the first plumbing',marsh:'REEDMARSH|the whispering wet',fen:'FENFOOT REACH|the heron’s parish',cove:'DRIFTWOOD COVE|where the sea breathes',strand:'THE STRAND|the sea’s shopping list',hill:'SUNPETAL HILL|above it all',beacon:'THE BEACON|fire on the skyline',crater:'STARFALL CRATER|where the sky fell',summit:'THE SUMMIT|roof of the valley',tors:'THE TORS|granite sentinels',escarp:'THE ESCARPMENT|the valley’s shoulder',ruins:'THE RUINS|someone’s old temple',chapel:'CHAPEL GLADE|the quiet ruins',warren:'THE WARRENS|the rabbit bank',springs:'SOURCE SPRINGS|where the river begins'};
 function loadMap(id,sx,sy){
   G.map=id; const M=MAPS[id]; G.L=M;
   G.visited=G.visited||{};G.visited[id]=1;
+  if(G.state==='play'||G.state==='bag'){const an=(AREANAMES[id]||'').split('|');
+    if(an[0]){const bn=$('areabanner');bn.innerHTML=an[0]+(an[1]?'<small>'+an[1]+'</small>':'');
+      bn.style.opacity=1;clearTimeout(loadMap._bt);loadMap._bt=setTimeout(()=>bn.style.opacity=0,2200)}}
   // per-area soundtrack
   const tune={village:'music_village',bramhouse:'music_village',nanahouse:'music_village',
               forest:'music_forest',river:'music_forest',falls:'music_forest',meadow:'music_day',marsh:'music_forest',crater:'music_cave',ruins:'music_forest',grotto:'music_cave',summit:'music_title',cove:'music_river',owlwood:'music_forest',tors:'music_day',chapel:'music_forest',tarn:'music_forest',allot:'music_day',warren:'music_river',strand:'music_river',escarp:'music_title',fen:'music_river',cave5:'music_cave',clocktower:'music_title',beacon:'music_title',race:'music_river',millroom:'music_house',turnpike:'music_day',innroom:'music_village',springs:'music_river',cave:'music_cave',islet:'music_forest',cave3:'music_cave',cave4:'music_cave',vilohouse:'music_village',mirahouse:'music_village',grows:'music_day',inn:'music_village',carpentry:'music_village',tailor:'music_village',barn:'music_day'}[id]||'music_day';
