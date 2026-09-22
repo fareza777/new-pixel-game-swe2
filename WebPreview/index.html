@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.56</div></div></div>
+    <div class="ver">v4.57</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1368,6 +1368,14 @@ function talkTo(o){
     f['llr'+G.day]=1;G.inv.item.llant--;G.gold+=20;
     G.hearts.hazel=Math.min(10,(G.hearts.hazel||0)+2);
     lines.unshift('“My lantern! I set it down two songs ago and the wind must\u2019ve walked off with it.”','“Twenty gold and my thanks — you\u2019ve saved the evening chorus. (+20g, +2 ♥)”')}
+  if(m.id==='fen'&&(G.inv.item.fish||0)+(G.inv.item.rfish||0)>0&&!f['tale'+G.day]){
+    f['tale'+G.day]=1;
+    const TALE=['“Pfeh — that\u2019s nothing. Once I hooked a carp the size of a rowboat. We shared lunch. He paid.”',
+      '“A fine catch — reminds me of the winter the pond froze mid-leap. Fish hung there like ornaments.”',
+      '“You think that\u2019s big? The one that got away still sends me postcards.”',
+      '“Ha! Decent work, kid. River\u2019s starting to know your name — like it knew your grandfather\u2019s.”'];
+    G.hearts.fen=Math.min(10,(G.hearts.fen||0)+1);
+    lines.unshift(TALE[G.day%TALE.length]+' (+1 ♥)')}
   if(m.id==='elm'&&G.day%7===0&&G.clock/60<11&&!f['cordw'+G.day]){
     f['cordw'+G.day]=1;
     startDlg(o,['Elm sets down his saw. “Storm season\u2019s coming — I can haul a cord of split oak to your door, keeps the hearth fed a week.”','“Forty gold, delivered by dusk. Deal?”'],
