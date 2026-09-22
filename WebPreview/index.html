@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v5.47</div></div></div>
+    <div class="ver">v5.48</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1144,6 +1144,9 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'vane',x:16.8,y:11.2,anchor:'bc',meta:{kind:'vane',name:'the weather vane'},fid:'vane0',hx:16.8,hy:11.2,ph:0});
   if(id==='farm'&&G.flags.bl_scare&&!G.objs.some(o=>o.fid==='scr0'))
     G.objs.push({key:'scrow',x:26.5,y:14.5,meta:{kind:G.weather==='wind'?'scarewink':'deco',name:'the scarecrow — the crows keep their distance'},fid:'scr0',hx:26.5,hy:14.5,ph:0});
+    if((G.flags.scare||G.flags.bl_scare)&&G.day%7===2&&G.forageDay['farm|scp0']!==G.day&&!G.objs.some(o=>o.fid==='scp0')){
+      const TR=['btn','rstone','feather','acorn','pearl'];
+      G.objs.push({key:'gpage',x:27.5,y:15.8,anchor:'c',meta:{kind:'forage',item:TR[G.day%5],name:'a trinket the crows left in the scarecrow’s pocket'},fid:'scp0',hx:27.5,hy:15.8,ph:0})}
     if((G.flags.scare||G.flags.bl_scare)&&G.day%7===5&&!G.objs.some(o=>o.fid==='scn0'))
       G.objs.push({key:'gpage',x:27.5,y:14.8,anchor:'c',meta:{kind:'scnote',name:'a note pinned to the scarecrow’s sleeve'},fid:'scn0',hx:27.5,hy:14.8,ph:0});
   if(id==='farm'&&G.flags.bl_hive&&!G.objs.some(o=>o.fid==='hive0'))
