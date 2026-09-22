@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.94</div></div></div>
+    <div class="ver">v4.95</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -437,6 +437,8 @@ function loadMap(id,sx,sy){
         meta:{kind:'npc',id:pid,name:VNAME[pid],portrait:(pid==='mira'?'npc5':pid)+'_portrait'},fid:'adr_'+pid,hx:px2,hy:py2,ph:i})});
     if(!G.objs.some(o=>o.fid==='pulp0'))
       G.objs.push({key:'crate01',x:11.0,y:9.0,anchor:'bc',meta:{kind:'pulpit',name:'the mayor\u2019s crate-pulpit'},fid:'pulp0',hx:11.0,hy:9.0,ph:0})}
+  if(id==='cave2'&&!G.objs.some(o=>o.fid==='ech0'))
+    G.objs.push({key:'rcrystal',x:14.5,y:4.5,anchor:'bc',meta:{kind:'echo',name:'a crystal seam that hums when you tap it'},fid:'ech0',hx:14.5,hy:4.5,ph:0});
   if(id==='village'&&nighth)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='npc'));
   if(!nighth)G.objs=G.objs.filter(o=>!o.nightOnly);
   if(G.day%7!==0&&!(G.weather==='fog'&&G.clock/60<13))G.objs=G.objs.filter(o=>!o.martOnly);
@@ -2665,7 +2667,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club','whisper','hcandle','echo'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3974,6 +3976,10 @@ function interact(){
     if(G.flags['hcd'+G.day]){toast('🕯 It burns low and steady through the night');return}
     G.flags['hcd'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_wish');
     startDlg(o,['You light the old candle beside his photograph — its flame is oddly steady.','In the wavering light the photo seems to smile a little wider.','Tomorrow the whole valley feasts in his name. Tonight, the farm remembers him quietly.','(+10⚡ — Founder\u2019s Feast tomorrow at the inn, 18:00)']);save();return}
+  if(m.kind==='echo'){
+    if(G.flags['echo'+G.day]){toast('💎 The seam hums faintly still — let it rest');return}
+    G.flags['echo'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+5);sfx('sfx_wish');
+    startDlg(o,['You tap the crystal seam — it sings back, low and round.','And from deeper in the dark, an answering note. Almost like whistling.','Gus said the mine remembers every song ever sung down here. This one… was Grandfather\u2019s. (+5⚡)']);return}
   if(m.kind==='whisper'){
     if(G.flags['whsp'+G.day]){toast('🌕 The water has said its piece tonight');return}
     G.flags['whsp'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_wish');
@@ -4938,6 +4944,7 @@ function promptScan(){
       else if(m.kind==='vintage')txt=BTN+' · 🍾 A dusty bottle…';
       else if(m.kind==='gbk')txt=BTN+' · 📖 The guestbook';
       else if(m.kind==='hcandle')txt=BTN+' · 🕯 Light the heirloom candle';
+      else if(m.kind==='echo')txt=G.flags['echo'+G.day]?'💎 The seam sleeps':BTN+' · 💎 Tap the crystal seam';
       else if(m.kind==='whisper')txt=BTN+' · 🌕 Kneel at the whispering pond';
       else if(m.kind==='club')txt=G.flags['club'+Math.floor(G.day/7)]?'🌳 The clubhouse — Pip\u2019s kingdom':BTN+' · 🌳 Pip\u2019s clubhouse';
       else if(m.kind==='sangel')txt=G.flags['sang'+G.day]?'❄️ Your snow angel lies in the drift':BTN+' · ❄️ Make a snow angel';
