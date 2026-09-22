@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.17</div></div></div>
+    <div class="ver">v4.18</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1499,6 +1499,18 @@ function talkTo(o){
     lines.unshift("Here — a leftover sandwich from the basket. Picnics taste better shared! (+15⚡)")}
   if(m.id==='vilo'&&G.map==='river'&&G.day%7===5){
     lines.unshift("Hazel's lemonade + river breeze — this is the life, kid.")}
+  if(m.id==='pip'&&G.day%7===0&&G.clock/60>=13&&G.clock/60<17&&!f['marb'+G.day]){
+    f['marb'+G.day]=1;sfx('sfx_talk');
+    startDlg(o,["*Pip shakes a sock of marbles* — Sunday game! 10g in the pot, winner takes all.","My blue swirl against your pick. Ready?"],
+      null,[
+        {label:'🫳 Play marbles (10g)',cb:()=>{
+          if(G.gold<10){toast('Not enough gold, says Pip, pitying.');return}
+          G.gold-=10;sfx('sfx_coin');
+          if(Math.random()<.5){G.gold+=20;G.stats.quests++;sfx('sfx_success');
+            toast('🔵 PLINK! Your shot sends his swirl flying — 20g pot is yours!')}
+          else toast('🔵 His swirl clips yours aside — Pip wins the pot. "Rematch next week!"')}},
+        {label:'Not today',cb:()=>toast('Pip pockets the marbles, undeterred.')}]);
+    return}
   if(m.id==='pip'&&G.flags.firstSnow===1&&!f.snowGreet){
     f.snowGreet=1;G.flags.firstSnow=2;
     lines.unshift('IT SNOWED! It snowed it snowed it SNOWED! Race you to the fort — first one there gets the good snowballs!');return}
