@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.39</div></div></div>
+    <div class="ver">v11.40</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3941,6 +3941,9 @@ function interact(){
         G.flags.planted=true;if(!G.inv.seed[G.selSeed])cycleSeed();hudRender();
         toast('🌱 Planted! Equip 💧 Watering Can & press A to water it');return}
       toast("No "+CROPS[G.selSeed]+" seeds left — buy more at Sari's stall (tap BAG to switch seeds).");return}
+    if(c.dead){const wn=CROPS[c.crop]||'crop';
+      if(G.tool==='hoe'){c.crop=0;c.stage=0;c.dead=0;c.soil=true;sfx('sfx_plant');swing('hoe',best.cx+.5,best.cy+.5);toast('🪓 Pulled the withered '+wn+' — fresh soil for new seeds');return}
+      toast('🥀 The '+wn+' withered when the season turned — clear it with the Hoe');return}
     if(c.stage>=last-1){
       if(G.tool!=='basket'){toast(TOOL_EMOJI.basket+' Equip the Basket to harvest — tap TOOL');return}
       if(!spendSta(2))return;
@@ -6895,7 +6898,7 @@ function dayTick(){
        for(const k in G.crops.farm||{}){const c=G.crops.farm[k];if(c.crop>0&&!c.watered&&wn<4){c.watered=true;wn++}}
        if(wn)bits.push('💛 '+(VNAME[G.spouse]||'Your spouse')+' watered '+wn+' beds for you')}
      if(G.spouse&&Math.random()<.4){let hp=null;
-       for(const k in G.crops.farm||{}){const c=G.crops.farm[k];if(c.crop>0&&c.stage>=(MAPS.farm.crop_frames[c.crop]||[]).length-1){hp=k;break}}
+       for(const k in G.crops.farm||{}){const c=G.crops.farm[k];if(c.crop>0&&!c.dead&&c.stage>=(MAPS.farm.crop_frames[c.crop]||[]).length-1){hp=k;break}}
        if(hp){const c=G.crops.farm[hp];G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;G.stats.crops++;collect('c'+c.crop);
          if(REGROW[c.crop]){c.stage=Math.max(1,(MAPS.farm.crop_frames[c.crop]||[]).length-3);c.watered=false}else{c.crop=0;c.stage=0}
          bits.push('🧺 '+(VNAME[G.spouse]||'Your spouse')+' picked a ripe '+CROPS[c.crop]+' for you')}}
@@ -6928,13 +6931,15 @@ function dayTick(){
         if(c.crop===22&&c.stage>=last)G.flags.sunpetalBloom=true;
         else if(c.stage>=last&&!c.giant&&Math.random()<.07)c.giant=true}
       c.watered=(G.weather==='rain'||G.weather==='storm')&&c.crop>0;   // keep ground wet on rainy days
+      if((G.day-1)%7===0&&c.crop>0&&c.crop!==22&&mid!=='grows'&&CROP_SEASON[c.crop]&&CROP_SEASON[c.crop].indexOf(season())<0&&!c.dead){c.dead=1;G._witherN=(G._witherN||0)+1}
     if(!(G.flags.scare||G.flags.bl_scare||G.flags.bl_owlbox)&&Math.random()<.28){   // a crow raids one ripe crop overnight
       const ripes=[];for(const k in (G.crops.farm||{})){const c2=G.crops.farm[k];
-        if(c2.crop>0&&c2.stage>=(MAPS.farm.crop_frames[c2.crop]||[]).length-1)ripes.push(k)}
+        if(c2.crop>0&&!c2.dead&&c2.stage>=(MAPS.farm.crop_frames[c2.crop]||[]).length-1)ripes.push(k)}
       if(ripes.length){const k2=ripes[Math.floor(Math.random()*ripes.length)];
         if(G.flags.bl_scare){}
         else{G.crops.farm[k2]={crop:0,stage:0,watered:false,soil:true};G.flags.crowed=true}}}
       }
+    if(G._witherN){setTimeout(()=>toast('🥀 '+G._witherN+' crop'+(G._witherN>1?'s':'')+' withered as '+SEASON[season()]+' came in — clear them with the hoe'),2150);G._witherN=0}
     hudRender();
     const WD=['Sproutday','Rainday','Bloomday','Lightday','Harvestday','Restday','Sunday'];
     G.flags.lastWeather=G.weather;
