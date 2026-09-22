@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.90</div></div></div>
+    <div class="ver">v4.91</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -765,6 +765,8 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'wren_down0',x:14.5,y:10.5,anchor:'bc',meta:{kind:'npc',id:'wren',name:'Wren',portrait:'wren_portrait'},fid:'owln0',hx:14.5,hy:10.5,ph:0});
   if(id==='forest'&&G.day%7===6&&G.clock/60>=5.5&&G.clock/60<8.5&&!G.objs.some(o=>o.fid==='bw0'))
     G.objs.push({key:'wren_down0',x:12.5,y:16.5,anchor:'bc',meta:{kind:'npc',id:'wren',name:'Wren',portrait:'wren_portrait'},fid:'bw0',hx:12.5,hy:16.5,ph:0});
+  if(id==='forest'&&G.flags.hideChamp&&!G.objs.some(o=>o.fid==='club0'))
+    G.objs.push({key:'crate_03',x:21.5,y:6.5,anchor:'bc',meta:{kind:'club',name:'Pip\u2019s clubhouse — a hollow in the old oak, NO GROWN-UPS'},fid:'club0',hx:21.5,hy:6.5,ph:0});
   if(id==='forest'&&G.clock/60>=5&&G.clock/60<8&&!G.objs.some(o=>o.fid==='dch0'))
     G.objs.push({key:'songbird_down0',x:18.5,y:8.5,anchor:'bc',meta:{kind:'dchorus',name:'the grove at first light'},fid:'dch0',hx:18.5,hy:8.5,ph:0,anim:{frames:['songbird_down0','songbird_down1','songbird_down2','songbird_down1'],fps:3}});
   if(id==='forest'&&G.clock/60>=17&&G.clock/60<20&&!G.flags['elmbday'+G.day]&&!G.objs.some(o=>o.fid==='elm0'))
@@ -1907,6 +1909,8 @@ function talkTo(o){
         lines.length=0;lines.push("SEVEN TIMES?! That's a village record!","*drumroll on the fountain* I declare you... HIDE & SEEK CHAMPION OF SUNPETAL! (+50g, Gold Ribbon)")
         ,lines.push("The whole plaza heard him announce it. Twice.")}
       else lines.length=0;lines.push("You found me! Best seeker ever! (+5g, +1 ♥)","Same time tomorrow? I'm SO hiding better.");o.x=28.5;o.y=15.8}}
+    if(f.hideChamp&&m.id==='pip'&&!f.clubShown){f.clubShown=1;
+      lines.unshift('Pip lowers his voice — SERIOUS business.','“Champion perk. In the forest, east past the shrine path — there\u2019s a hollow oak. MY clubhouse. My stash. You can visit. Tell NO one. Especially not Bram.”')}
     if(!f.pipDone&&G.inv.item&&G.inv.item.ball>0){
       G.inv.item.ball--;f.pipDone=true;G.stats.quests++;
       G.inv.item.candy=(G.inv.item.candy||0)+1;G.gold+=15;
@@ -2652,7 +2656,7 @@ function pickAction(){
       if(Math.abs(o.x-(cx+.5))<1.2&&Math.abs(o.y-(cy+.5))<1.0){
         // among objects, prefer the one nearest the hero (first match wins otherwise)
         const od=Math.hypot(o.x-G.hero.x,o.y-G.hero.y);
-        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel'].includes(m.kind)
+        if(['npc','chest','bed','forage','pig','animal','door','chicken','ship','sign','board','cat','fox','rabbit','penguin','offer','cook','shoplot','mail','well','cow','calf','gala','spring','dog','elder','shrine','scope','boat','frog','press','squirrel','sheep','critter','museum','contest','fund','cart','jar','radio','furn','boatfish','snowbuild','loom','wind','mound','bottle','seedmk','gpage','kite','egg','cart','bench','leafpile','raccoon','vane','spage','piano','horse','stall','wish','mtrunk','cfire','chorus','sundial','goldpan','skip','hatch','hearth','muffin','lemon','bonfire','carve','pancake','chop','chair','chime','desk','feast','lore','owl','scpage','sled','mat','dance','gfrog','knit','willow','barrel','pulpit','maple','picnic','laundry','parade','hay','swing','rowboat','sunfl','puddle','mttea','pboat','skate','checkers','honorbox','tcap','fort','lamb','ballot','papers','smokey','fwell','potluck','mnote','fbrk','awish','gpick','rstone','dchorus','cairn','rcut','btn','memorial','swap','cw','compost','ptree','solstice','totem','qvein','birdh','cord','swarm','petbed','petnap','supper','mic','trellis','fboard2','cookie','scarewink','kittens','koi','pbench','pparcel','haynap','easel','sprw','ssoup','heron','fbooth','sprout','goose','kiln','treeh','bell','lite','tincan','rboat','fboard','vintage','arack','pstock','gbk','goat','mplant','sangel','club'].includes(m.kind)
             &&(bestP<60||(bestP===60&&od<(best.od||99)))){best={kind:'obj',o,m,od};bestP=60}}}
     if(G.L.tiles.water&&G.L.tiles.water[k]&&!(season()===3&&G.map!=='river')&&bestP<35+own){best={kind:'fish',cx,cy};bestP=35+own}
   }
@@ -3957,6 +3961,13 @@ function interact(){
     if(!n){toast('📦 Shipping bin — bring crops or finds here to sell instantly');return}
     G.gold+=total;G.stats.gold+=total;sfx('sfx_coin');swing('basket',o.x,o.y);
     toast('📦 Shipped '+n+' items → +'+total+'g');hudRender();save();return}
+  if(m.kind==='club'){
+    if(G.flags['club'+Math.floor(G.day/7)]){startDlg(o,['🌳 The clubhouse: one comic, three slingshots, a crown of acorns.','Pip\u2019s rules, chalked on the wall: “No grown-ups. No chores. Always share your snacks.”']);return}
+    G.flags['club'+Math.floor(G.day/7)]=1;sfx('sfx_success');
+    const STASH=[['marble','a SHOOTER marble — still warm from his pocket'],['candy','Pip\u2019s emergency candy (he left a note: “for champion only”)'],['whittle','a whittled fox — Elm must have taught him'],['bottle','a message in a bottle he\u2019s saving for a big sea-day']];
+    const g=STASH[Math.floor(G.day/7)%STASH.length];
+    G.inv.item[g[0]]=(G.inv.item[g[0]]||0)+1;collect(g[0]);
+    startDlg(o,['🌳 You duck inside — it smells of sap and gum wrappers.','In a crown box under a plank: '+g[1]+'.','He told no one else about this place. Not even Mira.']);save();return}
   if(m.kind==='sangel'){
     if(G.flags['sang'+G.day]){toast('❄️ Already made — the angel keeps watch');return}
     G.flags['sang'+G.day]=1;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');swing('seeds',o.x,o.y);
@@ -4907,6 +4918,7 @@ function promptScan(){
       else if(m.kind==='fboard')txt=BTN+' · 🎣 Read the catch board';
       else if(m.kind==='vintage')txt=BTN+' · 🍾 A dusty bottle…';
       else if(m.kind==='gbk')txt=BTN+' · 📖 The guestbook';
+      else if(m.kind==='club')txt=G.flags['club'+Math.floor(G.day/7)]?'🌳 The clubhouse — Pip\u2019s kingdom':BTN+' · 🌳 Pip\u2019s clubhouse';
       else if(m.kind==='sangel')txt=G.flags['sang'+G.day]?'❄️ Your snow angel lies in the drift':BTN+' · ❄️ Make a snow angel';
       else if(m.kind==='mplant')txt=BTN+' · 🌙 Plant the Moonflower seed';
       else if(m.kind==='pstock')txt=BTN+' · 🧪 Buy a tonic (15g) — Mira\u2019s blend';
