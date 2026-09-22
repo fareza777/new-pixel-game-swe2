@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.70</div></div></div>
+    <div class="ver">v4.71</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -478,6 +478,10 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'lite',x:sp[0],y:sp[1],anchor:'bc',meta:{kind:'forage',item:'llant',name:'a lantern, lit and humming — Hazel\u2019s'},fid:'lla0',hx:sp[0],hy:sp[1],ph:0});}
   if(id==='farm'&&G.flags.cordUntil&&G.day<=G.flags.cordUntil){
     G.objs.push({key:'planks',x:40.8,y:6.4,anchor:'bc',meta:{kind:'cord',name:'a cord of split firewood — Elm\u2019s delivery'},fid:'crd0',hx:40.8,hy:6.4,ph:0});}
+  if(id==='farm'&&G.flags.bl_bfly&&!G.objs.some(o=>o.fid==='bfly0')){
+    G.objs.push({key:'flower_r',x:38.5,y:4.6,anchor:'bc',meta:{kind:'deco',name:'the butterfly garden — wildflowers nod in rows'},fid:'bfly0',hx:38.5,hy:4.6,ph:0});
+    if(G.clock/60>=8&&G.clock/60<18&&season()!==3){for(let i=0;i<3;i++)
+      G.objs.push({key:'butterfly',x:37+i*1.7,y:6.2+(i%2),anim:{frames:['butterfly'],fps:5},meta:{kind:'critter',item:'butterfly',name:'a garden butterfly',wander:1},fid:'bfly_'+i,hx:37+i*1.7,hy:6.2,ph:i*.8});}}
   if(id==='farm'&&G.flags.bl_trellis&&!G.objs.some(o=>o.fid==='trel0'))
     G.objs.push({key:'flower_b',x:43.6,y:4.6,anchor:'bc',meta:{kind:'trellis',name:'a trellis of morning glories'},fid:'trel0',hx:43.6,hy:4.6,ph:0});
   if(id==='farm'&&G.flags.bl_birdh)G.objs.push({key:'birdhouse',x:33.5,y:15.5,anchor:'bc',meta:{kind:'birdh',name:'a painted birdhouse — wrens flit about it'},fid:'bl_birdh',hx:33.5,hy:15.5,ph:0});
@@ -2205,6 +2209,7 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
              {flag:'bl_hay',name:'Hay Bale',price:25,sub:'golden bale for the coop corner'},
              {flag:'bl_petbed',name:'Pet Bed',price:80,sub:'a cushion by the farmhouse hearth — your pets curl up there at night'},
              {flag:'bl_trellis',name:'Morning Glory Trellis',price:60,sub:'climbing blooms beside your door — they greet spring dawns'},
+             {flag:'bl_bfly',name:'Butterfly Garden',price:150,sub:'a wildflower bed — butterflies drift in all day'},
              {flag:'bl_stable',name:'Horse Stable',price:700,sub:'a snug stable by the gate — room for a riding horse'},
              {flag:'bl_seedmk',name:'Seed Maker',price:300,sub:'feed it a crop — two seed packets by morning'},
              {flag:'bl_statue',name:'Founder Statue',price:500,sub:'only after you find every journal page'},
