@@ -161,7 +161,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v10.93</div></div></div>
+    <div class="ver">v10.94</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -1884,6 +1884,8 @@ function questList(){
   if(f.metPip&&!f.pipDone)L.push('⚾ Pip: find his red ball in the forest');
   if(f.metNana&&!f.metAll)L.push('👋 Nana: meet all the villagers');
   if(!f.reqDone&&G.reqDay!==G.day)L.push('📋 Board: check today\'s request in the plaza');
+  if(f.festival){const IDS=['bram','sari','vilo','nana','mira','tom','fen','pip','wren','luna','hazel','cora','elle','mart','elm','gus'];
+    const n=IDS.filter(id=>f['he5_'+id]).length;if(n<16)L.push('💛 Heart of the Valley: reach 5♥ with every neighbor ('+n+'/16)')}
   return L}
 function questText(){
   const f=G.flags;
@@ -2809,6 +2811,29 @@ function talkTo(o){
     lines.push("Kid... every page, every star, every flower, every silly postcard — you've collected the whole valley.")
     lines.push("Bram pins a brass badge to your collar — ARCHIVIST OF SUNPETAL VALLEY. (+300g, +10 max energy)")
     lines.push("'Your grandfather kept every memory of this place. Now they live with you.'")}
+  // heart events — at 5 hearts each neighbor shares something personal, once
+  const HE5G={bram:'letter',sari:'orchid',vilo:'sketch',nana:'hcake',mira:'tonic',tom:'prism',fen:'crystal',pip:'gmarble',wren:'rfeather',luna:'stardust',hazel:'soup',cora:'ibar',elle:'ribbon',mart:'gem',elm:'carvedowl',gus:'goldore'};
+  const HE5L={
+    bram:["Bram takes off his spectacles, quiet a moment.","'Your grandfather's last ledger entry — I've kept it folded in my desk for years. It's yours now, kid.'","[Received Grandfather's Ledger — a memory of him]"],
+    sari:["Sari waves you behind the stall, grinning.","'Reserved stock — for the farmer the whole valley talks about.'","[Received a Mountain Orchid — Sari's best]"],
+    vilo:["Vilo slides a folded page across the counter, cheeks pink.","'A sketch of your farm at dawn. Paint will follow — someday you'll sit for a real portrait.'","[Received a Sketch — Vilo's first of the valley]"],
+    nana:["Nana presses something warm into your hands.","'His favorite honey cake — I only bake it for family, dear.'","[Received a Honey Cake — warm from Nana's oven]"],
+    mira:["Mira signs your chart with a flourish.","'Cleanest bill of health in the valley. Take this tonic — you've earned it, doctor's honor.'","[Received a Tonic — Mira's own recipe]"],
+    tom:["Old Tom squints at the water, then at you.","'River brought this up last flood. Been waiting for the right hands.'","[Received a River Prism — it catches light like moving water]"],
+    fen:["Fen taps the side of his nose.","'A pond-crystal. Found it the morning your grandfather taught me to cast.'","[Received a Crystal — cold and clear from the pond bed]"],
+    pip:["Pip straightens like a soldier.","'This is my BEST marble. The champion one. You're my best friend, so — it's yours. Officially.'","[Received the Golden Marble — Pip's championship piece]"],
+    wren:["Wren points at a rust-red feather on her sketchbook.","'From the hermit thrush — the valley's shyest singer. It chose to land near you.'","[Received a Red Feather — the thrush's gift]"],
+    luna:["Luna holds out her palm: something glimmers.","'Stardust. It falls for people the sky likes. You're one of them now.'","[Received Stardust — still faintly warm]"],
+    hazel:["Hazel won't take your coin today.","'Family eats free. That's been the rule since your grandfather's day — you're family now.'","[Received a bowl of House Stew — on the house]"],
+    cora:["Cora wipes her hands on a rag, smiling wide.","'Forged this off a moonbeam and your grandfather's old hinge. Take it — family doesn't pay.'","[Received an Iron Bar — Cora's best pour]"],
+    elle:["Elle circles you once, then snips a thread.","'A ribbon in your colors — wear the valley, sweetheart.'","[Received a Silk Ribbon — Elle's own dye]"],
+    mart:["Mart lowers his voice to a whisper.","'The family price — always, for you. And take this; it came in with Tuesday's coach and nobody knows its worth. I do.'","[Received a Gem — from Mart's private drawer]"],
+    elm:["Elm turns a small figure over in his scarred hands.","'Carved it from the oak that watched your grandfather work. Keep it near.'","[Received a Carved Owl — warm cedar, patient eyes]"],
+    gus:["The old miner chuckles like gravel in a bucket.","'Ha — forty years dead and someone's still visiting. Take a seam-chip, living one.'","[Received Gold Ore — from Gus's secret seam]"]};
+  if(HE5G[m.id]&&(G.hearts[m.id]||0)>=5&&!f['he5_'+m.id]){
+    f['he5_'+m.id]=1;G.stats.quests++;
+    const g=HE5G[m.id];G.inv.item[g]=(G.inv.item[g]||0)+1;collect(g);
+    sfx('sfx_success');startDlg(o,HE5L[m.id]);return}
   if(m.id==='bram'&&f.sunpetalBloom&&!f.festival){f.festival=true;sfx('sfx_success');
     startDlg(o,lines,festivalVisuals);return}
   startDlg(o,lines);
