@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.28</div></div></div>
+    <div class="ver">v11.29</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3057,13 +3057,14 @@ function giveGift(gid){
   const loved=gid!=='bq'&&(LOVES[m.id]||[]).includes(gid),base=gid==='bq'?4:(loved?4:2);
   if(gid==='bq')G.inv.item.bq--;else if(isC)G.inv.crop[+gid.slice(1)]--;else G.inv.item[gid]--;
   G.talkDay['gift_'+m.id]=G.day;if(loved)G.flags['ty_'+m.id]=(G.flags['ty_'+m.id]||0)+1;
-  G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+base);G.stats.gifts++;checkKindred(m.id);
+  const homecook=m.id===G.spouse&&!isC&&gid!=='bq'&&RECIPES.some(r=>r.id===gid);
+  G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+base+(homecook?1:0));G.stats.gifts++;checkKindred(m.id);
   if(isB)G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+3);
   sfx('sfx_success');closeShop();hudRender();save();
   const nm=gid==='bq'?'a Moonbloom Bouquet':(isC?CROPS[+gid.slice(1)]:ITEMS[gid].name);
   startDlg({meta:{id:m.id,name:m.name,portrait:m.portrait}},[gid==='bq'?'A Moonbloom Bouquet'+(isB?' — for my birthday?! You made my whole year, kid. (+'+(base+3)+' ♥)':' — it smells like the whole valley at once! (+'+base+' ♥)'):
     loved?(LOVESAY[m.id]||'"This is my favorite thing in the whole valley! (+'+(base+(isB?3:0))+' ♥)"'):
-    'Oh! '+nm+(isB?' — on my birthday! You remembered! (+'+(base+3)+' ♥)':' — for me? Thank you, kid. (+'+base+' ♥)')])}
+    'Oh! '+nm+(isB?' — on my birthday! You remembered! (+'+(base+3)+' ♥)':' — for me? Thank you, kid. (+'+base+' ♥)')+(homecook?' …made with your own hands, for me — I can taste the love. (+1 bonus ♥)':'')])}
 function cookRecipe(r){
   const it=G.inv.item||{};
   for(const k in r.need){const isC=/^c\d+$/.test(k),hv=isC?(G.inv.crop[+k.slice(1)]||0):(it[k]||0);
@@ -4067,6 +4068,8 @@ function interact(){
             '💍 You\u2019re engaged to '+m.name+'!']);save()}},
         {label:'…not yet',cb:()=>{}}]);return}
     if(m.id===G.spouse){
+      const hasGift2=G.tool==='basket'&&((G.inv.item.bq||0)>0||Object.keys(G.inv.crop).some(k=>G.inv.crop[k]>0)||Object.keys(G.inv.item).some(k=>G.inv.item[k]>0&&GIFTABLE[k]));
+      if(hasGift2&&G.talkDay['gift_'+m.id]!==G.day){G.shop={tab:'gift',m:m};G.state='shop';uiBusy();shopRender();return}
       if(!G.flags.wedDone){G.flags.wedDone=1;sendMail('Mayor Bram','The whole village toasted you both at the Lantern last night. May your farm always smell of morning. — Bram');
         startDlg(o,['"I brought a kettle, a quilt, and a heart that chose you, love."',
           m.name+' touches the ring. "The chapel bell rang for us — the whole valley heard."',
@@ -4075,6 +4078,11 @@ function interact(){
         G.flags['anni'+G.day]=1;G.inv.item=G.inv.item||{};G.inv.item.bq=(G.inv.item.bq||0)+1;collect('bq');G.hearts[m.id]=10;
         startDlg(o,['"You remembered — our anniversary. Seasons already, and I still get butterflies."',
           '"Take this, love — the first bouquet I ever pressed was meant for you. (+1 Moonbloom Bouquet)"']);save();return}
+      if(G.day%7===0&&!G.flags['date'+G.day]){G.flags['date'+G.day]=1;G.hearts[m.id]=10;
+        G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');
+        startDlg(o,['"Restday, love — no chores, just us." '+m.name+' pulls you down onto the porch step.',
+          'You sit shoulder-to-shoulder and watch the farm breathe: chickens arguing, wind in the rows, somewhere a kettle singing.',
+          '"Best seat in the valley," '+m.name+' sighs, head on your shoulder. (+6⚡ · a Restday date)']);save();return}
       if(G.spouseDay!==G.day){G.spouseDay=G.day;G.hearts[m.id]=10;
         G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
         const pk=G.day%3===0||G.flags.bl_famroom;
