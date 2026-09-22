@@ -156,7 +156,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v4.64</div></div></div>
+    <div class="ver">v4.65</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:#241809;border:3px solid #c89b5a;border-radius:10px;padding:16px;min-width:260px;color:#ffe9c4">
@@ -4029,7 +4029,12 @@ function loop(ts){
   if(G.state==='festival'){festivalRender(ts);requestAnimationFrame(loop);return}
   if(G.state!=='play'&&G.state!=='dlg'&&G.state!=='bag'&&G.state!=='shop'){requestAnimationFrame(loop);return}
   // time passes only while playing (not in dialogs/menus)
-  if(G.state==='play'){G.clock+=dt*8;dayTick()}
+  if(G.state==='play'){G.clock+=dt*8;
+    if(G.flags.bl_clock&&G.map==='village'){const hh=Math.floor(G.clock/60);
+      if(G.flags.chimeH!==hh){G.flags.chimeH=hh;
+        if(hh===12){sfx('sfx_success');toast('🔔 NOON — the clocktower peals across the plaza')}
+        else if(hh>=7&&hh<=21)sfx('sfx_talk')}}
+    dayTick()}
   // move
   let mx=(K['a']||K['arrowleft']?-1:0)+(K['d']||K['arrowright']?1:0);
   let my=(K['w']||K['arrowup']?-1:0)+(K['s']||K['arrowdown']?1:0);
