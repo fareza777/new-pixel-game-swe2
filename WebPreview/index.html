@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.29</div></div></div>
+    <div class="ver">v11.30</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -734,7 +734,8 @@ function loadMap(id,sx,sy){
     const spid=G.spouse,spk=(spid==='mira'?'npc5':spid==='fen'?'npc20':spid),hh=G.clock/60;
     const spm={kind:'npc',id:spid,name:VNAME[spid]||spid,portrait:spk+'_portrait',spouse:1};
     if(id==='house'&&(hh<10||hh>=20))G.objs.push({key:spk+'_down0',x:8.5,y:4.4,anchor:'bc',meta:spm,fid:'spw0',hx:8.5,hy:4.4,ph:0});
-    else if(id==='farm'&&hh>=10&&hh<18)G.objs.push({key:spk+'_down0',x:14.5,y:9.5,anchor:'bc',meta:spm,fid:'spw0',hx:14.5,hy:9.5,ph:0});}
+    else if(id==='farm'&&hh>=10&&hh<18)G.objs.push({key:spk+'_down0',x:14.5,y:9.5,anchor:'bc',meta:spm,fid:'spw0',hx:14.5,hy:9.5,ph:0});
+    else if(id==='village'&&G.day%7===0&&hh>=10&&hh<18)G.objs.push({key:spk+'_down0',x:16,y:24,anchor:'bc',meta:spm,fid:'spw0',hx:16,hy:24,ph:0});}
   if(!nighth)G.objs=G.objs.filter(o=>!o.nightOnly);
   if(G.day%7!==0&&!(G.weather==='fog'&&G.clock/60<13))G.objs=G.objs.filter(o=>!o.martOnly);
   if(id==='cellar'&&G.flags.lastWeather==='rain'&&G.clock/60<20&&!G.objs.some(o=>o.fid==='cdp0'))
@@ -7081,6 +7082,16 @@ function loop(ts){
       if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
         const nx=o.x+dx*.3*dt,ny=o.y+dy*.3*dt;
         if(Math.hypot(nx-(o.hx||o.x),ny-(o.hy||o.y))<3&&!blocked(nx,ny)){o.x=nx;o.y=ny}}}
+    if(m.kind==='npc'&&m.spouse&&G.day%7===0&&(G.map==='farm'||G.map==='village')){
+      const fdc=Math.hypot(G.hero.x-o.x,G.hero.y-o.y);
+      if(fdc>1.8&&fdc<14){const dxc=(G.hero.x-o.x)/fdc,dyc=(G.hero.y-o.y)/fdc;
+        const nxc=o.x+dxc*1.15*dt,nyc=o.y+dyc*1.15*dt;
+        if(!blocked(nxc,nyc)){o.x=nxc;o.y=nyc}
+        const spkc=(m.id==='mira'?'npc5':m.id==='fen'?'npc20':m.id);
+        const ddc=Math.abs(dxc)>Math.abs(dyc)?(dxc<0?'left':'right'):(dyc<0?'up':'down');
+        const wk=spkc+'_'+ddc;
+        if(IMG[wk+'0'])o.anim={frames:[wk+'0',wk+'1',wk+'2'].filter(f=>IMG[f]),fps:6}
+        else if(IMG[spkc+'_down0'])o.anim={frames:[spkc+'_down0'],fps:1}}}
     if(m.kind==='cow'&&m.wander){o.ph-=dt;
       if(o.ph<=0){o.ph=2+Math.random()*4;o.d=Math.floor(Math.random()*5)}
       if(o.d<4){const dx=[0,-1,1,0][o.d],dy=[1,0,0,-1][o.d];
