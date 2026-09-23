@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.68</div></div></div>
+    <div class="ver">v12.69</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -435,7 +435,7 @@ const DEEDS=[
   ['skyward','🐦 Skyward','return Cora\u2019s grandmother\u2019s weathervane to its perch',()=>!!G.flags.cvnDone],
   ['routes','🧾 Old Routes','return Mart\u2019s family route manifest from the Turnpike',()=>!!G.flags.mqDone],
   ['dovepost','🕊 Dove Post','send a gift by dove from your own dovecote',()=>!!G.flags.doveSent],
-  ['firstplay','\ud83c\udfad Stage Family','watch Sunny\u2019s first school play',()=>G.flags.firstplay],['hide','🙈 Champion Seeker','found Pip\'s perfect hiding spot',()=>G.flags.hsDone],['coveday','🏖 Sun-Touched','spent Cove Day on the sand with the village',()=>G.flags.coveDeed],['wassail','🍎 Orchard Singer','sang the winter wassail at your farm',()=>G.flags.wassDone],['tide','🏮 Tide-Wisher','set a wish upon the Lantern Tide',()=>G.flags.ltdeed],['evejar','✨ Jar of Summer','scoop six marsh fireflies on Firefly Eve',()=>!!G.flags.eveDone],
+  ['firstplay','\ud83c\udfad Stage Family','watch Sunny\u2019s first school play',()=>G.flags.firstplay],['wonderdog','🐕 Wonder Dog','taught Rex every trick he knows',()=>G.flags.rexMaestro],['hide','🙈 Champion Seeker','found Pip\'s perfect hiding spot',()=>G.flags.hsDone],['coveday','🏖 Sun-Touched','spent Cove Day on the sand with the village',()=>G.flags.coveDeed],['wassail','🍎 Orchard Singer','sang the winter wassail at your farm',()=>G.flags.wassDone],['tide','🏮 Tide-Wisher','set a wish upon the Lantern Tide',()=>G.flags.ltdeed],['evejar','✨ Jar of Summer','scoop six marsh fireflies on Firefly Eve',()=>!!G.flags.eveDone],
   ['ponytamer','🐴 Pony Tamer','gentle Buttercup the pony',()=>!!G.flags.ponyTamed],
   ['velvet','🦋 Velvet Friend','help Pip find the Velvet Duchess',()=>!!G.flags.vwDone],
   ['bug_hunter','🦋 Bug Hunter','net 5 critters',()=>['butterfly','cricket','firefly','beetle'].reduce((a,k)=>a+(G.col[k]||0),0)>=5],
@@ -5086,15 +5086,17 @@ function interact(){
     if(G.petDay['dog']===G.day){
       if(G.flags['fetch'+G.day]){
         if(!G.flags['rext'+G.day]){G.flags['rext'+G.day]=1;const tr=G.flags.rexT||0;
-          const TRICKS=['SIT','ROLL OVER','SPEAK'];
-          if(tr<3){G.flags.rexT=tr+1;sfx('sfx_success');adjSta(2);
+          const TRICKS=['SIT','ROLL OVER','SPEAK','PLAY DEAD','DANCE'];
+          if(tr<5){G.flags.rexT=tr+1;sfx('sfx_success');adjSta(2);
+                        if(tr===4){G.flags.rexMaestro=1;
+              startDlg(o,['You circle your finger \u2014 Rex DANCES, a full pirouette on his hind legs, ears flying.','He learned every trick you know. Rex the Wonder Dog, fully trained! (deed: Wonder Dog \u00b7 +4\u26a1)']);adjSta(2);return}
             if(tr===2){G.flags.deed_dogwhisperer=1;
               startDlg(o,['You tap your shoulder twice — Rex sits up on his hind legs and SPEAKS, clear as a bell.','"That\u2019s three tricks," you tell him. He holds the pose, bursting with pride. (SPEAK learned — deed: Dog Whisperer · +2⚡)']);return}
-            startDlg(o,['Rex watches the treat in your fist with his whole soul — then folds into a perfect '+TRICKS[tr]+'.','Repetition, reward, patience. ('+TRICKS[tr]+' learned — '+ (tr+1) +'/3 tricks · +2⚡)']);return}
+            startDlg(o,['Rex watches the treat in your fist with his whole soul — then folds into a perfect '+TRICKS[tr]+'.','Repetition, reward, patience. ('+TRICKS[tr]+' learned — '+ (tr+1) +'/5 tricks · +2⚡)']);return}
           const perf=Math.random();
           if(perf<0.3){G.inv.item.oldcoin=(G.inv.item.oldcoin||0)+1;
-            startDlg(o,['Rex runs his full routine — sit, roll, speak — then digs at the path edge and drops an OLD COIN at your feet.','A dog who pays his own treats. (+2⚡)']);adjSta(2);return}
-          startDlg(o,['Rex runs his whole routine for the sheer joy of it — sit, roll, speak, tail a metronome. (+3⚡)']);adjSta(3);return}
+            startDlg(o,['Rex runs his full routine — sit, roll, speak, play dead, dance — then digs at the path edge and drops an OLD COIN at your feet.','A dog who pays his own treats. (+2⚡)']);adjSta(2);return}
+          startDlg(o,['Rex runs his whole routine for the sheer joy of it — sit, roll, speak, play dead, dance — tail a metronome. (+3⚡)']);adjSta(3);return}
         o.heart=60;return}
       G.flags['fetch'+G.day]=1;o.heart=60;sfx('sfx_success');
       const find=[['feather','a glossy feather'],['acorn','a buried acorn'],['shell','a river-worn shell'],['berry','a stolen berry']][G.day%4];
