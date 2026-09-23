@@ -6892,6 +6892,13 @@ const K={};addEventListener('keydown',e=>{const k=e.key.toLowerCase();K[k]=true;
 });
 addEventListener('keyup',e=>K[e.key.toLowerCase()]=false);
 function skipHour(){G.clock+=60;dayTick();save()}
+const GDREAMS=[
+ 'You dream of Grandfather’s hands — soil under every nail — guiding yours over a hoe twice your size. “Loose soil, little one. Roots hate a hard bed.”',
+ 'You dream of the porch at dusk. Grandfather is whittling something small — a bird, maybe — and humming the Falls song wrong on purpose just to make you laugh.',
+ 'You dream of rain on the barn roof. Inside, Grandfather reads the weather in the aches of his bad knee. “The valley always warns you — if you bother to listen.”',
+ 'You dream of Grandfather counting seeds into your palm, one by one, like they were coins. “Spend them carefully. They’re the only gold that grows.”',
+ 'You dream of him waving from the dock cart — younger, broader — calling, “Feed Molly before yourself and you’ll never go wrong!”',
+ 'You dream of two mugs on the sill, steam rising, and him saying, “A farm isn’t land, kid. It’s a promise you keep every morning.”'];
 function sleep(){
   // lie down: screen fades, day rolls over, wake at home — stamina restored
   const sn=G.daySnap||{};const bits=[];
@@ -6904,6 +6911,7 @@ function sleep(){
   G.diary=G.diary||[];
   G.diary.push('Day '+G.day+' ('+(G.weather==='rain'?'rain':G.weather==='snow'?'snow':G.weather==='storm'?'storm':G.weather==='fog'?'fog':G.weather==='wind'?'windy':'sunny')+') — '+(bits.length?bits.join(', '):'a quiet day'));
   if(G.diary.length>20)G.diary=G.diary.slice(-20);
+  if(Math.random()<.12)G._dream=GDREAMS[Math.floor(Math.random()*GDREAMS.length)];
   G.fade=1;sfx('sfx_door');
   setTimeout(()=>{G.clock=24*60;dayTick();G.clock=7*60;   // dayTick rolls day++ + crop growth
     loadMap('house',MAPS.house.spawn.x,MAPS.house.spawn.y);G.hero.dir='DOWN';
@@ -6912,6 +6920,8 @@ function sleep(){
     const bn=$('areabanner');bn.innerHTML='DAY '+G.day+'<small>'+WD[(G.day-1)%7]+' · '+wn+' · '+SEASON[season()]+'</small>';
     bn.style.opacity=1;clearTimeout(loadMap._bt);loadMap._bt=setTimeout(()=>bn.style.opacity=0,2800);
     toast('Day '+G.day+(G.weather==='rain'?' — a rainy morning':', morning — a new day in Sunpetal Valley'));save();
+    if(G._dream){const d=G._dream;G._dream=null;G.sta=Math.min(100+(G.maxsta||0),G.sta+3);
+      setTimeout(()=>startDlg({meta:{name:'a dream',portrait:'gus_portrait'}},['💤 '+d,'You wake with a smile. (+3⚡)']),1100)}
     setTimeout(()=>G.fade=0,400)},450);
 }
 function dayTick(){
