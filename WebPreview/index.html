@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.62</div></div></div>
+    <div class="ver">v11.63</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -276,7 +276,11 @@ function gainXP(k,n){const b=skLvl(G.xp[k]);G.xp[k]=(G.xp[k]||0)+n;const a=skLvl
     setTimeout(()=>startDlg({meta:{kind:'npc',id:'hero',name:'Mastery',portrait:'hero_portrait'}},
      ['Your '+k+' hands move on their own now — true mastery. Choose your calling:'],null,
      [{label:opts[0][0]+' — '+opts[0][1],cb:()=>{G.perk[k]=opts[0][2];toast('✦ '+opts[0][0]+' learned!');save()}},
-      {label:opts[1][0]+' — '+opts[1][1],cb:()=>{G.perk[k]=opts[1][2];toast('✦ '+opts[1][0]+' learned!');save()}}]),1400)}}
+      {label:opts[1][0]+' — '+opts[1][1],cb:()=>{G.perk[k]=opts[1][2];toast('✦ '+opts[1][0]+' learned!');save()}}]),1400)}
+  if(G.xp[k]>=300&&!G.flags['mxp_'+k]){G.flags['mxp_'+k]=1;
+    const MS={farm:['Sari','Your hands read soil like scripture now — the stall tips its hat to you. — Sari'],fish:['Fen','Heard you pull ’em like the river owes you favors. Respect, kid. — Fen'],cook:['Hazel','Customers keep asking who taught you. I take all the credit, naturally. — Hazel'],forage:['Wren','You notice the small things. That’s the whole trick — and you’ve got it. — Wren']};
+    const mm=MS[k]||['Mayor Bram','Well done, kid.'];
+    sendMail(mm[0],mm[1]);setTimeout(()=>toast('★ '+k.toUpperCase()+' GRAND MASTERY — a letter of commendation arrives!'),2600)}}
 function colName(id){return id[0]==='c'?CROPS[+id.slice(1)]+' (crop)':(ITEMS[id]?ITEMS[id].name:id)}
 const MAILDAY={2:['Mayor Bram',"Welcome to the valley, kid. My door is always open — the office with the red roof."],
  4:['Sari',"Fresh stock every morning at my stall — strawberries now in spring, eggplant come autumn. The vines keep giving."],
@@ -3790,7 +3794,7 @@ function toggleBag(v){
     const SKL=[['farm','🌾 Farming'],['forage','🍄 Foraging'],['fish','🎣 Fishing'],['cook','🍳 Cooking']],THL=[5,15,40,80,150];
     for(const[sk,nm]of SKL){const xp=G.xp[sk]||0,lv=skLvl(xp),nxt=lv<5?THL[lv]:null;
       const perk=sk==='farm'?'+'+lv*10+'% crop price':sk==='forage'?'rare finds +'+lv*10+'%':sk==='cook'?'+'+lv*10+'% dish price':'bite zone +'+(lv*1.4).toFixed(0)+'%';
-      h+=`<div class="invrow"><span>${nm} · Lv${lv}</span><span class="ct" style="margin-left:auto">${nxt?xp+'/'+nxt+'xp · '+perk:'MAX · '+perk}</span></div>`;
+      h+=`<div class="invrow"><span>${nm} · Lv${lv}${G.flags['mxp_'+sk]?' ★':''}</span><span class="ct" style="margin-left:auto">${nxt?xp+'/'+nxt+'xp · '+perk:(G.flags['mxp_'+sk]?'★ GRAND MASTER · ':'MAX · ')+perk}</span></div>`;
       if(G.perk&&G.perk[sk]){const pl=PERKS[sk].find(pp=>pp[2]===G.perk[sk]);
         h+=`<div class="invrow" style="font-size:10px;color:#ffd76e"><span>✦ ${pl[0]} — ${pl[1]}</span></div>`}}
     h+='<div class="invsec">NEIGHBORS</div>';
