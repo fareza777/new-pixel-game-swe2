@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.43</div></div></div>
+    <div class="ver">v12.44</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -4662,7 +4662,7 @@ function interact(){
         startDlg(o,['"Just passing, neighbour — your farm is starting to look like something out of a storybook."',
           m.name+' admires the rows a moment, then pats a pocket. "Oh — I brought you '+m.gsay+'." (+1♥ · neighbour visit)']);save();return}
       startDlg(o,['"Beautiful day for it, isn’t it? Don’t work too hard out here."']);return}
-    if(G.day%28===9&&!G.flags['forayd'+G.day]&&'<span style="color:#ffd76a">🍄 Forager’s Ramble — find 3 glowing sprigs in Elderwood Forest</span>',G.flags.pageant&&!G.flags.pageant_done){
+    if(G.flags.rounds===G.day&&G.flags.roundsDone!==G.day&&VNAME[G.flags.roundTarget]&&'<span style="color:#ffd76a">🧪 Mira’s rounds — deliver the tonic to '+VNAME[G.flags.roundTarget]+'</span>',G.day%28===9&&!G.flags['forayd'+G.day]&&'<span style="color:#ffd76a">🍄 Forager’s Ramble — find 3 glowing sprigs in Elderwood Forest</span>',G.flags.pageant&&!G.flags.pageant_done){
       const PQ={elle:['pbanner','pageant_p1','the Founders\u2019 Banner','"A banner for the pageant? Give me a morning and a bolt of red — there. Tell Bram the hem\u2019s my best work."'],
                 vilo:['tcrown','pageant_p2','the Tin Crown','"A crown for the founding mayor — tin, paint, and a little stardust. Mind the wet gold."'],
                 wren:['pscript','pageant_p3','the Pageant Script','"I wrote the founding as a meadow-drama — three acts, one intermission for daisies. Give Bram act two carefully, it\u2019s my favorite."']};
@@ -4677,6 +4677,13 @@ function interact(){
     if(!G.flags.pageant&&m.id==='bram'&&G.day>=12){
       G.flags.pageant=1;sfx('sfx_talk');
       startDlg(o,['"Forty years ago, your grandfather staged the Founders\u2019 Pageant — the whole valley in the plaza, lanterns strung, not a dry eye."','"I want to stage it again. I need three props: Elle could sew the banner, Vilo could paint a crown, and Wren owes me a script. Will you fetch them, farmer?"']);save();return}
+    if(m.id==='mira'&&G.day%7===3&&G.flags.rounds!==G.day){
+      G.flags.rounds=G.day;const TGT=['bram','sari','nana','vilo','hazel','cora','elle','mart','fen','wren','luna','elm','tom','pip'];
+      G.flags.roundTarget=TGT[G.day%TGT.length];G.inv.item.tonic=(G.inv.item.tonic||0)+1;
+      startDlg(o,['Mira corks a green bottle and presses it into your hands.','"Rounds today — '+VNAME[G.flags.roundTarget]+' has been running ragged. One tonic, and don’t let them argue."','[HERBAL TONIC added to your bag — deliver it today]']);save();return}
+    if(G.flags.rounds===G.day&&G.flags.roundTarget===m.id&&(G.inv.item.tonic||0)>0){
+      G.inv.item.tonic--;G.flags.roundsDone=G.day;G.gold+=15;G.hearts[m.id]=Math.min(10,(G.hearts[m.id]||0)+1);G.hearts.mira=Math.min(10,(G.hearts.mira||0)+1);sfx('sfx_success');
+      startDlg(o,[m.name+' eyes the green bottle, then sighs — half protest, half gratitude.','"Mira sent you, didn’t she. Fine — to my health, then. And yours." (+15g, +1♥ '+m.name+', +1♥ Mira)']);save();return}
     const MARRY={bram:1,sari:1,vilo:1,nana:1,mira:1,hazel:1,cora:1,elle:1,mart:1,fen:1,wren:1,luna:1,elm:1};
     if(!G.spouse&&G.flags.bl_ring&&MARRY[m.id]&&(G.hearts[m.id]||0)>=10){
       startDlg(o,[
