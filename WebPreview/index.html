@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.65</div></div></div>
+    <div class="ver">v11.66</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1065,6 +1065,9 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
   if(id==='farm'&&G.flags.kidwalk&&G.day%7===6&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='lem0'))
     G.objs.push({key:'crate_03',x:8.5,y:21.5,anchor:'c',meta:{kind:'lemonst',name:'Sunny’s lemonade stand — 2g a cup'},fid:'lem0',hx:8.5,hy:21.5,ph:0});
+  if(id==='farm'&&G.day%7===5&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='fv0')){const VN=[['sari','sari_down0','sari_portrait','some spare seeds for the shed',()=>{G.inv.item.seed_c1=(G.inv.item.seed_c1||0)+3}],['wren','wren_down0','wren_portrait','a pressed flower she found on the walk',()=>{G.inv.item.posy=(G.inv.item.posy||0)+1}],['fen','npc20_down0','npc20_portrait','a fish he swears was twice this size',()=>{G.inv.item.fish=(G.inv.item.fish||0)+1}],['nana','nana_down0','nana_portrait','a jar of jam for your pantry',()=>{G.inv.item.hcake=(G.inv.item.hcake||0)+1}],['vilo','vilo_down0','vilo_portrait','a sketch of your farm in the light',()=>{G.inv.item.sketch=(G.inv.item.sketch||0)+1}],['pip','pip_down0','pip_portrait','a feather for good luck',()=>{G.inv.item.feather=(G.inv.item.feather||0)+1}],['elle','elle_down0','elle_portrait','a skein of yarn for cold evenings',()=>{G.inv.item.wool=(G.inv.item.wool||0)+1}],['mira','npc5_down0','npc5_portrait','a tonic for tired shoulders',()=>{G.inv.item.htea=(G.inv.item.htea||0)+1}]][Math.floor(G.day/7)%8];
+    G.objs.push({key:VN[1],x:15.5,y:13.5,anchor:'bc',meta:{kind:'npc',id:VN[0],name:VNAME[VN[0]]||'A neighbour',portrait:VN[2],visit:1,gift:VN[4],gsay:VN[3]},fid:'fv0',hx:15.5,hy:13.5,ph:0})}
+
   if(id==='farm'&&G.day%28===8&&G.clock/60>=8&&G.clock/60<20){
     G.objs.push({key:'banner',x:6.5,y:20.5,meta:{kind:'rstart',name:'the starting banner — Sunpetal Races'},fid:'race0',hx:6.5,hy:20.5,ph:0});
     G.objs.push({key:'pennant',x:33.5,y:18.5,meta:{kind:'rcheck',name:'the far flag'},fid:'race1',hx:33.5,hy:18.5,ph:0});
@@ -4162,6 +4165,10 @@ function interact(){
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
     sfx('sfx_harvest');toast('Picked a '+(ITEMS[iid]?ITEMS[iid].name:m.name)+'!');hudRender();save();return}
   if(m.kind==='npc'){
+    if(m.visit){if(!G.flags['vis'+G.day]){G.flags['vis'+G.day]=1;G.hearts[m.id]=(G.hearts[m.id]||0)+1;if(m.gift)m.gift();
+        startDlg(o,['"Just passing, neighbour — your farm is starting to look like something out of a storybook."',
+          m.name+' admires the rows a moment, then pats a pocket. "Oh — I brought you '+m.gsay+'." (+1♥ · neighbour visit)']);save();return}
+      startDlg(o,['"Beautiful day for it, isn’t it? Don’t work too hard out here."']);return}
     const MARRY={bram:1,sari:1,vilo:1,nana:1,mira:1,hazel:1,cora:1,elle:1,mart:1,fen:1,wren:1,luna:1,elm:1};
     if(!G.spouse&&G.flags.bl_ring&&MARRY[m.id]&&(G.hearts[m.id]||0)>=10){
       startDlg(o,[
