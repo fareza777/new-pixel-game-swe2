@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.10</div></div></div>
+    <div class="ver">v12.11</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1685,6 +1685,13 @@ function loadMap(id,sx,sy){
     for(let i=0;i<2;i++)G.objs.push({key:'firefly',x:4+i*5,y:6+i,anim:{frames:['firefly'],fps:2},meta:{kind:'critter',item:'firefly',name:'a lantern firefly',wander:1},fid:'bug_gh'+i,hx:4+i*5,hy:6+i,ph:i*.7})
     if(G.clock/60>=8&&G.clock/60<11&&!G.objs.some(o=>o.fid==='ghv0'))
       G.objs.push({key:'herb_01',x:3.5,y:3.5,anchor:'c',meta:{kind:'vent',name:'the greenhouse vent, glassy with condensation'},fid:'ghv0',hx:3.5,hy:3.5,ph:0})
+    if(G.flags.bl_ghannex2){
+      if(!G.L.tillable.some(r=>r[0]===7))G.L.tillable.push([7,4,11,7]);
+      for(let gx=7;gx<=11;gx++)for(let gy=4;gy<=7;gy++){
+        if(!G.objs.some(o=>o.fid==='gbx'+gx+'_'+gy))
+          G.objs.push({key:'soila',x:gx+.5,y:gy+.5,anchor:'c',meta:{kind:'deco'},fid:'gbx'+gx+'_'+gy})}
+      if(!G.objs.some(o=>o.fid==='gap2'))
+        G.objs.push({key:'planter',x:9.5,y:3.6,anchor:'bc',meta:{kind:'deco',name:'the east annex beds — morning sun through the glass'},fid:'gap2'})}
     if(G.flags.bl_ghannex){
       if(!G.L.tillable.some(r=>r[0]===2))G.L.tillable.push([2,4,6,7]);
       for(let gx=2;gx<=6;gx++)for(let gy=4;gy<=7;gy++){
@@ -3646,6 +3653,7 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
  {flag:'bl_capsule',name:'Time Capsule',price:300,sub:'a little brass tin — bury a treasure for your future self; dig it up next season (+50g interest)'},
  {flag:'bl_ducks',name:'Duck Pair',price:220,sub:'two ducks settle on the farm pond — pet them for duck eggs by the dock; crumbs make them churn'},
  {flag:'bl_ghannex',name:'Greenhouse Annex',price:900,ore:3,req:'bl_ghouse',sub:'needs the greenhouse + 3 ore — deep planter beds across the west floor, warm year-round'},
+ {flag:'bl_ghannex2',name:'Greenhouse Annex II',price:1200,ore:4,req:'bl_ghannex',sub:'needs the west annex + 4 ore — a second run of deep beds along the east glass'},
  {flag:'bl_aqua',name:'The Aquarium',price:450,ore:1,sub:'needs 1 ore — a glass tank by the window; stock it with your favorite catch'},
  {flag:'bl_mayo',name:'Mayonnaise Maker',price:400,ore:1,sub:'needs 1 ore — drop eggs in at dusk; golden mayo by morning, worth double'},
  {flag:'bl_cheese',name:'Cheese Press',price:550,ore:1,sub:'needs 1 ore — press milk overnight into farmhouse cheese, worth double'},
