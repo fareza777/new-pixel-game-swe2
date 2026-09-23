@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.31</div></div></div>
+    <div class="ver">v12.32</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -265,6 +265,8 @@ let SPR={};                    // merged sprite key -> atlas rect name
 /* ------------------------------ game state ------------------------------ */
 const FISHDEX=['fish','rfish','kingfish','icefish','goldfish','dawnfish','moonfish','mistfish','prism','gar','oldone','tuna','sailfish','sunfish','palefish','ghostfrog','crab','cray','whelk'];
 function sendMail(f,t){G.letters.push({f,t,day:G.day})}
+const LREPLY={bram:['Bram','Received your letter at the office — fine penmanship. The valley grows better neighbors every day. — Bram'],nana:['Nana','A letter! I read it twice with my tea. You write just like your grandfather did. — Nana'],sari:['Sari','Got your note between stalls — made my whole shift. Come by soon, I saved you a smile. — Sari'],vilo:['Vilo','Your letter arrived like a small painting. I pinned it above my easel. — Vilo'],mira:['Mira','A hand-written letter — the best medicine there is. Take care of yourself out there. — Mira'],fen:['Fen','Read your letter on the dock. The fish aren\'t biting but this was better anyway. — Fen'],hazel:['Hazel','Your letter smelled faintly of the farm — I read it with a cup of cocoa. — Hazel'],cora:['Cora','Got your letter in the workshop. Pinned it next to the good saw. — Cora'],elle:['Elle','Your letter! I read it to my pincushion. She cried. — Elle'],mart:['Mart','Letter received. I\'ll keep it in the till for luck. — Mart'],wren:['Wren','A letter pressed like a leaf in my herbarium — thank you for the paper sun. — Wren'],luna:['Luna','Your words arrived by starlight, as promised. Write again when the moon is full. — Luna'],elm:['Elm','Read your letter by the fire. Trails are long but letters are longer. — Elm'],tom:['Tom','Got your letter at the counter — took a break just to read it slow. — Tom']};
+function letterReplies(){for(const k in G.flags)if(k.startsWith('lw_q_')&&G.flags[k]){const id=k.slice(5);G.flags[k]=0;const r=LREPLY[id];if(r){sendMail(r[0],r[1]);G.hearts[id]=Math.min(10,(G.hearts[id]||0)+1);G.flags.lwgot=1}}}
 function hbSet(d){G.flags.hbday=d;sendMail('Nana','Day '+d+' of the valley year — written in the book in my best ink. I\'ll bake something special. — Nana');toast('🎂 Birthday marked: year-day '+d+' — the valley will remember!')}
 function chkDex(){if(G.flags.fendex||!FISHDEX.every(k=>((G.fishDex||{})[k]||0)>0))return;
   G.flags.fendex=1;G.inv.item.oar=1;sfx('sfx_success');
@@ -4458,6 +4460,13 @@ function interact(){
     if(!G.letters.length){sfx('sfx_talk');toast('📬 Nothing in the mail today');return}
     G.mailbox=(G.mailbox||[]).concat(G.letters);if(G.mailbox.length>40)G.mailbox=G.mailbox.slice(-40);
     const pages=G.letters.splice(0).map(l=>'📬  '+l.f+', Day '+l.day+':\n\n"'+l.t+'"');
+    if(!pages.length){
+      const WHO=[['bram','Mayor Bram'],['nana','Nana'],['sari','Sari'],['vilo','Vilo'],['mira','Mira'],['fen','Fen'],['hazel','Hazel'],['cora','Cora'],['elle','Elle'],['mart','Mart'],['wren','Wren'],['luna','Luna'],['elm','Elm'],['tom','Tom']];
+      const ch=WHO.filter(w=>!G.flags['lw_'+w[0]+'_'+(G.day)]).slice(0,4).map(w=>({t:'✉ Write to '+w[1],cb:()=>{
+        G.flags['lw_'+w[0]+'_'+G.day]=1;G.flags['lw_q_'+w[0]]=1;sfx('sfx_talk');
+        toast('✉ You slip a letter to '+w[1]+' into the box — flag up, it\'ll be there tomorrow')}}));
+      ch.push({t:'Never mind',cb:()=>{}});
+      startDlg({meta:{id:'mail',name:'Mailbox',portrait:'crate_01'}},['The box is empty. A pencil and a stack of paper sit inside, waiting.','Who will you write to today?'],null,ch);return}
     sfx('sfx_talk');startDlg({meta:{id:'mail',name:'Mailbox',portrait:'crate_01'}},pages);return}
   if(m.kind==='shoplot'){
     if(G.flags.field2){toast('🪧 East Field — yours, farmer. Break it in gently.');return}
@@ -7764,6 +7773,7 @@ function sleep(){
     setTimeout(()=>G.fade=0,400)},450);
 }
 function dayTick(){
+  letterReplies();if(G.flags.lwgot){G.flags.lwgot=0;setTimeout(()=>toast('📬 Replies arrived — check the mailbox!'),1800)}
   if(G.stall&&Object.keys(G.stall).length&&G.day%7===6&&G.map==='village'){const hr=G.clock/60;
     if(hr>=9&&hr<17&&(!G._stallNext||G.clock>=G._stallNext)){G._stallNext=G.clock+14+Math.random()*20;
       const ks=Object.keys(G.stall),id=ks[Math.floor(Math.random()*ks.length)],isc=id[0]==='c'&&CROP_PRICE[id.slice(1)];
