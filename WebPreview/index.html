@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.57</div></div></div>
+    <div class="ver">v11.59</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -368,6 +368,7 @@ const DEEDS=[
   ['delver','⛏ Deep Delver','reach the Old Mine’s deepest floor',()=>!!G.flags.mineB2],
   ['bloomer','🌻 Bloom Bringer','wake the Elder Sunpetal',()=>!!G.flags.elderBloom],
   ['archivist','🏺 Archivist','donate 15 entries to the Archive',()=>Object.keys(G.flags).filter(k=>k.indexOf('don_')===0).length>=15],
+  ['curator','🗝 Curator','donate 30 entries to the Archive',()=>Object.keys(G.flags).filter(k=>k.indexOf('don_')===0).length>=30],
   ['chef','🍳 Kitchen Heart','cook 8 different recipes',()=>RECIPES.filter(r=>(G.col[r.id]||0)>0).length>=8],
   ['legend','👑 Legend Angler','land a Pond Kingfish or Golden Koi',()=>(G.col.kingfish||0)+(G.col.goldfish||0)>0],
   ['philanthropist','🏛 Town Patron','fully fund the plaza beautification',()=>(G.flags.fundTier||0)>=3],
@@ -3385,6 +3386,7 @@ function donateItem(id){
   if(dn===8){G.gold+=150;msg+=" 🏆 Milestone: 150g + the mayor's thanks!"}
   if(dn===15){G.gold+=300;G.flags.pearlCharm=true;msg+=" 🏆 Milestone: 300g + Pearl Charm — the fish bite easier now!"}
   if(dn===22){G.flags.goldCan=true;msg+=" 🏆 Milestone: the GOLDEN WATERING CAN — watering costs no energy!"}
+  if(dn===30){G.gold+=500;G.flags.curatorSeal=true;msg+=" 🏆 Milestone: 500g + the CURATOR'S SEAL — every shop in the valley pays you 10% more, forever!"}
   $('shopmsg').textContent=msg;shopRender();hudRender();save()}
 const OUTFITS=[{n:1,name:'Valley Blue',price:0,sub:'the farm classic'},
              {n:2,name:'Forest Green',price:80,sub:'moss & pine tones'},
@@ -3585,11 +3587,11 @@ function buyFert(){
   shopRender();hudRender();save();
 }
 function demandCrop(){const K=Object.keys(CROP_PRICE);return +K[(G.day*5+season()*3)%K.length]}
-function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1)*(+id===demandCrop()?1.5:1))}
+function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1)*(+id===demandCrop()?1.5:1)*(G.flags.curatorSeal?1.1:1))}
 const FISH_SELL={fish:1,kingfish:1,goldfish:1,moonfish:1,koi:1,trout:1,sardine:1,carp:1,catfish:1};
-function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0;
-  if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1)*(G.flags.gapron?1.1:1));
-  return (G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])?Math.round(s*1.25):s}
+function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0,SEAL=G.flags.curatorSeal?1.1:1;
+  if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1)*(G.flags.gapron?1.1:1)*SEAL);
+  return Math.round(((G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])?s*1.25:s)*SEAL)}
 function sellCrop(id){
   if(!G.inv.crop[id])return;
   const pr=cropSellPrice(id);
