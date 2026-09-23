@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.72</div></div></div>
+    <div class="ver">v11.73</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1068,6 +1068,9 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
   if(id==='farm'&&G.flags.kidwalk&&G.day%7===6&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='lem0'))
     G.objs.push({key:'crate_03',x:8.5,y:21.5,anchor:'c',meta:{kind:'lemonst',name:'Sunny’s lemonade stand — 2g a cup'},fid:'lem0',hx:8.5,hy:21.5,ph:0});
+  if(id==='village'&&G.day%9===2&&G.clock/60>=9&&G.clock/60<17&&!G.objs.some(o=>o.fid==='tnk0')){
+    G.objs.push({key:'wagon',x:23.5,y:17.5,anchor:'c',meta:{kind:'deco',name:'a weathered cart painted with moons and raindrops'},fid:'tnk_c'});
+    G.objs.push({key:'mart_down0',x:22.5,y:17.5,anchor:'bc',meta:{kind:'npc',id:'tinker',name:'Tinker Sol',portrait:'mart_portrait'},fid:'tnk0',hx:22.5,hy:17.5,ph:0})}
   if(id==='farm'&&G.flags.kidwalk&&Math.random()<.35&&!G.objs.some(o=>o.fid==='ktr0'))
     G.objs.push({key:'mound',x:11.5,y:15.5,anchor:'c',meta:{kind:'kidtreas',name:'freshly-turned earth — Sunny was digging here'},fid:'ktr0',hx:11.5,hy:15.5,ph:0});
   if(id==='farm'&&G.day%7!==6&&G.day%7!==0&&G.clock/60<10&&!G.objs.some(o=>o.fid==='np0')&&!G.flags['np'+G.day])
@@ -4201,6 +4204,18 @@ function interact(){
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
     sfx('sfx_harvest');toast('Picked a '+(ITEMS[iid]?ITEMS[iid].name:m.name)+'!');hudRender();save();return}
   if(m.kind==='npc'){
+    if(m.id==='tinker'){
+      const buy=(cost,fn,msg)=>{if(G.gold<cost){toast('Tinker Sol: "No coin, no charm, friend."');return}
+        G.gold-=cost;fn();sfx('sfx_success');toast(msg);hudRender();save()};
+      startDlg(o,['"Sun and rain, bottled and sold!" Tinker Sol spreads his wares across the cart.','"What calls to you today, farmer?"'],null,[
+        {label:'🌧 Rain Charm — 80g (rain tomorrow)',cb:()=>buy(80,()=>{G.nextWeather='rain'},'🌧 You shake the little blue bottle — tomorrow the clouds will do the watering for you')},
+        {label:'☀ Sun Charm — 80g (clear tomorrow)',cb:()=>buy(80,()=>{G.nextWeather='sun'},'☀ You pocket the little gold bottle — tomorrow will shine, Sol swears on his hat')},
+        {label:'🍀 Lucky Charm — 60g (lucky tomorrow)',cb:()=>buy(60,()=>{G.flags.luckyDay=G.day+1},'🍀 A clover pressed in amber — "Carry it and the valley will spoil you." (lucky day tomorrow)')},
+        {label:'📦 Mystery Crate — 50g',cb:()=>buy(50,()=>{
+          const pool=['oldcoin','pearl','starore','candy','truffle','seaglass','crystal','firewood'];
+          const it=pool[Math.floor(Math.random()*pool.length)];G.inv.item[it]=(G.inv.item[it]||0)+1;collect(it);
+          setTimeout(()=>toast('📦 Inside the crate: '+ITEMS[it].name+'!'),1800)},'📦 You pry the lid — inside, swaddled in straw...')},
+        {label:'Just browsing',cb:()=>{}}]);return}
     if(m.visit){if(!G.flags['vis'+G.day]){G.flags['vis'+G.day]=1;G.hearts[m.id]=(G.hearts[m.id]||0)+1;if(m.gift)m.gift();
         startDlg(o,['"Just passing, neighbour — your farm is starting to look like something out of a storybook."',
           m.name+' admires the rows a moment, then pats a pocket. "Oh — I brought you '+m.gsay+'." (+1♥ · neighbour visit)']);save();return}
