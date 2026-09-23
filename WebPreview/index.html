@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.80</div></div></div>
+    <div class="ver">v11.81</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -266,12 +266,14 @@ let SPR={};                    // merged sprite key -> atlas rect name
 function sendMail(f,t){G.letters.push({f,t,day:G.day})}
 function collect(id){G.col[id]=(G.col[id]||0)+1}
 function skLvl(x){return x>=150?5:x>=80?4:x>=40?3:x>=15?2:x>=5?1:0}
+const MINING_SET={ore:1,starore:1,crystal:1,rcrystal:1,iceshard:1,diamond:1,gem:1,goldore:1,coal:1};
 const PERKS={farm:[['🌱 Green Thumb','crops sell for 25% more','price'],['🧺 Rich Harvest','15% chance of one extra crop','harvest']],
  fish:[['🎯 River Sense','a much wider reel zone','zone'],['🌊 Sea Shanty','fish sell for 25% more','sell']],
  forage:[["👁 Keen Eye",'double-gathers 15% more often','eye'],["🍃 Nature's Gift",'foraging costs no energy','free']],
- cook:[['🍳 Golden Ladle','dishes sell for 25% more','ladle'],['🥗 Farm-to-Table','cooked food restores 25% more energy','table']]};
+ cook:[['🍳 Golden Ladle','dishes sell for 25% more','ladle'],['🥗 Farm-to-Table','cooked food restores 25% more energy','table']],
+ mine:[['⛏ Gem Sense','mineral finds double 20% more often','dmine'],['💎 Deep Pockets','ore & gems sell for 25% more','msell']]};
 function gainXP(k,n){const b=skLvl(G.xp[k]);G.xp[k]=(G.xp[k]||0)+n;const a=skLvl(G.xp[k]);
-  if(a>b){sfx('sfx_success');toast((k==='farm'?'🌾 Farming':k==='fish'?'🎣 Fishing':k==='cook'?'🍳 Cooking':'🍄 Foraging')+' Lv '+a+'! '+(k==='farm'?'Crops sell for more':k==='fish'?'Fish bite easier':k==='cook'?'Dishes sell for more':'More double-gathers'))}
+  if(a>b){sfx('sfx_success');toast((k==='farm'?'🌾 Farming':k==='fish'?'🎣 Fishing':k==='cook'?'🍳 Cooking':k==='mine'?'⛏ Mining':'🍄 Foraging')+' Lv '+a+'! '+(k==='farm'?'Crops sell for more':k==='fish'?'Fish bite easier':k==='cook'?'Dishes sell for more':k==='mine'?'Richer seams gleam':'More double-gathers'))}
   if(a>=5&&(!G.perk||!G.perk[k])){G.perk=G.perk||{};const opts=PERKS[k];
     setTimeout(()=>startDlg({meta:{kind:'npc',id:'hero',name:'Mastery',portrait:'hero_portrait'}},
      ['Your '+k+' hands move on their own now — true mastery. Choose your calling:'],null,
@@ -279,6 +281,7 @@ function gainXP(k,n){const b=skLvl(G.xp[k]);G.xp[k]=(G.xp[k]||0)+n;const a=skLvl
       {label:opts[1][0]+' — '+opts[1][1],cb:()=>{G.perk[k]=opts[1][2];toast('✦ '+opts[1][0]+' learned!');save()}}]),1400)}
   if(G.xp[k]>=300&&!G.flags['mxp_'+k]){G.flags['mxp_'+k]=1;
     const MS={farm:['Sari','Your hands read soil like scripture now — the stall tips its hat to you. — Sari'],fish:['Fen','Heard you pull ’em like the river owes you favors. Respect, kid. — Fen'],cook:['Hazel','Customers keep asking who taught you. I take all the credit, naturally. — Hazel'],forage:['Wren','You notice the small things. That’s the whole trick — and you’ve got it. — Wren']};
+    MS.mine=['Elm','You swing that pick like you were born under the hill, kid. The seams sing for you. — Elm'];
     const mm=MS[k]||['Mayor Bram','Well done, kid.'];
     sendMail(mm[0],mm[1]);setTimeout(()=>toast('★ '+k.toUpperCase()+' GRAND MASTERY — a letter of commendation arrives!'),2600)}}
 function colName(id){return id[0]==='c'?CROPS[+id.slice(1)]+' (crop)':(ITEMS[id]?ITEMS[id].name:id)}
@@ -3660,7 +3663,7 @@ function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.far
 const FISH_SELL={fish:1,kingfish:1,goldfish:1,moonfish:1,koi:1,trout:1,sardine:1,carp:1,catfish:1};
 function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0,SEAL=G.flags.curatorSeal?1.1:1;
   if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1)*(G.flags.gapron?1.1:1)*SEAL);
-  return Math.round(((G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])?s*1.25:s)*SEAL)}
+  return Math.round(((G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])|| (G.perk&&G.perk.mine==='msell'&&MINING_SET[id])?s*1.25:s)*SEAL)}
 function sellCrop(id){
   if(!G.inv.crop[id])return;
   const pr=cropSellPrice(id);
@@ -3845,9 +3848,9 @@ function toggleBag(v){
     const kin=Object.keys(G.flags).filter(k=>k.indexOf('kin_')===0).length;
     if(kin)h+=`<div class="invrow"><span>💛 Kindred spirits</span><span class="ct" style="margin-left:auto">${kin}</span></div>`;
     h+='<div class="invsec">SKILLS</div>';
-    const SKL=[['farm','🌾 Farming'],['forage','🍄 Foraging'],['fish','🎣 Fishing'],['cook','🍳 Cooking']],THL=[5,15,40,80,150];
+    const SKL=[['farm','🌾 Farming'],['forage','🍄 Foraging'],['fish','🎣 Fishing'],['cook','🍳 Cooking'],['mine','⛏ Mining']],THL=[5,15,40,80,150];
     for(const[sk,nm]of SKL){const xp=G.xp[sk]||0,lv=skLvl(xp),nxt=lv<5?THL[lv]:null;
-      const perk=sk==='farm'?'+'+lv*10+'% crop price':sk==='forage'?'rare finds +'+lv*10+'%':sk==='cook'?'+'+lv*10+'% dish price':'bite zone +'+(lv*1.4).toFixed(0)+'%';
+      const perk=sk==='farm'?'+'+lv*10+'% crop price':sk==='forage'?'rare finds +'+lv*10+'%':sk==='cook'?'+'+lv*10+'% dish price':sk==='mine'?'richer seams':'bite zone +'+(lv*1.4).toFixed(0)+'%';
       h+=`<div class="invrow"><span>${nm} · Lv${lv}${G.flags['mxp_'+sk]?' ★':''}</span><span class="ct" style="margin-left:auto">${nxt?xp+'/'+nxt+'xp · '+perk:(G.flags['mxp_'+sk]?'★ GRAND MASTER · ':'MAX · ')+perk}</span></div>`;
       if(G.perk&&G.perk[sk]){const pl=PERKS[sk].find(pp=>pp[2]===G.perk[sk]);
         h+=`<div class="invrow" style="font-size:10px;color:#ffd76e"><span>✦ ${pl[0]} — ${pl[1]}</span></div>`}}
@@ -4230,8 +4233,8 @@ function interact(){
     if(!spendSta(G.perk&&G.perk.forage==='free'?0:1))return;
     G.forageDay[G.map+'|'+o.fid]=G.day;
     G.inv.item=G.inv.item||{};const iid=m.item||'mushroom';
-    G.inv.item[iid]=(G.inv.item[iid]||0)+1;G.stats.forage++;collect(iid);gainXP('forage',4);
-    if(Math.random()<(G.flags.luckyDay===G.day?.3:0)+skLvl(G.xp.forage)*.08+(G.perk&&G.perk.forage==='eye'?.15:0)){G.inv.item[iid]++;collect(iid);toast('✨ Double gather!')}
+    G.inv.item[iid]=(G.inv.item[iid]||0)+1;G.stats.forage++;collect(iid);if(MINING_SET[iid])gainXP('mine',6);else gainXP('forage',4);
+    if(Math.random()<(G.flags.luckyDay===G.day?.3:0)+skLvl(G.xp.forage)*.08+(G.perk&&G.perk.forage==='eye'?.15:0)+(G.perk&&G.perk.mine==='dmine'&&MINING_SET[iid]?.2:0)){G.inv.item[iid]++;collect(iid);toast('✨ Double gather!')}
     if(iid==='apple'&&G.flags.graft){G.inv.item.apple++;toast('🍎 The grafted branch gives an extra apple!')}
     if(iid==='honey'&&G.flags.queenBee){G.inv.item.honey++;toast('👑 The queen\u2019s hive gives double honey!')}
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
@@ -5929,7 +5932,7 @@ function interact(){
     if(G.flags.qvein){toast('💎 The seam lies quiet — you took its heart already');return}
     if(!G.inv.item.gpick){toast('💎 A glittering seam — too hard for your tools. Somewhere in these caves an old pickaxe waits…');return}
     G.flags.qvein=1;sfx('sfx_success');swing('hoe',o.x,o.y);
-    G.inv.item.rcrystal=(G.inv.item.rcrystal||0)+3;G.inv.item.crystal=(G.inv.item.crystal||0)+2;
+    G.inv.item.rcrystal=(G.inv.item.rcrystal||0)+3;G.inv.item.crystal=(G.inv.item.crystal||0)+2;gainXP('mine',12);
     startDlg(o,["⛏ Gus's pickaxe sings through the seam — the wall gives way like bread crust.","Inside: a pocket of quartz, cool as moonlight, cut long before you were born.","[Found 3 Refined Crystal + 2 rough crystal]"]);return}
   if(m.kind==='totem'){
     if(G.flags['tot'+G.day]){toast('🗿 The carved faces watch the rows, patient');return}
