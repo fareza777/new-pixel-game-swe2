@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.60</div></div></div>
+    <div class="ver">v11.61</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -7095,6 +7095,8 @@ function dayTick(){
        if(hp){const c=G.crops.farm[hp];G.inv.crop[c.crop]=(G.inv.crop[c.crop]||0)+1;G.stats.crops++;collect('c'+c.crop);
          if(REGROW[c.crop]){c.stage=Math.max(1,(MAPS.farm.crop_frames[c.crop]||[]).length-3);c.watered=false}else{c.crop=0;c.stage=0}
          bits.push('🧺 '+(VNAME[G.spouse]||'Your spouse')+' picked a ripe '+CROPS[c.crop]+' for you')}}
+     if(G.spouse&&Math.random()<.3){const SPG={vilo:['sketch','left a little sketch by the door'],nana:['herb','tucked a sprig of herbs in your basket'],fen:['rfish','left a fresh river fish on the sill'],cora:['firewood','split a neat stack of firewood'],hazel:['honey','slipped a honey jar into your bag'],wren:['starflower','pressed a starflower for you'],elle:['wool','dropped off a fine ball of wool'],mart:['truffle','shared a forest truffle'],pip:['candy','hid a candy in your pocket'],bram:['carvedowl','whittled a little owl for you'],mira:['posy','left a small posy for good luck'],luna:['crystal','left a star crystal for you'],tom:['steg','left a stuffed eggplant for your pantry'],sari:['tart','baked a strawberry tart for you'],elm:['acorn','dropped a fine acorn in your bag']};
+       const g=SPG[G.spouse];if(g){G.inv.item[g[0]]=(G.inv.item[g[0]]||0)+1;bits.push('💝 '+(VNAME[G.spouse]||'Your spouse')+' '+g[1])}}
      if(dry>0)bits.push('💧 '+dry+' crop'+(dry>1?'s':'')+' thirsty');
      if(G.flags.rooster)bits.unshift('🐓 The rooster greets the dawn');
      if(G.flags.fjar){G.sta=Math.min(100+(G.maxsta||0),G.sta+4);bits.unshift('🏮 slept softly by firefly light (+4⚡)')}
