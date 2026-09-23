@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.84</div></div></div>
+    <div class="ver">v11.85</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -392,8 +392,18 @@ const DEEDS=[
   ['gourmand','🍽 Valley Gourmand','cook 20 different recipes',()=>RECIPES.filter(r=>(G.col[r.id]||0)>0).length>=20],
   ['homestead','🏡 Homesteader','commission 10 farm builds',()=>Object.keys(G.flags).filter(k=>k.indexOf('bl_')===0&&G.flags[k]).length>=10],
   ['wager','🏆 Harvest Champion','match Grandfather’s streak — win the Wager 3 times',()=>(G.flags.hwins||0)>=3],
-  ['jockey','🏇 Valley Jockey','run the Sunpetal Races on horseback',()=>!!G.flags.raced]];
-function evalDeeds(){for(const d of DEEDS){if(!G.flags['deed_'+d[0]]&&d[3]()){G.flags['deed_'+d[0]]=1;toast('🏅 Deed earned: '+d[0].replace(/_/g,' ')+' — '+d[1])}}}
+  ['jockey','🏇 Valley Jockey','run the Sunpetal Races on horseback',()=>!!G.flags.raced],
+  ['rockheart','⛏ Rock Heart','reach Mining Lv 5',()=>skLvl(G.xp.mine||0)>=5],
+  ['artisan','🏭 Artisan','own eight artisan machines',()=>['bl_smoke','bl_mayo','bl_cheese','bl_loom','bl_pres','bl_gemcut','bl_aqua','bl_fishpond','bl_kiln','bl_crabpot','bl_capsule'].filter(k=>G.flags[k]).length>=8],
+  ['lorekeeper','📖 Lorekeeper','hear all eight Valley Tales',()=>[0,1,2,3,4,5,6,7].every(i=>G.flags['lore'+i])],
+  ['barterer','🤝 Barterer','strike five swap-meet trades',()=>Object.keys(G.flags).filter(k=>k.indexOf('swap')===0).length>=5],
+  ['keeper','🐟 Pond Keeper','stock the fish pond',()=>!!G.flags.pondFish],
+  ['sage','✦ Valley Sage','master all five skills',()=>['farm','forage','fish','cook','mine'].every(k=>skLvl(G.xp[k]||0)>=5)]];
+function evalDeeds(){for(const d of DEEDS){if(!G.flags['deed_'+d[0]]&&d[3]()){G.flags['deed_'+d[0]]=1;toast('🏅 Deed earned: '+d[0].replace(/_/g,' ')+' — '+d[1]);
+  const dn=Object.keys(G.flags).filter(k=>k.indexOf('deed_')===0).length;
+  const MILE={5:5,10:10,15:15,20:20,25:30,30:40,35:50};
+  if(MILE[dn]){G.maxsta=(G.maxsta||0)+MILE[dn];
+    setTimeout(()=>{sfx('sfx_success');toast('🏆 '+dn+' deeds! The valley honours you — +'+MILE[dn]+' max energy')},1900)}}}}
 const BDAY={pip:4,bram:27,tom:9,elm:11,sari:10,vilo:14,nana:19,mira:23,fen:26,wren:17,luna:25,hazel:8,mart:12,cora:18,elle:22};
 const VNAME={luna:'Luna',shrine:'Forest Shrine',elder:'Elder Tree',bram:'Mayor Bram',sari:'Sari',vilo:'Vilo',nana:'Nana',mira:'Mira',fen:'Fen',pip:'Pip',mart:'Mart',wren:'Wren',hazel:'Hazel',cora:'Cora',elle:'Elle',elm:'Elm',tom:'Tom'};
 const isBirthday=id=>BDAY[id]===((G.day-1)%28)+1;
