@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.67</div></div></div>
+    <div class="ver">v11.68</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3952,6 +3952,13 @@ function faint(){
   },800);
 }
 function landFish(){
+  if(Math.random()<.06){const gold=25+Math.floor(Math.random()*56);
+    let loot=' of old coin';
+    const rr=Math.random();
+    if(rr<.18){G.inv.item.pearl=(G.inv.item.pearl||0)+1;collect('pearl');loot=' and a black pearl!'}
+    else if(rr<.4){G.inv.item.oldcoin=(G.inv.item.oldcoin||0)+1;collect('oldcoin');loot=' and a stamped coin'}
+    G.gold+=gold;G.stats.fish=(G.stats.fish||0)+1;gainXP('fish',8);sfx('sfx_success');
+    toast('🧰 You haul up a barnacled chest! Inside: '+gold+'g'+loot);hudRender();save();return}
   const _night=G.clock/60>=20||G.clock/60<5;const fenLes=G.map==='river'&&G.day%7===5&&G.clock/60>=21&&!G.flags['nfl'+G.day];let fid=fenLes?'kingfish':fullmoon()&&G.map==='farm'?'moonfish':_night&&Math.random()<.35?'eel':G.map==='river'?(season()===3?'icefish':(G.clock/60>=5&&G.clock/60<8&&Math.random()<.25?'dawnfish':G.weather==='fog'&&G.clock/60<9&&Math.random()<.4?'mistfish':G.rainbowDay===G.day&&Math.random()<.3?'prism':G.flags.luckyDay===G.day&&Math.random()<.12?'goldfish':'rfish')):'fish';
   const garSpot=G.flags.fenLesson&&!G.flags.gar&&G.map==='river'&&G.hero.y<7;
   if(garSpot){fid='gar';G.flags.gar=1}collect(fid);
