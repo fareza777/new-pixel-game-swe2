@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.85</div></div></div>
+    <div class="ver">v11.86</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1081,6 +1081,19 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
   if(id==='farm'&&G.flags.kidwalk&&G.day%7===6&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='lem0'))
     G.objs.push({key:'crate_03',x:8.5,y:21.5,anchor:'c',meta:{kind:'lemonst',name:'Sunny’s lemonade stand — 2g a cup'},fid:'lem0',hx:8.5,hy:21.5,ph:0});
+  if(id==='village'&&G.day%28===16&&G.clock/60>=18&&G.clock/60<24&&!G.objs.some(o=>o.fid==='nm0')){
+    for(let i=0;i<6;i++)G.objs.push({key:'lantern',x:20.5+i*2.6,y:12.3,anchor:'c',meta:{kind:'deco',name:'a paper lantern, warm against the dark'},fid:'nml'+i});
+    const NMG=[['mart','mart','Mart',[['moondew',80],['goldfish',150],['pearl',120]],'"Night stock, friend — things the sun never sees."'],
+      ['npc5','npc5','Mira',[['tonic',30],['cocoa',15],['htea',20]],'"Warm things for cold nights, dear."'],
+      ['hazel','hazel','Hazel',[['hcake',35],['tart',20],['candy',10]],'"Baked fresh for the moonrise crowd!"'],
+      ['npc20','npc20','Fen',[['pearl',100],['kingfish',220],['cray',30]],'"River treasures. Night prices."'],
+      ['elle','elle','Elle',[['scarf',60],['whittle',40],['fwool',50]],'"Hand-worked warmth for the evening."'],
+      ['luna','luna','Luna',[['starore',150],['charm',120],['moondew',90]],'"The stars sell cheap tonight."']];
+    const nwk=Math.floor(G.day/28);
+    for(let i=0;i<3;i++){const t=NMG[(nwk*3+i)%NMG.length];
+      G.objs.push({key:t[0]+'_down0',x:22.5+i*3.5,y:14.5,anchor:'bc',meta:{kind:'npc',id:'nm'+i,nm:t,name:t[1],portrait:t[1]+'_portrait'},fid:'nm'+i,hx:22.5+i*3.5,hy:14.5,ph:i})}
+    if(!G.flags['nmseen'+G.day]){G.flags['nmseen'+G.day]=1;adjSta(2);
+      setTimeout(()=>toast('🏮 The Night Market glows — lanterns up, stalls open till midnight'),900)}}
   if(id==='village'&&G.day%28===3&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='sw0')){
     const SWAP=[['bram','bram','Mayor Bram',{crop:1,n:5},{item:'oldcoin',n:1},'"Five turnips for an old coin — the co-op collects them."'],
       ['nana','nana','Nana',{item:'herb',n:3},{item:'honey',n:1},'"Three herbs for a jar of my honey, dear."'],
@@ -4259,6 +4272,17 @@ function interact(){
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
     sfx('sfx_harvest');toast('Picked a '+(ITEMS[iid]?ITEMS[iid].name:m.name)+'!');hudRender();save();return}
   if(m.kind==='npc'){
+    if(m.nm){
+      const t=m.nm;
+      const left=t[3].filter(g=>!G.flags['nm'+G.day+g[0]]);
+      if(!left.length){startDlg(o,['"Sold out for tonight, kid — come again when the lanterns rise."']);return}
+      const ch=left.map(g=>({label:'🌙 '+ITEMS[g[0]].name+' — '+g[1]+'g',cb:()=>{
+        if(G.gold<g[1]){toast('"No coin tonight — the lanterns wait for no one."');return}
+        G.gold-=g[1];G.inv.item[g[0]]=(G.inv.item[g[0]]||0)+1;collect(g[0]);
+        G.flags['nm'+G.day+g[0]]=1;sfx('sfx_coin');hudRender();save();
+        toast('🏮 Wrapped in lantern-light: '+ITEMS[g[0]].name+' is yours')}}));
+      ch.push({label:'Just looking',cb:()=>{}});
+      startDlg(o,[t[4]],null,ch);return}
     if(m.swap){
       const t=m.swap,give=t[3],get=t[4];
       const done=G.flags['swap'+G.day+m.swap[0]];
