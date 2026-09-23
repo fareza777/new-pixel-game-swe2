@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.04</div></div></div>
+    <div class="ver">v12.05</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -735,6 +735,10 @@ function loadMap(id,sx,sy){
   if(id==='village'&&nighth)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='npc'));
   if(id==='farm'&&G.spouse&&!G.flags.wedDone&&!G.flags.wedscene&&G.day>(G.flags.proposeDay||0)){
     G.flags.wedscene=1;
+    if(G.flags.chapelDone){
+      G.flags.wedChapel=1;
+      toast('🔔 The chapel bell tolls across the valley — the wedding is at the glade!');
+      setTimeout(()=>{if(G.map==='farm'&&G.state==='play')loadMap('chapel')},1400);return}
     const spid=G.spouse,spk=(spid==='mira'?'npc5':spid==='fen'?'npc20':spid);
     const wed=[['bram','bram',13.4,10.2],['nana','nana',15.6,10.2],['mira','npc5',12.4,9.6]];
     wed.forEach(([w2,kk,wx,wy])=>{if(w2!==spid)G.objs.push({key:kk+'_down0',x:wx,y:wy,anchor:'bc',meta:{kind:'npc',id:w2,name:VNAME[w2]||w2,portrait:kk+'_portrait'},fid:'wed_'+w2,hx:wx,hy:wy,ph:0})});
@@ -1351,6 +1355,23 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'bellpost',x:10.5,y:8.2,anchor:'c',meta:{kind:'oldbell',name:'the old bell, still on its post'},fid:'cb0',hx:10.5,hy:8.2,ph:0});
   if(id==='chapel'&&!G.objs.some(o=>o.fid==='cbd0'))
     G.objs.push({key:'papers',x:8.5,y:9.5,anchor:'c',meta:{kind:'bundles',name:'the restoration board — crates wait for willing hands'},fid:'cbd0',hx:8.5,hy:9.5,ph:0});
+  if(id==='chapel'&&G.flags.wedChapel===1&&G.spouse&&!G.objs.some(o=>o.fid==='wed_s')){
+    const spid=G.spouse,spk=(spid==='mira'?'npc5':spid==='fen'?'npc20':spid);
+    G.hero.x=10.5;G.hero.y=12;G.hero.dir='UP';
+    const WEDG=[['nana','nana',9.5,7],['mira','npc5',13.5,7],['elle','elle',8.5,9.5],['cora','cora',14.5,9.5],['vilo','vilo',9.5,10.5]];
+    WEDG.forEach(([w2,kk,wx,wy])=>{if(w2!==spid)G.objs.push({key:kk+'_down0',x:wx,y:wy,anchor:'bc',meta:{kind:'npc',id:w2,name:VNAME[w2]||w2,portrait:kk+'_portrait'},fid:'wed_'+w2,hx:wx,hy:wy,ph:0})});
+    G.objs.push({key:'bram_down0',x:11.5,y:6,anchor:'bc',meta:{kind:'npc',id:'bram',name:VNAME.bram,portrait:'bram_portrait'},fid:'wed_bram',hx:11.5,hy:6,ph:0});
+    G.objs.push({key:spk+'_down0',x:11.5,y:8.5,anchor:'bc',meta:{kind:'npc',id:spid,name:VNAME[spid]||spid,portrait:spk+'_portrait',spouse:1},fid:'wed_s',hx:11.5,hy:8.5,ph:0});
+    setTimeout(()=>{if(G.state!=='play')return;
+      G.flags.wedDone=1;G.flags.wedChapel=0;sfx('sfx_bell');
+      for(const h2 in G.hearts)G.hearts[h2]=Math.min(10,G.hearts[h2]+3);
+      G.sta=Math.min((G.sta||0)+8,G.maxsta||100);
+      sendMail('Mayor Bram','The whole village toasted you both at the Lantern last night. May your farm always smell of morning. — Bram');
+      startDlg({meta:{id:'bram',name:'Mayor Bram',portrait:'bram_portrait'}},[null,'vo_wed',
+        '"Under the old bell of Chapel Glade, by sunpetal and spring water — we gather to wed our farmer and '+VNAME[spid]+'."',
+        '"The roof is gone but the sky is a finer vault — by the sweat of this good earth, you are wed!"',
+        '🔔 The bell rings out over the glade. Petals drift down through the open stones. (+3♥ everyone, +8⚡)',
+        VNAME[spid]+' takes your hand beneath the bell. "Every Sunday the doves will know our names. Home, love — home."'])},900)}
   if(id==='chapel'&&G.flags.chapelDone&&!G.objs.some(o=>o.fid==='cg0'))
     G.objs.push({key:'goldflower',x:10.5,y:9.8,anchor:'c',meta:{kind:'deco',name:'the restored chancel, warm with candlelight'},fid:'cg0',hx:10.5,hy:9.8,ph:0});
   if(id==='tors'&&!G.objs.some(o=>o.fid==='tw0'))
