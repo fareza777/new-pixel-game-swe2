@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.70</div></div></div>
+    <div class="ver">v11.71</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -771,6 +771,9 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'feather',x:11.5,y:4.5,anchor:'c',meta:{kind:'wishbone',name:'a dried wishbone, pale as chalk'},fid:'wsh0',hx:11.5,hy:4.5,ph:0});
   if(id==='cellar'&&!G.flags.vintage&&!G.objs.some(o=>o.fid==='vnt0'))
     G.objs.push({key:'cider',x:9.6,y:2.4,anchor:'bc',meta:{kind:'vintage',name:'a dusty bottle behind the preserves'},fid:'vnt0',hx:9.6,hy:2.4,ph:0});
+  if(id==='cellar'&&G.flags.bl_mushroom){
+    if(!G.objs.some(o=>o.fid==='mc1'))G.objs.push({key:'herb_01',x:3.5,y:3.5,anchor:'c',meta:{kind:'forage',item:'mushroom',name:'an oak log run through with button mushrooms'},fid:'mc1',hx:3.5,hy:3.5,ph:0});
+    if(!G.objs.some(o=>o.fid==='mc2'))G.objs.push({key:'herb_01',x:13.5,y:3.5,anchor:'c',meta:{kind:'forage',item:'mshroom',name:'a shaded bed of forest mushrooms'},fid:'mc2',hx:13.5,hy:3.5,ph:0})}
   if(id==='mirahouse'&&G.clock/60>=9&&G.clock/60<17&&!G.objs.some(o=>o.fid==='mtr0'))
     G.objs.push({key:'pot10',x:9.5,y:4.5,anchor:'c',meta:{kind:'mortar',name:'Mira’s stone mortar, scented faintly of lavender'},fid:'mtr0',hx:9.5,hy:4.5,ph:0});
   if(id==='mirahouse'&&G.flags.remedy&&G.day%7===2&&!G.objs.some(o=>o.fid==='pstock'))
@@ -3459,7 +3462,8 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
  {flag:'bl_sunroom',name:"Sunny's Room",price:1800,sub:'A little room of their own — small bed, drawings on the wall (needs Family Room + a walking kid)'},
  {flag:'bl_orchard',name:'Orchard Row',price:900,sub:'a cherry and an apple tree along the west fence — fruit daily in season'},
  {flag:'bl_vine',name:'Vineyard Row',price:800,sub:'three grape vines along the south fence — daily grapes every autumn + a little wine press'},
- {flag:'bl_smoke',name:'The Smokehouse',price:700,ore:2,sub:'needs 2 ore — hang fish inside at dusk; by morning they’re smoked & worth double'}];
+ {flag:'bl_smoke',name:'The Smokehouse',price:700,ore:2,sub:'needs 2 ore — hang fish inside at dusk; by morning they’re smoked & worth double'},
+ {flag:'bl_mushroom',name:'Mushroom Cellar',price:650,sub:'oak logs in the cool dark — two mushroom beds to harvest every day'}];
 function buyBuild(gd){
   const f=G.flags;
   if(gd.flag==='bl_statue'&&!f.gwatch){toast('Cora: "Find all of the founder\u2019s journal pages first."');return}
