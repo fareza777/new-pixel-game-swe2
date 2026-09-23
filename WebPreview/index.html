@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.66</div></div></div>
+    <div class="ver">v11.67</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -4122,6 +4122,21 @@ function interact(){
     for(const[t,fk,gp]of TIERS){
       if(!G.flags[fk]&&(G.stats.quests||0)>=t){G.flags[fk]=1;G.gold+=gp;sfx('sfx_success');
         toast('🏅 VALLEY HONOR ROLL — your name goes up! '+t+' favors done for neighbors (+'+gp+'g)');save();return}}}
+  if(m.kind==='board'&&G.flags.wkC){
+    const c=G.flags.wkC;
+    if(c){const got=(G.inv.crop&&G.inv.crop[c.i])||0;
+      if(got>=c.n){G.inv.crop[c.i]-=c.n;G.flags.wkC=null;G.gold+=c.p;G.stats.quests++;sfx('sfx_success');
+        toast('📦 Weekly order filled: '+c.n+'× '+(CROPS[c.i]||c.i)+' → +'+c.p+'g — the market caravan pays premium!');hudRender();save();return}
+      toast('📦 Market order: '+c.n+'× '+(CROPS[c.i]||c.i)+' needed — you have '+got+'/'+c.n+'. Deliver before next Restday!');return}}
+  if(m.kind==='board'&&G.day%7===0&&!G.flags.wkC){
+    const wk=Math.floor(G.day/7);
+    if(!G.flags['wkNo'+wk]){const wkL=[['1',5,90],['3',4,110],['8',3,120],['13',3,130],['18',3,140],['21',3,150]][wk%6];
+      G.flags['wkNo'+wk]=1;
+      startDlg(o,['A fresh notice in bold lettering: "THE MARKET CARAVAN SEEKS '+wkL[1]+'× '+(CROPS[wkL[0]]||wkL[0])+' — pays '+wkL[2]+'g, premium rates."',
+        'Pinned beside it, in Bram’s hand: "Only the reliable need apply. — B."']);return}
+    const wkL=[['1',5,90],['3',4,110],['8',3,120],['13',3,130],['18',3,140],['21',3,150]][wk%6];
+    G.flags.wkC={i:wkL[0],n:wkL[1],p:wkL[2]};sfx('sfx_success');
+    toast('📦 Order accepted: '+wkL[1]+'× '+(CROPS[wkL[0]]||wkL[0])+' for '+wkL[2]+'g — deliver any day this week!');save();return}
   if(m.kind==='board'){
     // daily villager request — deterministic per day
     const POOL=[{i:'mushroom',n:2,p:30,w:'Fen wants mushrooms for his stew'},
