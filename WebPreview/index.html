@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.14</div></div></div>
+    <div class="ver">v12.15</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -825,6 +825,8 @@ function loadMap(id,sx,sy){
       got.forEach((t,i)=>{
         const sp=(t[1]==='ftrophy'?'goldstar':t[1]);
         G.objs.push({key:(t[1]==='sfx_bell'?'bell':sp),x:12.55+i*.62,y:2.1,anchor:'bc',meta:{kind:'memento',name:t[2]},fid:'mem'+(i+1),hx:12.55+i*.62,hy:2.1,ph:0})})}}
+  if(id==='house'&&G.flags.bl_spice&&!G.objs.some(o=>o.fid==='spc0'))
+    G.objs.push({key:'herb_01',x:11.5,y:2.2,anchor:'bc',meta:{kind:'deco',name:'the spice rack — cinnamon, bay, and a tin of mystery'},fid:'spc0',hx:11.5,hy:2.2,ph:0});
   if(id==='house'&&!G.objs.some(o=>o.fid==='obr0'))
     G.objs.push({key:'herb_01',x:12.5,y:3.2,anchor:'c',meta:{kind:'braid',name:'Grandfather’s onion braid, still drying on the nail'},fid:'obr0',hx:12.5,hy:3.2,ph:0});
   if(id==='house'&&G.weather==='wind'&&G.clock/60>=10&&G.clock/60<20&&!G.objs.some(o=>o.fid==='sht0'))
@@ -3666,6 +3668,7 @@ const BUILDS=[{flag:'bl_barn',name:'The Old Barn',price:400,sub:'east pasture �
  {flag:'bl_ducks',name:'Duck Pair',price:220,sub:'two ducks settle on the farm pond — pet them for duck eggs by the dock; crumbs make them churn'},
  {flag:'bl_feed',name:'Feed Trough',price:650,req:'bl_barn',sub:'needs the barn — a self-filling trough keeps the animals fed overnight; milk & wool appear even without daily pets'},
  {flag:'bl_gwater',name:'Glasshouse Irrigation',price:800,ore:2,req:'bl_ghouse',sub:'needs the greenhouse + 2 ore — copper drip lines water every indoor bed overnight'},
+ {flag:'bl_spice',name:'The Spice Rack',price:400,sub:'a cedar rack of tins and dried herbs by the stove — your cooked dishes sell +15%'},
  {flag:'bl_ghannex',name:'Greenhouse Annex',price:900,ore:3,req:'bl_ghouse',sub:'needs the greenhouse + 3 ore — deep planter beds across the west floor, warm year-round'},
  {flag:'bl_ghannex2',name:'Greenhouse Annex II',price:1200,ore:4,req:'bl_ghannex',sub:'needs the west annex + 4 ore — a second run of deep beds along the east glass'},
  {flag:'bl_aqua',name:'The Aquarium',price:450,ore:1,sub:'needs 1 ore — a glass tank by the window; stock it with your favorite catch'},
@@ -3841,7 +3844,7 @@ function demandCrop(){const K=Object.keys(CROP_PRICE);return +K[(G.day*5+season(
 function cropSellPrice(id){return Math.round(CROP_PRICE[id]*(1+.1*skLvl(G.xp.farm))*(G.perk&&G.perk.farm==='price'?1.25:1)*(+id===demandCrop()?1.5:1)*(G.flags.curatorSeal?1.1:1))}
 const FISH_SELL={fish:1,kingfish:1,goldfish:1,moonfish:1,koi:1,trout:1,sardine:1,carp:1,catfish:1,palefish:1,ghostfrog:1,tuna:1,sailfish:1,sunfish:1};
 function itemSellPrice(id){const s=(ITEMS[id]||{}).sell||0,SEAL=G.flags.curatorSeal?1.1:1;
-  if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1)*(G.flags.gapron?1.1:1)*SEAL);
+  if(RECIPES.some(r=>r.id===id))return Math.round(s*(1+.1*skLvl(G.xp.cook||0))*(G.perk&&G.perk.cook==='ladle'?1.25:1)*(G.flags.gapron?1.1:1)*(G.flags.bl_spice?1.15:1)*SEAL);
   return Math.round(((G.perk&&G.perk.fish==='sell'&&FISH_SELL[id])|| (G.perk&&G.perk.mine==='msell'&&MINING_SET[id])?s*1.25:s)*SEAL)}
 function sellCrop(id){
   if(!G.inv.crop[id])return;
