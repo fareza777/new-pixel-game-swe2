@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.64</div></div></div>
+    <div class="ver">v11.65</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -4193,11 +4193,17 @@ function interact(){
         G.flags['anni'+G.day]=1;G.inv.item=G.inv.item||{};G.inv.item.bq=(G.inv.item.bq||0)+1;collect('bq');G.hearts[m.id]=10;
         startDlg(o,['"You remembered — our anniversary. Seasons already, and I still get butterflies."',
           '"Take this, love — the first bouquet I ever pressed was meant for you. (+1 Moonbloom Bouquet)"']);save();return}
-      if(G.day%7===0&&!G.flags['date'+G.day]){G.flags['date'+G.day]=1;G.hearts[m.id]=10;
-        G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');
-        startDlg(o,['"Restday, love — no chores, just us." '+m.name+' pulls you down onto the porch step.',
-          'You sit shoulder-to-shoulder and watch the farm breathe: chickens arguing, wind in the rows, somewhere a kettle singing.',
-          '"Best seat in the valley," '+m.name+' sighs, head on your shoulder. (+6⚡ · a Restday date)']);save();return}
+      if(G.day%7===0&&!G.flags['date'+G.day]){
+        const SPOT={vilo:['falls','Silverleaf Falls'],nana:['meadow','the meadow'],wren:['forest','Elderwood'],fen:['river','the riverbank'],luna:['crater','the crater'],hazel:['inn','the inn porch'],sari:['village','the plaza'],cora:['forest','the pines'],elle:['village','the plaza'],mart:['cave','the mine mouth'],tom:['cove','the shore'],pip:['meadow','the meadow'],bram:['village','the plaza'],mira:['springs','the springs'],elm:['forest','the pines']}[m.id]||['village','the plaza'];
+        startDlg(o,['"Restday, love — what do you say we do with it?"'],null,
+          [{label:'🪑 Stay on the porch (+6⚡)',cb:()=>{G.flags['date'+G.day]=1;G.hearts[m.id]=10;G.sta=Math.min(100+(G.maxsta||0),G.sta+6);sfx('sfx_success');
+             startDlg(o,[m.name+' pulls you down onto the porch step — "No chores, just us."',
+               'You sit shoulder-to-shoulder and watch the farm breathe: chickens arguing, wind in the rows, somewhere a kettle singing.',
+               '"Best seat in the valley," '+m.name+' sighs, head on your shoulder. (+6⚡ · a Restday date)']);save()}},
+           {label:'🚶 Day trip to '+SPOT[1]+' (+8⚡)',cb:()=>{G.flags['date'+G.day]=1;G.hearts[m.id]=10;G.sta=Math.min(100+(G.maxsta||0),G.sta+8);sfx('sfx_success');
+             G.fade=1;setTimeout(()=>{loadMap(SPOT[0]);G.fade=0;
+               startDlg({meta:{name:m.name,portrait:m.portrait||'hero_portrait'}},['"You actually brought me here — I love this place." '+m.name+' squeezes your hand.',
+                 'You lose an hour to talk and the view. The walk home is all smiles. (+8⚡ · a Restday outing)'])},700);save()}}]);return}
       if(G.spouseDay!==G.day){G.spouseDay=G.day;G.hearts[m.id]=10;
         G.sta=Math.min(100+(G.maxsta||0),G.sta+10);sfx('sfx_success');
         const pk=G.day%3===0||G.flags.bl_famroom;
