@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.96</div></div></div>
+    <div class="ver">v11.97</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1112,6 +1112,12 @@ function loadMap(id,sx,sy){
       G.objs.push({key:t[0]+'_down0',x:22.5+i*3.5,y:14.5,anchor:'bc',meta:{kind:'npc',id:'nm'+i,nm:t,name:t[1],portrait:t[1]+'_portrait'},fid:'nm'+i,hx:22.5+i*3.5,hy:14.5,ph:i})}
     if(!G.flags['nmseen'+G.day]){G.flags['nmseen'+G.day]=1;adjSta(2);
       setTimeout(()=>toast('🏮 The Night Market glows — lanterns up, stalls open till midnight'),900)}}
+  if(id==='farm'&&G.day%28===12&&G.clock/60>=8&&G.clock/60<18){
+    const BPTS=[[40.5,20.5],[36.5,21.5],[48.5,18.5],[42.5,24.5],[45.5,25.5],[48.5,30.5]];
+    BPTS.forEach((pt,i)=>{if(!G.objs.some(o=>o.fid==='bfc'+i))
+      G.objs.push({key:'butterfly',x:pt[0],y:pt[1],anchor:'bc',anim:{frames:['butterfly'],fps:6},meta:{kind:'critter',item:'butterfly',name:'a count-day butterfly — Pip is watching!'},fid:'bfc'+i,ph:i})})
+    if(!G.flags['bfcseen'+G.day]){G.flags['bfcseen'+G.day]=1;
+      setTimeout(()=>toast('\ud83e\udd8b Butterfly Count day — Pip counts every catch. Net 3 for a prize!'),900)}}
   if(id==='village'&&G.day%28===20&&G.clock/60>=9&&G.clock/60<20&&!G.objs.some(o=>o.fid==='trv0')){
     G.objs.push({key:'npc20_down0',x:19.5,y:13.5,anchor:'c',meta:{kind:'traveler',name:'the Traveler',portrait:'npc20_portrait'},fid:'trv0',hx:19.5,hy:13.5,ph:0});
     if(!G.flags['trvseen'+G.day]){G.flags['trvseen'+G.day]=1;
@@ -3868,7 +3874,7 @@ function toggleBag(v){
     if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
     h+='<div class="invsec" style="color:#998;font-size:10px">tap a crop to eat it (+18⚡) · give crops to villagers for ♥</div>';
   }else if(BAGTAB==='cal'){
-    const EV={6:['🎉','Village Social, 4–8pm'],7:['🎪','Fair Day — stalls & contests'],8:['🏇','Sunpetal Races — your farm, mounted, 8–8'],3:['🤝','Swap Meet — plaza stalls, 10–4'],10:['🎣','Fishing Derby — Fen at the river, 8–6'],14:['🎆','Seasonal Festival, 5–10pm'],17:['🍲','Cook-Off — Hazel at the inn, 10–6'],16:['🏮','Night Market — plaza stalls, 6pm–midnight'],20:['🧳','The Traveler visits — plaza edge, 9am–8pm'],20:['🗳','Ballot Day'],21:['🌾','Harvest Wager — Bram at the plaza, 9–5'],24:['☄','Wanderer\'s Comet — night sky'],25:['🏮','Festival of Light, 5–11pm'],27:['🎂','Bram\'s Birthday, 5–9pm'],0:['🔥','Founder\'s Feast & bonfire']};
+    const EV={6:['🎉','Village Social, 4–8pm'],7:['🎪','Fair Day — stalls & contests'],8:['🏇','Sunpetal Races — your farm, mounted, 8–8'],3:['🤝','Swap Meet — plaza stalls, 10–4'],10:['🎣','Fishing Derby — Fen at the river, 8–6'],14:['🎆','Seasonal Festival, 5–10pm'],17:['🍲','Cook-Off — Hazel at the inn, 10–6'],16:['🏮','Night Market — plaza stalls, 6pm–midnight'],12:['🦋','Butterfly Count — net 3 count-day butterflies'],20:['🧳','The Traveler visits — plaza edge, 9am–8pm'],20:['🗳','Ballot Day'],21:['🌾','Harvest Wager — Bram at the plaza, 9–5'],24:['☄','Wanderer\'s Comet — night sky'],25:['🏮','Festival of Light, 5–11pm'],27:['🎂','Bram\'s Birthday, 5–9pm'],0:['🔥','Founder\'s Feast & bonfire']};
     const doy=((G.day-1)%28)+1;
     h+='<div class="invsec">'+SEASON[season()]+' — Day '+doy+' of 28</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:4px 2px">';
     for(let d=1;d<=28;d++){
@@ -4654,6 +4660,10 @@ function interact(){
     if(!spendSta(2))return;
     G.bugDay[G.map+'|'+o.fid]=G.day;G.inv.item[m.item]=(G.inv.item[m.item]||0)+1;
     collect(m.item);sfx('sfx_harvest');swing('basket',o.x,o.y);
+    if(G.day%28===12&&m.item==='butterfly'){G.flags.bfc=(G.flags.bfc||0)+1;
+      if(G.flags.bfc===3){G.gold+=60;G.stats.quests++;sfx('sfx_success');
+        toast('🏆 BUTTERFLY COUNT COMPLETE — Pip runs over waving the prize: +60g!')}
+      else toast('\ud83e\udd8b Counted! '+G.flags.bfc+'/3 for the Butterfly Count')}
     G.stats.forage++;gainXP('forage',4);toast('🦋 Caught '+m.name+'! Worth '+(ITEMS[m.item]?ITEMS[m.item].sell:10)+'g at the stall');hudRender();return}
   if(m.kind==='cat'){
     if(!G.flags.mochiHome&&(G.inv.item.fish>0||G.inv.item.rfish>0)){
