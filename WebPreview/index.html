@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v12.20</div></div></div>
+    <div class="ver">v12.21</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -733,6 +733,8 @@ function loadMap(id,sx,sy){
   if(id==='cave2'&&!G.objs.some(o=>o.fid==='ech0'))
     G.objs.push({key:'rcrystal',x:14.5,y:4.5,anchor:'bc',meta:{kind:'echo',name:'a crystal seam that hums when you tap it'},fid:'ech0',hx:14.5,hy:4.5,ph:0});
   if(id==='village'&&nighth)G.objs=G.objs.filter(o=>!(o.meta&&o.meta.kind==='npc'));
+  if(id==='farm'&&G.flags['ecl'+G.day]&&G.clock/60>=11&&G.clock/60<15&&!G.objs.some(o=>o.fid==='emf0'))
+    G.objs.push({key:'butterfly',x:36,y:14,anchor:'bc',anim:{frames:['butterfly'],fps:5},meta:{kind:'critter',item:'emoth',name:'an eclipse moth — wings like burnt gold',wander:1},fid:'emf0',hx:36,hy:14,ph:0});
   if(id==='farm'&&G.spouse&&!G.flags.wedDone&&!G.flags.wedscene&&G.day>(G.flags.proposeDay||0)){
     G.flags.wedscene=1;
     if(G.flags.chapelDone){
@@ -1413,6 +1415,9 @@ function loadMap(id,sx,sy){
     G.objs.push({key:'glowshard',x:13.5,y:10.5,anchor:'c',meta:{kind:'stardust',name:'a drift of glowing stardust'},fid:'sd0',hx:13.5,hy:10.5,ph:0});
   if(id==='marsh'&&G.clock/60>=17&&G.clock/60<21&&!G.objs.some(o=>o.fid==='bt0'))
     G.objs.push({key:'bird2_down0',x:24.5,y:17.5,anchor:'bc',meta:{kind:'bittern',name:'a bittern booming in the reeds'},fid:'bt0',hx:24.5,hy:17.5,ph:0});
+  if(id==='meadow'&&G.flags['ecl'+G.day]&&G.clock/60>=11&&G.clock/60<15){
+    for(let i=0;i<3;i++)if(!G.objs.some(o=>o.fid==='emt'+i))
+      G.objs.push({key:'butterfly',x:14+i*2,y:10+(i%2),anchor:'bc',anim:{frames:['butterfly'],fps:5},meta:{kind:'critter',item:'emoth',name:'an eclipse moth — wings like burnt gold',wander:1},fid:'emt'+i,hx:14+i*2,hy:10+(i%2),ph:i*.9})}
   if(id==='meadow'&&G.clock/60>=9&&G.clock/60<18&&!G.objs.some(o=>o.fid==='mhk0'))
     G.objs.push({key:'skep',x:9.5,y:17.5,anchor:'bc',meta:{kind:'meadskep',name:'a skep humming with meadow bees'},fid:'mhk0',hx:9.5,hy:17.5,ph:0});
   if(id==='meadow'&&G.flags.toyQ&&!G.flags.toyFnd&&!G.objs.some(o=>o.fid==='toy0'))
@@ -3900,7 +3905,7 @@ const ITEMS={mushroom:{name:'Wild Mushroom',icon:'mushroom_01',sell:8},
              apple:{name:'Crisp Apple',icon:'apple',sell:12},parcel:{name:'Sealed Parcel',icon:'parcel',sell:0},cherry:{name:'Sweet Cherry',icon:'cherry',sell:14},cpie:{name:'Cherry Pie',icon:'apie',sell:60},
              clover:{name:'Lucky Clover',icon:'clover',sell:80},
              rfish:{name:'River Fish',icon:'fish2',sell:25},smfish:{name:'Smoked Fish',icon:'fish2',sell:40},
-             shell:{name:'River Shell',icon:'shell',sell:8},cray:{name:'Crayfish',icon:'fish2',sell:32},tuna:{name:'Bluefin Tuna',icon:'fish_01',sell:130},sailfish:{name:'Sailfish',icon:'fish2',sell:210},sunfish:{name:'Sunfish',icon:'fish3',sell:90},hstone:{name:'Hearthstone',icon:'charm',sell:0},starpouch:{name:'Star Pouch',icon:'sack',sell:0},whelk:{name:'Whelk',icon:'shell',sell:22},palefish:{name:'Pale Blindfish',icon:'fish3',sell:95},ghostfrog:{name:'Ghost Frog',icon:'gfrog',sell:140},oldboot:{name:'Old Boot',icon:'boot',sell:2},seaglass:{name:'Sea Glass',icon:'seaglass',sell:15},icefish:{name:'Frostfish',icon:'fish3',sell:30},duckegg:{name:'Duck Egg',icon:'duckegg',sell:18},plum:{name:'Wild Plum',icon:'plumicon',sell:16,edible:6},tmap:{name:'Tattered Map',icon:'gpage',sell:0},oldone:{name:'The Old One',icon:'gar',sell:800,edible:0},cider:{name:'Harvest Cider',icon:'wine',sell:80,edible:10},mead:{name:'Golden Mead',icon:'wine',sell:95,edible:12},peach:{name:'Peach',icon:'peach',sell:18,edible:8},apricot:{name:'Apricot',icon:'apricot',sell:15,edible:6},acheese:{name:'Aged Cheese',icon:'cheese',sell:150},vcheese:{name:'Vintage Cheese',icon:'cheese',sell:240},wool:{name:'Soft Wool',icon:'wool',sell:35},posy:{name:'Plaza Posy',icon:'flower_r',sell:10},custard:{name:'Frostberry Custard',icon:'custard',sell:48},chowder:{name:'Silverleaf Chowder',icon:'chowder',sell:55},htea:{name:'Honey-Mint Tea',icon:'htea',sell:32}, tart:{name:'Strawberry Tart',icon:'tart',sell:52}, steg:{name:'Stuffed Eggplant',icon:'steg',sell:50}, segg:{name:'Spring Egg',icon:'segg',sell:26}, mayo:{name:'Mayonnaise',icon:'presjar',sell:24}, ibar:{name:'Iron Bar',icon:'ibar',sell:30}, gbar:{name:'Gold Bar',icon:'gbar',sell:65}, rcrystal:{name:'Refined Crystal',icon:'rcrystal',sell:110}, pearl:{name:'Pearl',icon:'pearl',sell:60}, goldfish:{name:'Golden Koi',icon:'goldfish',sell:120}, ofeather:{name:'Owl Feather',icon:'ofeather',sell:35}, moondew:{name:'Moon Dew',icon:'moondew',sell:45}, snowball:{name:'Snowball',icon:'snowball',sell:0}, scarf:{name:'Woolen Scarf',icon:'scarf',sell:60}, presv:{name:'Jar of Preserves',icon:'presjar',sell:60},fjuice:{name:'Fresh-Pressed Juice',icon:'htea',sell:75,edible:26}, flour:{name:'Flour',icon:'flour',sell:24}, starore:{name:'Star Ore',icon:'starore',sell:70}, bread:{name:'Crusty Bread',icon:'bread',sell:45}, kingfish:{name:'Pond Kingfish',icon:'kingfish',sell:150},locket:{name:'Sunpetal Locket',icon:'locket',sell:80},crab:{name:'Tidepool Crab',icon:'crab',sell:35},csoup:{name:'Spiced Crab Soup',icon:'chowder',sell:58},iceshard:{name:'Ice Crystal',icon:'iceshard',sell:40}, orchid:{name:'Glasshouse Orchid',icon:'orchid',sell:40}, feather:{name:'Feather',icon:'feather',sell:5},rfeather:{name:'Herald Feather',icon:'feather',sell:40}, ribbon:{name:'Gold Ribbon',icon:'charm',sell:80}, pegg:{name:'Painted Egg',icon:'egg_r',sell:18,edible:6}, mshroom:{name:'Moon Mushroom',icon:'mshroom',sell:40,edible:12},ftrophy:{name:'Derby Trophy',icon:'kingfish',sell:0},
+             shell:{name:'River Shell',icon:'shell',sell:8},cray:{name:'Crayfish',icon:'fish2',sell:32},tuna:{name:'Bluefin Tuna',icon:'fish_01',sell:130},sailfish:{name:'Sailfish',icon:'fish2',sell:210},sunfish:{name:'Sunfish',icon:'fish3',sell:90},hstone:{name:'Hearthstone',icon:'charm',sell:0},starpouch:{name:'Star Pouch',icon:'sack',sell:0},whelk:{name:'Whelk',icon:'shell',sell:22},palefish:{name:'Pale Blindfish',icon:'fish3',sell:95},ghostfrog:{name:'Ghost Frog',icon:'gfrog',sell:140},oldboot:{name:'Old Boot',icon:'boot',sell:2},seaglass:{name:'Sea Glass',icon:'seaglass',sell:15},icefish:{name:'Frostfish',icon:'fish3',sell:30},duckegg:{name:'Duck Egg',icon:'duckegg',sell:18},plum:{name:'Wild Plum',icon:'plumicon',sell:16,edible:6},tmap:{name:'Tattered Map',icon:'gpage',sell:0},oldone:{name:'The Old One',icon:'gar',sell:800,edible:0},cider:{name:'Harvest Cider',icon:'wine',sell:80,edible:10},mead:{name:'Golden Mead',icon:'wine',sell:95,edible:12},peach:{name:'Peach',icon:'peach',sell:18,edible:8},apricot:{name:'Apricot',icon:'apricot',sell:15,edible:6},emoth:{name:'Eclipse Moth',icon:'butterfly',sell:120},acheese:{name:'Aged Cheese',icon:'cheese',sell:150},vcheese:{name:'Vintage Cheese',icon:'cheese',sell:240},wool:{name:'Soft Wool',icon:'wool',sell:35},posy:{name:'Plaza Posy',icon:'flower_r',sell:10},custard:{name:'Frostberry Custard',icon:'custard',sell:48},chowder:{name:'Silverleaf Chowder',icon:'chowder',sell:55},htea:{name:'Honey-Mint Tea',icon:'htea',sell:32}, tart:{name:'Strawberry Tart',icon:'tart',sell:52}, steg:{name:'Stuffed Eggplant',icon:'steg',sell:50}, segg:{name:'Spring Egg',icon:'segg',sell:26}, mayo:{name:'Mayonnaise',icon:'presjar',sell:24}, ibar:{name:'Iron Bar',icon:'ibar',sell:30}, gbar:{name:'Gold Bar',icon:'gbar',sell:65}, rcrystal:{name:'Refined Crystal',icon:'rcrystal',sell:110}, pearl:{name:'Pearl',icon:'pearl',sell:60}, goldfish:{name:'Golden Koi',icon:'goldfish',sell:120}, ofeather:{name:'Owl Feather',icon:'ofeather',sell:35}, moondew:{name:'Moon Dew',icon:'moondew',sell:45}, snowball:{name:'Snowball',icon:'snowball',sell:0}, scarf:{name:'Woolen Scarf',icon:'scarf',sell:60}, presv:{name:'Jar of Preserves',icon:'presjar',sell:60},fjuice:{name:'Fresh-Pressed Juice',icon:'htea',sell:75,edible:26}, flour:{name:'Flour',icon:'flour',sell:24}, starore:{name:'Star Ore',icon:'starore',sell:70}, bread:{name:'Crusty Bread',icon:'bread',sell:45}, kingfish:{name:'Pond Kingfish',icon:'kingfish',sell:150},locket:{name:'Sunpetal Locket',icon:'locket',sell:80},crab:{name:'Tidepool Crab',icon:'crab',sell:35},csoup:{name:'Spiced Crab Soup',icon:'chowder',sell:58},iceshard:{name:'Ice Crystal',icon:'iceshard',sell:40}, orchid:{name:'Glasshouse Orchid',icon:'orchid',sell:40}, feather:{name:'Feather',icon:'feather',sell:5},rfeather:{name:'Herald Feather',icon:'feather',sell:40}, ribbon:{name:'Gold Ribbon',icon:'charm',sell:80}, pegg:{name:'Painted Egg',icon:'egg_r',sell:18,edible:6}, mshroom:{name:'Moon Mushroom',icon:'mshroom',sell:40,edible:12},ftrophy:{name:'Derby Trophy',icon:'kingfish',sell:0},
   sashimi:{name:'Tuna Sashimi',icon:'fish_01',sell:185,edible:60},ustew:{name:'Underlake Stew',icon:'stew',sell:135,edible:55},flegs:{name:'Golden Frog Legs',icon:'steg',sell:195,edible:55},sailgrill:{name:'Grilled Sailfish',icon:'fish2',sell:265,edible:70},roetoast:{name:'Golden Roe Toast',icon:'bread',sell:95,edible:35},crayboil:{name:'Crayfish Boil',icon:'chowder',sell:58,edible:30},gpie:{name:'Grape Pie',icon:'apie',sell:95,edible:55},fstew:{name:"Fisherman's Stew",icon:'stew',sell:80,edible:60},starcake:{name:'Starcake',icon:'tart',sell:110,edible:70},wtrophy:{name:'Wager Cup',icon:'rcrystal',sell:0},ctrophy:{name:'Cook-Off Trophy',icon:'stew',sell:0}, acorn:{name:'Acorn',icon:'seed',sell:6,edible:3}, diamond:{name:'Raw Diamond',icon:'gem',sell:300}, eel:{name:'Night Eel',icon:'fish3',sell:55,edible:20}, cocoa:{name:'Rainy-Day Cocoa',icon:'htea',sell:35,edible:30}, lily:{name:'Pond Lily',icon:'lily',sell:22}, sketch:{name:'Vilo’s Sketch',icon:'gpage',sell:50},bouquet:{name:'Seasonal Bouquet',icon:'bouquet',sell:28,edible:0},chestnut:{name:'Chestnut',icon:'chestnut',sell:14,edible:4},carvedowl:{name:'Carved Owl',icon:'carvedowl',sell:60,edible:0},cduck:{name:'Carved Duck',icon:'cduck',sell:45,edible:0},whittle:{name:'Whittled Bird',icon:'whittle',sell:12,edible:0},mwhittle:{name:'Masterwork Carving',icon:'whittle',sell:60,edible:0},pframe:{name:'Pressed Posy Frame',icon:'starchart',sell:38},lemonade:{name:'Sunpetal Lemonade',icon:'htea',sell:12,edible:10},gphoto:{name:'Grandfather\u2019s Photograph',icon:'gpage',sell:0},sbread:{name:'Sourdough Loaf',icon:'bread',sell:50,edible:40},
   sglass:{name:'Sea Glass',icon:'gem',sell:20,edible:0},
   bberry:{name:'Blackberry',icon:'berry',sell:14,edible:7},
@@ -7677,6 +7682,7 @@ function dayTick(){
     if(G.prevWeather==='rain'||G.prevWeather==='storm')G.flags['pud'+G.day]=1;
   if(G.prevWeather==='storm')G.flags['fencedmg']=G.day+1;
     if((G.prevWeather==='rain'||G.prevWeather==='storm')&&G.weather==='sun'){G.rainbowDay=G.day;setTimeout(()=>toast('🌈 A rainbow arcs over the valley — the sky is smiling on your farm'),1600)}
+    if(season()!==3&&Math.random()<.045){G.flags['ecl'+G.day]=1;setTimeout(()=>toast('🌒 The almanac was right — an ECLIPSE comes at midday. The light will do strange things'),2400)}
     const wr2=Math.random();G.nextWeather=season()===3?(wr2<0.35?'snow':wr2<0.5?'wind':'sun'):(wr2<0.08?'storm':wr2<0.29?'rain':wr2<0.47?'wind':wr2<0.58?'fog':wr2<0.64?'heat':'sun');
   if(G.flags.crowed){G.flags.crowed=false;setTimeout(()=>toast('🐦 A crow raided your field overnight — a ripe crop is gone!'),1500)}
   if(G.day%28===10)setTimeout(()=>toast('🎣 The FISHING DERBY is on! Find Fen at the river before 6pm — biggest catch wins the Golden Lure'),2300);
@@ -8389,6 +8395,7 @@ function render(ts){
       const wx=(i*97+wt*7)%(cv.width+60)-30, wy=(i*53+Math.sin(wt/30+i)*20)%(cv.height+20)-10;
       ctx.fillStyle=i%3?'rgba(140,190,90,.5)':'rgba(230,200,110,.55)';
       ctx.fillRect(wx,wy,3,2)}
+  }
   if(G.weather==='heat'&&!G.L.indoor){
     ctx.fillStyle='rgba(255,190,80,.09)';ctx.fillRect(0,0,cv.width,cv.height);
     const ht=ts/20;
@@ -8401,7 +8408,16 @@ function render(ts){
     const hg=ctx.createLinearGradient(0,0,0,cv.height*.3);
     hg.addColorStop(0,'rgba(255,200,90,.16)');hg.addColorStop(1,'rgba(255,200,90,0)');
     ctx.fillStyle=hg;ctx.fillRect(0,0,cv.width,cv.height*.3)}
-  }
+  if((G.flags['ecl'+G.day]||G.day%56===0)&&!G.L.indoor&&G.clock/60>=11&&G.clock/60<15){
+    const ph=Math.sin(((G.clock/60-11)/4)*Math.PI);
+    ctx.fillStyle=`rgba(16,6,30,${.5*ph})`;ctx.fillRect(0,0,cv.width,cv.height);
+    const ex=cv.width/2,ey=cv.height*.14,er=30+Math.sin(ts/40)*2;
+    const cg=ctx.createRadialGradient(ex,ey,er*.5,ex,ey,er*3.4);
+    cg.addColorStop(0,'rgba(255,130,60,0)');cg.addColorStop(.42,`rgba(255,115,55,${.65*ph})`);cg.addColorStop(1,'rgba(255,80,40,0)');
+    ctx.fillStyle=cg;ctx.fillRect(ex-er*3,ey-er*3,er*6,er*6);
+    ctx.fillStyle='rgba(8,4,16,.92)';ctx.beginPath();ctx.arc(ex,ey,er,0,7);ctx.fill();
+    for(let i=0;i<20;i++){const mx=(i*71+ts*.7)%(cv.width+40)-20,my=(i*53+ts*.9)%(cv.height+30)-15;
+      ctx.fillStyle=`rgba(255,140,80,${.35*ph*(i%3?1:.5)})`;ctx.fillRect(mx,my,2,2)}}
   // Festival Eve fireworks (last day of each season, after 20:00)
   if(G.day%28===0&&G.map==='village'&&G.clock>=20*60){
     if(G.flags._fwDay!==G.day){G.flags._fwDay=G.day;sfx('sfx_success');toast('🎆 The Festival of Light — fireworks over the plaza!')}
