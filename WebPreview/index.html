@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.78</div></div></div>
+    <div class="ver">v11.79</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -1068,6 +1068,19 @@ function loadMap(id,sx,sy){
   if(id==='farm'&&G.flags.bl_hay)G.objs.push({key:'haybale',x:50.6,y:12.6,meta:{kind:'hay',name:'the hay bale'},fid:'bl_hay',hx:50.6,hy:12.6,ph:0});
   if(id==='farm'&&G.flags.kidwalk&&G.day%7===6&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='lem0'))
     G.objs.push({key:'crate_03',x:8.5,y:21.5,anchor:'c',meta:{kind:'lemonst',name:'Sunny’s lemonade stand — 2g a cup'},fid:'lem0',hx:8.5,hy:21.5,ph:0});
+  if(id==='village'&&G.day%28===3&&G.clock/60>=10&&G.clock/60<16&&!G.objs.some(o=>o.fid==='sw0')){
+    const SWAP=[['bram','bram','Mayor Bram',{crop:1,n:5},{item:'oldcoin',n:1},'"Five turnips for an old coin — the co-op collects them."'],
+      ['nana','nana','Nana',{item:'herb',n:3},{item:'honey',n:1},'"Three herbs for a jar of my honey, dear."'],
+      ['fen','npc20','Fen',{item:'fish',n:3},{item:'pearl',n:1},'"Three pond fish for a river pearl. No questions asked."'],
+      ['wren','wren','Wren',{item:'feather',n:2},{item:'ofeather',n:1},'"Two plain feathers for an owl feather — for my collection."'],
+      ['hazel','hazel','Hazel',{item:'milk',n:2},{item:'custard',n:1},'"Two milks for a custard fresh from the oven."'],
+      ['mart','mart','Mart',{item:'oldcoin',n:4},{item:'charm',n:1},'"Four old coins for a Lucky Charm, friend. Rare stock."'],
+      ['elle','elle','Elle',{item:'wool',n:2},{item:'scarf',n:1},'"Two wool for a scarf — I am feeling generous today."'],
+      ['elm','elm','Elm',{item:'firewood',n:4},{item:'chestnut',n:2},'"Four splits of firewood for two chestnuts."'],
+      ['mira','npc5','Mira',{item:'mushroom',n:3},{item:'tonic',n:1},'"Three mushrooms for a bottle of my tonic."']];
+    const wk=Math.floor(G.day/28);
+    for(let i=0;i<3;i++){const t=SWAP[(wk*3+i)%SWAP.length];
+      G.objs.push({key:t[1]+'_down0',x:24.5+i*3,y:14.5,anchor:'bc',meta:{kind:'npc',id:'swap'+i,swap:t,portrait:t[0]+'_portrait',name:t[2]},fid:'sw'+i,hx:24.5+i*3,hy:14.5,ph:0})}}
   if(id==='village'&&G.day%9===2&&G.clock/60>=9&&G.clock/60<17&&!G.objs.some(o=>o.fid==='tnk0')){
     G.objs.push({key:'wagon',x:23.5,y:17.5,anchor:'c',meta:{kind:'deco',name:'a weathered cart painted with moons and raindrops'},fid:'tnk_c'});
     G.objs.push({key:'mart_down0',x:22.5,y:17.5,anchor:'bc',meta:{kind:'npc',id:'tinker',name:'Tinker Sol',portrait:'mart_portrait'},fid:'tnk0',hx:22.5,hy:17.5,ph:0})}
@@ -4222,6 +4235,18 @@ function interact(){
     if(iid==='apple'&&Math.random()<0.07){G.inv.item.goldapple=(G.inv.item.goldapple||0)+1;collect('goldapple');toast('✨ A Golden Apple drops — it glows faintly!')}
     sfx('sfx_harvest');toast('Picked a '+(ITEMS[iid]?ITEMS[iid].name:m.name)+'!');hudRender();save();return}
   if(m.kind==='npc'){
+    if(m.swap){
+      const t=m.swap,give=t[3],get=t[4];
+      const done=G.flags['swap'+G.day+m.swap[0]];
+      if(done){startDlg(o,['"All traded out for today, farmer — come back next Swap Meet."']);return}
+      const have=give.item?(G.inv.item[give.item]||0):(G.inv.crop[give.crop]||0);
+      if(have<give.n){startDlg(o,['"The offer stands: '+give.n+' '+(give.item?ITEMS[give.item].name:CROPS[give.crop])+' for '+get.n+' '+(get.item?ITEMS[get.item].name:CROPS[get.crop])+'. Come back when you have them."']);return}
+      startDlg(o,[t[5]],null,[{label:'🤝 Trade '+give.n+' '+(give.item?ITEMS[give.item].name:CROPS[give.crop])+' → '+get.n+' '+(get.item?ITEMS[get.item].name:CROPS[get.crop]),cb:()=>{
+        if(give.item)G.inv.item[give.item]-=give.n;else G.inv.crop[give.crop]-=give.n;
+        if(get.item){G.inv.item[get.item]=(G.inv.item[get.item]||0)+get.n;collect(get.item)}else{G.inv.crop[get.crop]=(G.inv.crop[get.crop]||0)+get.n}
+        G.flags['swap'+G.day+m.swap[0]]=1;G.stats.quests++;sfx('sfx_coin');
+        toast('🤝 A fair trade! '+get.n+' '+(get.item?ITEMS[get.item].name:CROPS[get.crop])+' changes hands');save()}},
+        {label:'Not today',cb:()=>{}}]);return}
     if(m.id==='tinker'){
       const buy=(cost,fn,msg)=>{if(G.gold<cost){toast('Tinker Sol: "No coin, no charm, friend."');return}
         G.gold-=cost;fn();sfx('sfx_success');toast(msg);hudRender();save()};
