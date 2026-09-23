@@ -223,7 +223,7 @@
       <div class="mbtn" id="mset">⚙ Settings</div>
     </div>
     <div id="loadmsg">loading…</div>
-    <div class="ver">v11.86</div></div></div>
+    <div class="ver">v11.87</div></div></div>
 
 <div id="setov" class="ovl" style="background:rgba(8,6,14,.96)">
   <div class="panel" style="background:linear-gradient(#2a1d0d,#1c1208);border:3px solid #c89b5a;border-radius:14px;padding:16px;min-width:260px;color:#ffe9c4;box-shadow:0 14px 48px rgba(0,0,0,.65),inset 0 0 0 2px #3a2a14,inset 0 1px 0 rgba(255,215,110,.15)">
@@ -3836,14 +3836,14 @@ function toggleBag(v){
     if(!any)h+='<div class="invrow"><span style="color:#998">— none —</span></div>';
     h+='<div class="invsec" style="color:#998;font-size:10px">tap a crop to eat it (+18⚡) · give crops to villagers for ♥</div>';
   }else if(BAGTAB==='cal'){
-    const EV={6:['🎉','Village Social, 4–8pm'],7:['🎪','Fair Day — stalls & contests'],8:['🏇','Sunpetal Races — your farm, mounted, 8–8'],10:['🎣','Fishing Derby — Fen at the river, 8–6'],14:['🎆','Seasonal Festival, 5–10pm'],17:['🍲','Cook-Off — Hazel at the inn, 10–6'],20:['🗳','Ballot Day'],21:['🌾','Harvest Wager — Bram at the plaza, 9–5'],24:['☄','Wanderer\'s Comet — night sky'],25:['🏮','Festival of Light, 5–11pm'],27:['🎂','Bram\'s Birthday, 5–9pm'],0:['🔥','Founder\'s Feast & bonfire']};
+    const EV={6:['🎉','Village Social, 4–8pm'],7:['🎪','Fair Day — stalls & contests'],8:['🏇','Sunpetal Races — your farm, mounted, 8–8'],3:['🤝','Swap Meet — plaza stalls, 10–4'],10:['🎣','Fishing Derby — Fen at the river, 8–6'],14:['🎆','Seasonal Festival, 5–10pm'],17:['🍲','Cook-Off — Hazel at the inn, 10–6'],16:['🏮','Night Market — plaza stalls, 6pm–midnight'],20:['🗳','Ballot Day'],21:['🌾','Harvest Wager — Bram at the plaza, 9–5'],24:['☄','Wanderer\'s Comet — night sky'],25:['🏮','Festival of Light, 5–11pm'],27:['🎂','Bram\'s Birthday, 5–9pm'],0:['🔥','Founder\'s Feast & bonfire']};
     const doy=((G.day-1)%28)+1;
     h+='<div class="invsec">'+SEASON[season()]+' — Day '+doy+' of 28</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:4px 2px">';
     for(let d=1;d<=28;d++){
       const ev=EV[d%28===0?0:d],tod=d===doy,bid=Object.keys(BDAY).find(k=>BDAY[k]===d&&VNAME[k]);
       h+=`<div style="text-align:center;padding:5px 0;border-radius:5px;font-size:11px;${tod?'background:#5a7a2a;color:#ffe97a;font-weight:bold':'background:#20182f;color:#b8a988'}${ev||bid?';border:1px solid #7a5a2a':''}" title="${(ev?ev[1]+' · ':'')+(bid?'🎂 '+VNAME[bid]+'\u2019s birthday':'')}">${d}${ev?'<div style="font-size:10px">'+ev[0]+'</div>':bid?'<div style="font-size:10px">🎂</div>':''}</div>`}
     h+='</div><div class="invsec">THIS SEASON</div>';
-    for(const dd of [6,7,10,14,17,20,21,24,25,27,28]){const ev=EV[dd%28];if(!ev)continue;
+    for(const dd of [3,6,7,8,10,14,16,17,20,21,24,25,27,28]){const ev=EV[dd%28];if(!ev)continue;
       const past=dd<doy;
       h+=`<div class="invrow" style="opacity:${past?'.45':'1'}"><span>${ev[0]} Day ${dd} — ${ev[1]}</span></div>`}
     h+='<div class="invsec">BIRTHDAYS</div>';
